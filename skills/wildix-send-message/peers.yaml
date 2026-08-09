@@ -1,0 +1,12 @@
+peers:
+  - name: wildix-auth
+    glob: ~/.claude/skills/wildix-auth/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-auth -y
+    install_policy: silent
+    purpose: Authenticate with Wildix x-bees via AWS Cognito and obtain tokens for API calls.
+
+  - name: wildix-get-last-chats
+    glob: ~/.claude/skills/wildix-get-last-chats/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-last-chats -y
+    install_policy: silent
+    purpose: List x-bees channels to find the channelId before sending.

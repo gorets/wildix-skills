@@ -1,0 +1,20 @@
+{
+  "name": "wildix",
+  "version": "1.1.0",
+  "description": "AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, and messaging",
+  "author": {
+    "name": "Wildix"
+  },
+  "repository": "https://github.com/gorets/wildix-skills",
+  "homepage": "https://wildix.com",
+  "license": "MIT",
+  "keywords": [
+    "wildix",
+    "x-bees",
+    "collaboration",
+    "chat",
+    "conference",
+    "messaging"
+  ],
+  "skills": "./skills/"
+}

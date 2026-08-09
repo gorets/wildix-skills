@@ -1,0 +1,6 @@
+tokens/
+*.json.bak
+.env
+.DS_Store
+.idea
+.vscode

@@ -1,0 +1,57 @@
+# Wildix router peer manifest.
+#
+# One entry per skill in the Wildix pack. The router (skills/wildix/SKILL.md)
+# uses this file as the single source of truth for:
+#   - glob: path to detect whether a peer is installed
+#   - install: command to run if missing
+#   - install_policy: "silent" (auto) or "ask" (confirm with user first)
+#   - purpose: one-sentence description used for routing decisions
+
+peers:
+  - name: wildix-auth
+    glob: ~/.claude/skills/wildix-auth/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-auth -y
+    install_policy: silent
+    purpose: Authenticate with Wildix x-bees via AWS Cognito. Required by all other skills.
+
+  - name: wildix-chats-overview
+    glob: ~/.claude/skills/wildix-chats-overview/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-chats-overview -y
+    install_policy: silent
+    purpose: Fetch and summarize x-bees chats for today, yesterday, a specific date, or a date range.
+
+  - name: wildix-get-conference
+    glob: ~/.claude/skills/wildix-get-conference/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-conference -y
+    install_policy: silent
+    purpose: Fetch conference details, participants, transcription status, and AI insights from wda.wildix.com.
+
+  - name: wildix-get-last-chats
+    glob: ~/.claude/skills/wildix-get-last-chats/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-last-chats -y
+    install_policy: silent
+    purpose: Return the user's x-bees inbox — list of chats sorted by last activity. For browsing, not for ID lookup.
+
+  - name: wildix-get-chat
+    glob: ~/.claude/skills/wildix-get-chat/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-chat -y
+    install_policy: silent
+    purpose: Resolve a raw channel ID or x-bees inbox URL to a full channelId (type:rawId format).
+
+  - name: wildix-get-messages-in-chat
+    glob: ~/.claude/skills/wildix-get-messages-in-chat/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-messages-in-chat -y
+    install_policy: silent
+    purpose: Fetch messages from a specific x-bees chat with pagination support.
+
+  - name: wildix-get-unread-messages
+    glob: ~/.claude/skills/wildix-get-unread-messages/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-unread-messages -y
+    install_policy: silent
+    purpose: Fetch unread channels and their recent messages for the authenticated user.
+
+  - name: wildix-send-message
+    glob: ~/.claude/skills/wildix-send-message/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-send-message -y
+    install_policy: silent
+    purpose: Send a text message to an x-bees channel as a bot or as the authenticated user.

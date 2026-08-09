@@ -1,0 +1,12 @@
+peers:
+  - name: wildix-auth
+    glob: ~/.claude/skills/wildix-auth/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-auth -y
+    install_policy: silent
+    purpose: Authenticate with Wildix x-bees via AWS Cognito and obtain tokens for API calls.
+
+  - name: wildix-get-conference
+    glob: ~/.claude/skills/wildix-get-conference/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-get-conference -y
+    install_policy: silent
+    purpose: Fetch conference details, participants, transcription, and AI insights from wda.wildix.com.
