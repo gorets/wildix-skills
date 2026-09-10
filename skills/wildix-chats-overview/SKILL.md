@@ -3,7 +3,7 @@ name: wildix-chats-overview
 description: Use when asked to show messages, get an overview, or summarize x-bees chats for today, yesterday, a specific date, or a date range (e.g. current week)
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

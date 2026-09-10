@@ -3,7 +3,7 @@ name: wildix-get-messages-in-chat
 description: Use when asked to read messages in a chat, show chat history, fetch conversation messages, or get what was said in a specific x-bees, collaboration 7, or x-hoppers chat.
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

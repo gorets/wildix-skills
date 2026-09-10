@@ -3,7 +3,7 @@ name: wildix-get-unread-messages
 description: Use when asked to show unread messages, unread channels, what was missed in x-bees chat, or what needs attention in conversations
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

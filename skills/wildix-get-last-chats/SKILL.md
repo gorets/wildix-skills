@@ -3,7 +3,7 @@ name: wildix-get-last-chats
 description: Use when asked to list chats, show the inbox, browse recent conversations, or find a chat by name in x-bees, collaboration 7, or x-hoppers. Returns the user's chat list sorted by last activity. NOT for resolving a chat by its ID — use wildix-get-chat for that.
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

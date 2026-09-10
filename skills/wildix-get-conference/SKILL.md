@@ -3,7 +3,7 @@ name: wildix-get-conference
 description: Fetch details for one or more x-bees/Wildix conferences by ID from wda.wildix.com. Use when you have a conferenceId and need participant list, duration, transcription status, recording availability.
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

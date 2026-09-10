@@ -3,7 +3,7 @@ name: wildix-get-chat
 description: Fetch x-bees chat info by raw channel ID, inbox URL, or full channelId. Use when you have a URL like https://app.x-bees.com/inbox/<rawId> or a bare rawId and need channel details (name, type, members) before fetching messages or sending.
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

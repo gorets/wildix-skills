@@ -3,7 +3,7 @@ name: wildix-adr-from-meeting
 description: Turn an x-bees meeting transcription into an Architecture Decision Record and publish it to Confluence. Use when asked to write an ADR from a call, record architecture decisions from a meeting, or when given an x-bees conference link to document as an ADR.
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Read, Write, Edit, Glob, Grep, Skill, mcp__claude_ai_Atlassian__*
 ---
@@ -54,6 +54,9 @@ Fields:
 | `confluence.spaceId` | space key, accepted as `spaceId` |
 | `confluence.indexPageId` | the "ADR index" page holding the Page Properties Report macro |
 | `confluence.folders` | series → Confluence folder id (plus `ADR`, the root folder) |
+
+Reading the config is silent — say nothing about it when the file is there. What the config
+resolved to is reported once, at the end (Step 8).
 
 Degrade without failing:
 
@@ -247,6 +250,11 @@ Order of work:
 
 In one message: the link to the page, the ADR number, what the meeting left unresolved, and which
 next-steps items have no owner.
+
+**Name the target you actually used** — the Confluence space and the series folder the page went
+to, and the local directory the file went to. One line is enough. Step 0 reads the config silently,
+so this is the only place the user can see which values took effect; without it a stale or edited
+config publishes into the wrong space unnoticed, and "did it even read my config?" has no answer.
 
 Separately, if it happened: a mismatch between the local corpus and Confluence over numbers, or the
 local corpus being unavailable (Step 4); participants whose AAID was not found and who stayed as

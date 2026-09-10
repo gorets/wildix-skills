@@ -2,6 +2,13 @@
 
 AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, read chats, browse channels, fetch conference details, send messages, and turn a meeting transcription into a published Architecture Decision Record — all from Claude Code.
 
+> **Unofficial project.** These skills are a personal project, not an official Wildix product. They
+> are not released, endorsed or supported by Wildix, and Wildix gives no warranty for them. They
+> were built against publicly documented endpoints and the observable behaviour of the x-bees apps
+> — the APIs they call are internal product APIs, not a public contract, and can change or
+> disappear without notice. "Wildix" and "x-bees" are trademarks of Wildix, used here only to say
+> which service these skills talk to.
+
 ## Installation
 
 ```bash
@@ -140,4 +147,4 @@ cp commands/adr.md ~/.claude/commands/adr.md
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

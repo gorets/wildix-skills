@@ -3,7 +3,7 @@ name: wildix-send-message
 description: Use when asked to send a message to an x-bees, collaboration 7, x-hoppers chat channel on behalf of a bot or user. Triggers on requests like "send a message to channel X", "notify channel", "post to chat", "reply to message", "send file", "attach file to message".
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---

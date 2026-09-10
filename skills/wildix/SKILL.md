@@ -3,7 +3,7 @@ name: wildix
 description: Router for Wildix x-bees skills. Use when the user wants to work with x-bees chats, channels, conferences, or messaging — reads, sends, lists, summarizes, or fetches conference details.
 license: MIT
 metadata:
-  author: Wildix
+  author: Vladimir Gorobets
 allowed-tools: >-
   Bash, Glob, Skill
 ---
