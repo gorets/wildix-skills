@@ -1,6 +1,6 @@
 {
   "name": "wildix",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, and messaging",
   "author": {
     "name": "Wildix"
