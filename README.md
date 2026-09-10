@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, read chats, browse channels, fetch conference details, and send messages — all from Claude Code.
+AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, read chats, browse channels, fetch conference details, send messages, and turn a meeting transcription into a published Architecture Decision Record — all from Claude Code.
 
 ## Installation
 
@@ -19,6 +19,7 @@ npx skills add gorets/wildix-skills --s wildix-get-chat -y
 npx skills add gorets/wildix-skills --s wildix-get-messages-in-chat -y
 npx skills add gorets/wildix-skills --s wildix-get-unread-messages -y
 npx skills add gorets/wildix-skills --s wildix-send-message -y
+npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
 ## Skills
@@ -99,11 +100,43 @@ Sends a text message to an x-bees channel as a bot or as the authenticated user.
 
 **Depends on:** `wildix-auth`
 
+---
+
+### `wildix-adr-from-meeting`
+
+Downloads a meeting transcription from `wda.wildix.com`, turns it into an Architecture Decision
+Record, and publishes it to Confluence as a Page Properties page that a Page Properties Report
+indexes automatically. Keeps a local copy in an Obsidian vault when you have one.
+
+**Triggers:** "write an ADR from this call", "record the architecture decisions from that meeting",
+passing an `app.x-bees.com/insights/conferences/<id>` link
+
+**Depends on:** `wildix-auth`
+
+**Extra setup.** This skill needs a config file of its own — space, folder ids, your account:
+
+```bash
+cp ~/.claude/skills/wildix-adr-from-meeting/config.example.json ~/.claude/adr.config.json
+```
+
+It also needs an Atlassian MCP server connected in Claude Code for the Confluence half; without it
+the record is still built locally and the skill tells you what is missing. `vaultAdrDir` and
+`participantsFile` in the config are optional — with no Obsidian vault the skill works straight
+against Confluence.
+
+**Optional short command.** The skill is invocable as `/wildix-adr-from-meeting`. For a shorter
+`/adr` with an argument hint, copy the wrapper — `npx skills` installs skills only, not commands:
+
+```bash
+cp commands/adr.md ~/.claude/commands/adr.md
+```
+
 ## Requirements
 
 - `jq` — `brew install jq` (macOS) or `apt install jq` (Linux)
 - `python3` — included on macOS/Linux
 - `curl` — included on macOS/Linux
+- an Atlassian MCP server in Claude Code — only for `wildix-adr-from-meeting`, to publish to Confluence
 
 ## License
 

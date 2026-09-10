@@ -1,0 +1,6 @@
+peers:
+  - name: wildix-auth
+    glob: ~/.claude/skills/wildix-auth/SKILL.md
+    install: npx skills add gorets/wildix-skills --s wildix-auth -y
+    install_policy: silent
+    purpose: Authenticate with Wildix x-bees via AWS Cognito and obtain the IdToken used to download the meeting transcription.

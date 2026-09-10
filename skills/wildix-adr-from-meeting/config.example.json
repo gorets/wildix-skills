@@ -1,0 +1,18 @@
+{
+  "email": "firstname.lastname@wildix.com",
+  "adrLanguage": "ru",
+  "vaultAdrDir": "~/ObsidianFiles/Work/ARD",
+  "participantsFile": "~/.claude/data/adr-participants.json",
+  "confluence": {
+    "cloudId": "<your-site>.atlassian.net",
+    "spaceId": "<space key: ENG, or ~<account-id> for a personal space>",
+    "indexPageId": "<id of the ADR index page>",
+    "folders": {
+      "ADR": "<id of the root ADR folder>",
+      "RNA": "<id of the RNA folder>",
+      "STREAM": "<id of the STREAM folder>",
+      "BACKEND-API": "<id of the BACKEND-API folder>",
+      "GENERAL": "<id of the GENERAL folder>"
+    }
+  }
+}
