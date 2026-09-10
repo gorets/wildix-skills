@@ -1,5 +1,8 @@
 #!/bin/bash
-# Usage: get-transcription.sh <ID_TOKEN> <conferenceId> [outFile]
+# Usage: ID_TOKEN="$ID_TOKEN" get-transcription.sh <conferenceId> [outFile]
+#
+# The token is read from the environment, never from argv: command-line arguments are visible
+# to every process on the host (`ps`) and land in shell history.
 #
 # Downloads the full transcription of a Wildix/x-bees conference and writes it as plain text:
 #
@@ -14,15 +17,18 @@
 # Exits 3 when the conference has no transcription (it was never enabled on the call).
 set -euo pipefail
 
-ID_TOKEN="${1:?Usage: get-transcription.sh <ID_TOKEN> <conferenceId> [outFile]}"
-CONF_ID="${2:?Usage: get-transcription.sh <ID_TOKEN> <conferenceId> [outFile]}"
-OUT_FILE="${3:-}"
+USAGE='usage: ID_TOKEN=<token> get-transcription.sh <conferenceId> [outFile]'
+# Never interpolate $ID_TOKEN into these messages — a missing argument would print the token.
+: "${ID_TOKEN:?ID_TOKEN must be set in the environment; $USAGE}"
+CONF_ID="${1:?$USAGE}"
+OUT_FILE="${2:-}"
 
-python3 - "$ID_TOKEN" "$CONF_ID" "$OUT_FILE" <<'PYEOF'
+ID_TOKEN="$ID_TOKEN" python3 - "$CONF_ID" "$OUT_FILE" <<'PYEOF'
 import json, sys, os, urllib.request, urllib.error, concurrent.futures
 from datetime import datetime, timezone, timedelta
 
-id_token, conf_id, out_file = sys.argv[1], sys.argv[2], sys.argv[3]
+id_token = os.environ["ID_TOKEN"]
+conf_id, out_file = sys.argv[1], sys.argv[2]
 BASE = "https://wda.wildix.com/v2"
 TZ = timezone(timedelta(hours=3))  # UTC+3, the timezone the KB records meetings in
 
