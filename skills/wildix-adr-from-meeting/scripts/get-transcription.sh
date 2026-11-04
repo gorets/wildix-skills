@@ -1,8 +1,8 @@
 #!/bin/bash
-# Usage: ID_TOKEN="$ID_TOKEN" get-transcription.sh <conferenceId> [outFile]
+# Usage: get-transcription.sh <conferenceId> [outFile]
 #
-# The token is read from the environment, never from argv: command-line arguments are visible
-# to every process on the host (`ps`) and land in shell history.
+# The token is loaded by the wildix-auth skill and passed through the environment, never through argv:
+# command-line arguments are visible to every process on the host (`ps`) and land in shell history.
 #
 # Downloads the full transcription of a Wildix/x-bees conference and writes it as plain text:
 #
@@ -17,11 +17,16 @@
 # Exits 3 when the conference has no transcription (it was never enabled on the call).
 set -euo pipefail
 
-USAGE='usage: ID_TOKEN=<token> get-transcription.sh <conferenceId> [outFile]'
-# Never interpolate $ID_TOKEN into these messages — a missing argument would print the token.
-: "${ID_TOKEN:?ID_TOKEN must be set in the environment; $USAGE}"
+USAGE='usage: get-transcription.sh <conferenceId> [outFile]'
 CONF_ID="${1:?$USAGE}"
 OUT_FILE="${2:-}"
+
+# Authentication belongs to the wildix-auth skill: it loads ID_TOKEN without ever printing it.
+for _d in "$(dirname "$0")/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
+done
+command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }
+wildix_require_token || exit 2
 
 ID_TOKEN="$ID_TOKEN" python3 - "$CONF_ID" "$OUT_FILE" <<'PYEOF'
 import json, sys, os, urllib.request, urllib.error, concurrent.futures

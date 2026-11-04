@@ -22,6 +22,10 @@ Glob ~/.claude/skills/wildix-auth/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
+## Authentication
+
+The script authenticates itself through the `wildix-auth` skill: you never get, pass or print a token. When it stops with exit code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run the script again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
+
 ## Input
 
 Conference IDs can be passed as bare IDs or as full x-bees URLs:
@@ -32,15 +36,14 @@ Extract the ID from the URL: everything after the last `/`.
 
 ## Flow
 
-1. **Get IdToken** via `wildix-auth` skill (if not already available)
-2. **Extract conferenceId(s)** from input (strip URL prefix if needed)
-3. **Run the script** with the conference ID(s)
-4. **Display results**
+1. **Extract conferenceId(s)** from input (strip URL prefix if needed)
+2. **Run the script** with the conference ID(s)
+3. **Display results**
 
 ## Script
 
 ```bash
-bash <BASE_DIR>/scripts/get-conference.sh "$ID_TOKEN" <conferenceId> [conferenceId2 ...]
+bash <BASE_DIR>/scripts/get-conference.sh <conferenceId> [conferenceId2 ...]
 ```
 
 Fetches all IDs in parallel. Returns a JSON array of conference objects sorted by start time.

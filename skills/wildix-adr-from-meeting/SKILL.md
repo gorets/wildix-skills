@@ -93,26 +93,18 @@ Degrade without failing:
 Extract the `conferenceId`: if the argument contains `/`, take everything after the last `/`
 (a link like `https://app.x-bees.com/insights/conferences/<id>`); otherwise use it as is.
 
-Get an IdToken (the script refreshes an expired one itself); the email comes from the config:
+The script gets the token itself through the `wildix-auth` skill, so you never handle one. The account
+is the email from the config:
 
 ```bash
-ID_TOKEN=$(bash ~/.claude/skills/wildix-auth/scripts/get-token.sh "<email from the config>")
-```
-
-If the script exits 2, the API rejected the token: re-authenticate through the `wildix-auth` skill
-and retry. **Never hardcode the token** and never write it to a file.
-
-Download the transcription:
-
-```bash
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-transcription.sh \
+WILDIX_EMAIL="<email from the config>" bash <BASE_DIR>/scripts/get-transcription.sh \
   "<conferenceId>" ~/.wildix/transcripts/<conferenceId>.txt
 ```
 
-**Pass the token through the environment, never as an argument.** Command-line arguments are
-visible to every process on the host (`ps`) and land in shell history; the environment is not.
-This is the convention across the `wildix-*` skills — do not "simplify" it into a positional
-argument.
+If the script exits 2 and says the user is not logged in (or the token could not be refreshed),
+run the `wildix-auth` skill to log in and retry. **Never hardcode a token** and never write one to a
+file; the token never appears in a command-line argument, which every process on the host can read.
+This is the convention across the `wildix-*` skills.
 
 The script takes the dialogue body verbatim from the platform's own text export
 `GET wda.wildix.com/v2/history/conferences/<id>/transcription/text` — speaker names and timestamps

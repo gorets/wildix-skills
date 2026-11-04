@@ -27,14 +27,17 @@ Glob ~/.claude/skills/wildix-get-last-chats/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
+## Authentication
+
+The script authenticates itself through the `wildix-auth` skill: you never get, pass or print a token. When it stops with exit code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run the script again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
+
 ## Flow
 
-1. **Get x-bees IdToken** via `wildix-auth` skill — **REQUIRED, do not skip**
-2. **Get channelId** — use `wildix-get-last-chats` skill if unknown
-3. **Run the script**
+1. **Get channelId** — use `wildix-get-last-chats` skill if unknown
+2. **Run the script**
 
 ```bash
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-messages.sh "<channelId>" [limit] [offset]
+bash <BASE_DIR>/scripts/get-messages.sh "<channelId>" [limit] [offset]
 ```
 
 `channelId` — any of: raw ID, `type:id` (e.g. `group:abc123`), or `https://app.x-bees.com/inbox/<rawId>` URL — stripped automatically

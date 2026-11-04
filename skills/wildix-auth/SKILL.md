@@ -20,11 +20,25 @@ Tokens live in the shared Wildix config directory — the same one the official 
 
 Scripts resolve this themselves — never pass a token directory to them. `<BASE_DIR>` below refers only to where this skill is installed.
 
+## How Other Skills Use It
+
+Other `wildix-*` skills never ask the agent for a token. Their scripts source `scripts/load-token.sh` from this skill and call `wildix_require_token`, which puts a valid `IdToken` into the script's own environment (refreshing it when it has expired) without ever printing it. The agent only runs the script.
+
+Which account the scripts use:
+
+1. `ID_TOKEN` already in the environment: used as it is (tests, a script run by hand).
+2. `WILDIX_EMAIL` in the environment: that account.
+3. exactly one logged-in session: that one.
+
+With no session, or with several and no `WILDIX_EMAIL`, a script stops with exit code 2 and a message. Then run Mode 2 (log in), or pick the account, and run the script again. `wildix_token_email` (in the same file) gives a script the user's e-mail from the token claims.
+
+The rest of this file is for direct use of the tokens: logging in, checking a token, logging out.
+
 ## Which Token to Use
 
 **Use `IdToken`** for all Wildix API calls (not AccessToken). Expires in 1 hour.
 
-Always retrieve it via `get-token.sh` — auto-refreshes when expired, validates via API after refresh:
+When you need a token yourself (not through another skill's script), retrieve it via `get-token.sh` — auto-refreshes when expired, validates via API after refresh:
 ```bash
 ID_TOKEN=$(bash <BASE_DIR>/scripts/get-token.sh "<email>")
 ```

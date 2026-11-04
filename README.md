@@ -160,6 +160,10 @@ against Confluence.
 cp commands/adr.md ~/.claude/commands/adr.md
 ```
 
+## Authentication
+
+Log in once with `wildix-auth`. After that every script of the other skills gets its token itself, through `wildix-auth`: the agent never sees, passes or prints a token. With several accounts logged in, set `WILDIX_EMAIL=<email>` to choose one. A script that finds no session stops with exit code 2 and tells you to log in.
+
 ## Requirements
 
 - `jq` — `brew install jq` (macOS) or `apt install jq` (Linux)

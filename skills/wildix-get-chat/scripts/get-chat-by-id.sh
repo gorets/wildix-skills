@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Fetches channel info from the Wildix API by raw channel ID.
-# Usage: ID_TOKEN=<token> get-chat-by-id.sh <rawIdOrChannelIdOrUrl>
+# Usage: get-chat-by-id.sh <rawIdOrChannelIdOrUrl>
 set -euo pipefail
 
-ID_TOKEN="${ID_TOKEN:?ID_TOKEN env var required. Usage: ID_TOKEN=<token> get-chat-by-id.sh <rawIdOrChannelIdOrUrl>}"
+# Authentication belongs to the wildix-auth skill: it loads ID_TOKEN without ever printing it.
+for _d in "$(dirname "$0")/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
+done
+command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }
+wildix_require_token || exit 2
 INPUT="${1:?rawIdOrChannelIdOrUrl required}"
 
 # Extract raw ID: strip URL (https://app.x-bees.com/inbox/abc123 → abc123)

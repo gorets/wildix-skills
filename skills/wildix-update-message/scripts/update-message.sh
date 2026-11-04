@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Edit or delete your own x-bees message, as the user whose IdToken is given.
-# Usage: ID_TOKEN=<token> update-message.sh edit   <channelId> <messageId> <text> [--markdown]
-#        ID_TOKEN=<token> update-message.sh delete <channelId> <messageId>
+# Usage: update-message.sh edit   <channelId> <messageId> <text> [--markdown]
+#        update-message.sh delete <channelId> <messageId>
 #
 #   edit    PATCH  /v2/conversations/channels/{channelId}/messages/{messageId}  {"set":{"text":...}}
 #   delete  DELETE /v2/conversations/channels/{channelId}/messages/{messageId}
@@ -12,13 +12,18 @@
 # someone else. channelId may be an inbox URL, a full channelId (group:abc) or a raw id.
 set -euo pipefail
 
-USAGE="Usage: ID_TOKEN=<token> update-message.sh <edit|delete> <channelId> <messageId> [text] [--markdown]"
+USAGE="Usage: update-message.sh <edit|delete> <channelId> <messageId> [text] [--markdown]"
 ACTION="${1:?$USAGE}"
 CHANNEL_ID="${2:?$USAGE}"
 MESSAGE_ID="${3:?$USAGE}"
 shift 3
 
-ID_TOKEN="${ID_TOKEN:?ID_TOKEN env var required (get it with the wildix-auth skill)}"
+# Authentication belongs to the wildix-auth skill: it loads ID_TOKEN without ever printing it.
+for _d in "$(dirname "$0")/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
+done
+command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }
+wildix_require_token || exit 2
 
 TEXT=""
 HAVE_TEXT=0
@@ -53,13 +58,7 @@ if [[ "$CODE" != 2* ]]; then
   cat "$OUT" >&2; echo >&2
   exit 1
 fi
-ME=$(python3 - "$ID_TOKEN" <<'PY'
-import base64, json, sys
-p = sys.argv[1].split(".")[1]
-p += "=" * (-len(p) % 4)
-print(json.loads(base64.urlsafe_b64decode(p)).get("email", "").lower())
-PY
-)
+ME=$(wildix_token_email)
 AUTHOR=$(python3 - "$OUT" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))

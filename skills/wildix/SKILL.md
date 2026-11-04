@@ -53,4 +53,4 @@ Glob ~/.claude/skills/wildix-auth/SKILL.md
 # If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
 ```
 
-Then invoke `wildix-auth` to get a valid `ID_TOKEN` before the target sub-skill runs.
+The sub-skills' scripts authenticate themselves through `wildix-auth`: nobody passes a token around. When a script reports that the user is not logged in, invoke `wildix-auth` to log in, then run the script again.

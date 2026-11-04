@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Add, remove or list reactions on an x-bees message, as the user whose IdToken is given.
-# Usage: ID_TOKEN=<token> react.sh <add|remove|list> <channelId> <messageId> [reactionType]
+# Usage: react.sh <add|remove|list> <channelId> <messageId> [reactionType]
 #
 #   add     POST   /v2/conversations/channels/{channelId}/messages/{messageId}/reactions
 #   remove  DELETE /v2/conversations/channels/{channelId}/messages/{messageId}/reactions/{reactionType}
@@ -9,13 +9,18 @@
 # channelId may be an inbox URL, a full channelId (group:abc) or a raw id.
 set -euo pipefail
 
-USAGE="Usage: ID_TOKEN=<token> react.sh <add|remove|list> <channelId> <messageId> [reactionType]"
+USAGE="Usage: react.sh <add|remove|list> <channelId> <messageId> [reactionType]"
 ACTION="${1:?$USAGE}"
 CHANNEL_ID="${2:?$USAGE}"
 MESSAGE_ID="${3:?$USAGE}"
 TYPE="${4:-}"
 
-ID_TOKEN="${ID_TOKEN:?ID_TOKEN env var required (get it with the wildix-auth skill)}"
+# Authentication belongs to the wildix-auth skill: it loads ID_TOKEN without ever printing it.
+for _d in "$(dirname "$0")/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
+done
+command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }
+wildix_require_token || exit 2
 
 ALLOWED="clap confused eyes heart slightly_smiling_face smiley thumbsdown thumbsup white_check_mark"
 

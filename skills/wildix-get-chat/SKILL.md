@@ -24,6 +24,10 @@ Glob ~/.claude/skills/wildix-auth/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
+## Authentication
+
+The script authenticates itself through the `wildix-auth` skill: you never get, pass or print a token. When it stops with exit code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run the script again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
+
 ## Input formats
 
 | Input | Example |
@@ -36,11 +40,10 @@ The script strips URL prefixes and type prefixes automatically.
 
 ## Flow
 
-1. **Get IdToken** via `wildix-auth` skill (if not already available)
-2. **Run the script**
+1. **Run the script**
 
 ```bash
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-chat-by-id.sh "<input>"
+bash <BASE_DIR>/scripts/get-chat-by-id.sh "<input>"
 ```
 
 ## API

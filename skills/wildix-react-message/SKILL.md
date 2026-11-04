@@ -22,19 +22,22 @@ Glob ~/.claude/skills/wildix-auth/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for the full peer manifest.
 
+## Authentication
+
+The script authenticates itself through the `wildix-auth` skill: you never get, pass or print a token. When it stops with exit code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run the script again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
+
 ## Flow
 
-1. **Get the IdToken** of the user with the `wildix-auth` skill (`get-token.sh <email>`). Use the `IdToken`, not the AccessToken.
-2. **Find the messageId** when you only know the message by its text or position: read the chat with `wildix-get-messages-in-chat`; the id is the `messageId` field. A channel may be given as an inbox URL, a full `channelId` or a raw id.
-3. **Run the script:**
+1. **Find the messageId** when you only know the message by its text or position: read the chat with `wildix-get-messages-in-chat`; the id is the `messageId` field. A channel may be given as an inbox URL, a full `channelId` or a raw id.
+2. **Run the script:**
 
 ```bash
 # add
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/react.sh add    "<channelId>" "<messageId>" eyes
+bash <BASE_DIR>/scripts/react.sh add    "<channelId>" "<messageId>" eyes
 # remove
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/react.sh remove "<channelId>" "<messageId>" eyes
+bash <BASE_DIR>/scripts/react.sh remove "<channelId>" "<messageId>" eyes
 # list who reacted with what
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/react.sh list   "<channelId>" "<messageId>"
+bash <BASE_DIR>/scripts/react.sh list   "<channelId>" "<messageId>"
 ```
 
 On success the script prints the API answer (`list`) or `{"ok":true,...}`. On an HTTP error it prints the status and the body to stderr and exits 1.
@@ -61,7 +64,7 @@ Base: `https://api.x-bees.com`, `Authorization: Bearer <IdToken>`. The routes co
 
 | Problem | Fix |
 |---------|-----|
-| HTTP 401 | The IdToken expired (1 hour). Get a fresh one with `wildix-auth` |
+| HTTP 401 | The token was rejected. Log in again with the `wildix-auth` skill and rerun |
 | HTTP 403 or 404 | The user is not a member of the channel, or the `messageId` belongs to another channel |
 | Reacting twice with the same type | One reaction of each type per user per message: the API may answer with an error; check with `list` |
 

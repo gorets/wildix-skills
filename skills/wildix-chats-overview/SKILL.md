@@ -28,21 +28,20 @@ Glob ~/.claude/skills/wildix-get-conference/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
+## Authentication
+
+The script authenticates itself through the `wildix-auth` skill: you never get, pass or print a token. When it stops with exit code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run the script again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
+
 ## Flow
 
-1. **Get x-bees IdToken** via `wildix-auth` skill — **REQUIRED, do not skip**
-2. **Determine the date range** from the user's request
-3. **Run the script** — fetches all channels, filters messages client-side
-4. **Fetch conference details** — if `conferenceIds` is non-empty, invoke `wildix-get-conference` skill
-5. **Display results** and provide a summary/analysis
+1. **Determine the date range** from the user's request
+2. **Run the script** — fetches all channels, filters messages client-side
+3. **Fetch conference details** — if `conferenceIds` is non-empty, invoke `wildix-get-conference` skill
+4. **Display results** and provide a summary/analysis
 
 ## Steps
 
-### 1. Get auth token
-
-Invoke the `wildix-auth` skill to obtain `ID_TOKEN`.
-
-### 2. Determine date range
+### 1. Determine date range
 
 | Request | from_date | to_date |
 |---------|-----------|---------|
@@ -52,31 +51,31 @@ Invoke the `wildix-auth` skill to obtain `ID_TOKEN`.
 | Specific date | that date | *(same)* |
 | Custom range | start date | end date |
 
-### 3. Run the script
+### 2. Run the script
 
 ```bash
 # Today (default)
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-chats-overview.sh
+bash <BASE_DIR>/scripts/get-chats-overview.sh
 
 # Yesterday
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-chats-overview.sh "$(date -v-1d +%Y-%m-%d)"
+bash <BASE_DIR>/scripts/get-chats-overview.sh "$(date -v-1d +%Y-%m-%d)"
 
 # Date range (e.g. Mon–Fri)
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-chats-overview.sh "2026-05-04" "2026-05-08"
+bash <BASE_DIR>/scripts/get-chats-overview.sh "2026-05-04" "2026-05-08"
 ```
 
 The script:
-- Exchanges `ID_TOKEN` for Stream JWT via `GET https://api.x-bees.com/v2/conversations/token`
+- Exchanges the user's IdToken for a Stream JWT via `GET https://api.x-bees.com/v2/conversations/token`
 - Decodes `user_id` from the JWT
 - Paginates `POST /channels` (30 per page, offset-based) until all channels are fetched, 100 messages each
 - For channels where all messages fall within the range (truncation suspected), paginates backwards via `id_lt`
 - Filters messages client-side: `from_date <= created_at[:10] <= to_date`
 
-### 4. Fetch conference details
+### 3. Fetch conference details
 
 If the script output contains `conferenceIds` (non-empty array), invoke the `wildix-get-conference` skill passing all IDs at once. Keep only conferences where the current user (`user_id`) appears in `participants[].info.xbsId`.
 
-### 5. Display results
+### 4. Display results
 
 ```
 Period: {period} — {totalChannels} channels, {totalMessages} messages

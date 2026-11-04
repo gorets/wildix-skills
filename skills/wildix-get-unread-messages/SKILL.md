@@ -22,17 +22,20 @@ Glob ~/.claude/skills/wildix-auth/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
+## Authentication
+
+The script authenticates itself through the `wildix-auth` skill: you never get, pass or print a token. When it stops with exit code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run the script again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
+
 ## Flow
 
-1. **Get x-bees IdToken** via `wildix-auth` skill — **REQUIRED, do not skip**
-2. **Run the script**
+1. **Run the script**
 
 ```bash
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/get-unread.sh
+bash <BASE_DIR>/scripts/get-unread.sh
 ```
 
 The script:
-- Exchanges `ID_TOKEN` for a Stream JWT via `GET https://api.x-bees.com/v2/conversations/token`
+- Exchanges the user's IdToken for a Stream JWT via `GET https://api.x-bees.com/v2/conversations/token`
 - Calls `GET https://chat.wildix-chat.com/unread` for unread counts
 - Fetches channel details in batches of 30
 

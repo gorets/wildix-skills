@@ -1,21 +1,32 @@
 #!/bin/bash
-# Usage: get-conference.sh <ID_TOKEN> <conferenceId> [conferenceId2 ...]
+# Usage: get-conference.sh <conferenceId> [conferenceId2 ...]
 # Fetches conference details + insights from wda.wildix.com for one or more conference IDs.
 # Returns a JSON array of enriched conference objects sorted by start time.
 set -euo pipefail
 
-ID_TOKEN="${1:?Usage: get-conference.sh <ID_TOKEN> <conferenceId> [...]}"
-shift
+# Legacy form: the first argument was the token itself. Still accepted, but it puts the token in the
+# process list; the normal call passes conference IDs only.
+if [[ "${1:-}" =~ ^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$ ]]; then
+  ID_TOKEN="$1"
+  shift
+fi
 if [ $# -eq 0 ]; then
   echo '[]'
   exit 0
 fi
+# Authentication belongs to the wildix-auth skill: it loads ID_TOKEN without ever printing it.
+for _d in "$(dirname "$0")/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
+done
+command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }
+wildix_require_token || exit 2
+export ID_TOKEN
 
-python3 - "$ID_TOKEN" "$@" <<'PYEOF'
-import json, sys, urllib.request, concurrent.futures
+python3 - "$@" <<'PYEOF'
+import json, os, sys, urllib.request, concurrent.futures
 
-id_token = sys.argv[1]
-conf_ids = sys.argv[2:]
+id_token = os.environ["ID_TOKEN"]
+conf_ids = sys.argv[1:]
 
 def get(url):
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {id_token}", "User-Agent": "wildix-agent-skills/1.1.0"})

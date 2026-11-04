@@ -22,17 +22,18 @@ Glob ~/.claude/skills/wildix-auth/SKILL.md
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
-## Choosing a Token
+## Choosing the sender
 
-```
-BOT_TOKEN in .env?
-  YES → use bot mode (no auth needed)
-  NO  → user wants to send as themselves?
-          YES → get ID_TOKEN via wildix-auth skill
-          NO  → ask: "Provide BOT_TOKEN or send as your user account?"
-                  BOT_TOKEN provided → save to .env, use bot mode
-                  user account       → get ID_TOKEN via wildix-auth skill
-```
+The scripts find the token themselves; you never get, pass or print one. The order is: `ID_TOKEN` from the environment, then `BOT_TOKEN` from `<BASE_DIR>/.env` (the bot), and when there is no bot token, the logged-in user through the `wildix-auth` skill.
+
+| Send as | How |
+|---|---|
+| the bot | `BOT_TOKEN` in `<BASE_DIR>/.env`, no option |
+| the user | no bot token set: no option needed. With a bot token set: add `--user` |
+
+If the user wants the bot and there is no `BOT_TOKEN`, ask them for it and save it to `.env`.
+
+When a script exits with code 2 and says the user is not logged in (or that the token could not be refreshed), run the `wildix-auth` skill to log in, then run it again. With several accounts logged in, run it as `WILDIX_EMAIL=<email> bash …` to choose one.
 
 ---
 
@@ -43,9 +44,9 @@ BOT_TOKEN in .env?
 bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>"
 ```
 
-**User (pass ID_TOKEN via env):**
+**User:**
 ```bash
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>"
+bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>" --user
 ```
 
 ---
@@ -59,9 +60,9 @@ Pass `--reply-to <messageId>` — the server renders the quoted message in the U
 bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<replyText>" \
   --reply-to "<messageId>"
 
-# User (token via env):
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<replyText>" \
-  --reply-to "<messageId>"
+# User:
+bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<replyText>" \
+  --reply-to "<messageId>" --user
 ```
 
 The `messageId` is the 32-char ID from a previous message (available in chat history).
@@ -79,9 +80,9 @@ The script automatically fetches the original message to build the full `quote` 
 ATTACH1=$(bash <BASE_DIR>/scripts/upload-file.sh "<channelId>" "/path/to/file.pdf")
 ATTACH2=$(bash <BASE_DIR>/scripts/upload-file.sh "<channelId>" "/path/to/image.png")
 
-# User (token via env):
-ATTACH1=$(ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/upload-file.sh "<channelId>" "/path/to/file.pdf")
-ATTACH2=$(ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/upload-file.sh "<channelId>" "/path/to/image.png")
+# User:
+ATTACH1=$(bash <BASE_DIR>/scripts/upload-file.sh "<channelId>" "/path/to/file.pdf" --user)
+ATTACH2=$(bash <BASE_DIR>/scripts/upload-file.sh "<channelId>" "/path/to/image.png" --user)
 ```
 
 `upload-file.sh` outputs a `MessageAttachment` JSON string. It internally:
@@ -97,9 +98,9 @@ bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>" \
   --attach "$ATTACH1" \
   --attach "$ATTACH2"
 
-# User (token via env):
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>" \
-  --attach "$ATTACH1"
+# User:
+bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>" \
+  --attach "$ATTACH1" --user
 ```
 
 ---
@@ -126,8 +127,8 @@ Add `--markdown` to send the text as Markdown (`**bold**`, lists, links, code). 
 # Bot:
 bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "**Build** passed: [log](https://example.com)" --markdown
 
-# User (token via env):
-ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<markdown text>" --markdown
+# User:
+bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<markdown text>" --markdown --user
 ```
 
 Without `--markdown` the text is sent as plain text, as before.
