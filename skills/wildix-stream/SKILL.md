@@ -197,6 +197,7 @@ Other things to know:
 - `messages.sh edit` uses the full update (`PUT`), because the partial one is not ready: it sends the new text together with what the message already has (attachments, quote, mentions), so nothing is lost. `--markdown` on an edit is accepted but the service does not store the flag yet; on `send` it does.
 - `channels.sh create-group` always sends an id of 8-4-4-4-8 characters. Without one the service makes a 36-character id that none of its own calls accepts afterwards.
 - **Who reacted is not returned yet.** The `Message` schema has `latestReactions` (with the `userId` of each reaction) and a message answers with it in the specification, but the service returns only `reactionCounts` for now, and the API has no operation that lists reactions. `messages.sh reactions` shows the counts and says so. You can tell that a reaction of a type exists, not whose it is; do not guess.
+- `pin` and `unpin` set `editedAt` on the message, so a client shows it as edited though nobody edited it (reactions do not).
 - Members can have the role `owner`, which the OpenAPI enum (`member`, `supervisor`) does not list.
 - A deleted channel can still be read: the deletion is soft.
 
