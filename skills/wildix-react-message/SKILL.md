@@ -28,7 +28,7 @@ The script authenticates itself through the `wildix-auth` skill: you never get, 
 
 ## Flow
 
-1. **Find the messageId** when you only know the message by its text or position: read the chat with `wildix-get-messages-in-chat`; the id is the `messageId` field. A channel may be given as an inbox URL, a full `channelId` or a raw id.
+1. **Get the messageId** from the link to the message (`https://app.x-bees.com/inbox/<channelId>/<messageId>`: the last part). When the user names only a chat, ask for the link of the message. A channel may be given as an inbox URL, a full `channelId` or a raw id.
 2. **Run the script:**
 
 ```bash

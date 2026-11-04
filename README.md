@@ -21,13 +21,7 @@ Or install individual skills:
 npx skills add gorets/wildix-skills --s wildix-auth -y
 npx skills add gorets/wildix-skills --s wildix-chats-overview -y
 npx skills add gorets/wildix-skills --s wildix-get-conference -y
-npx skills add gorets/wildix-skills --s wildix-get-last-chats -y
-npx skills add gorets/wildix-skills --s wildix-get-chat -y
-npx skills add gorets/wildix-skills --s wildix-get-messages-in-chat -y
-npx skills add gorets/wildix-skills --s wildix-get-unread-messages -y
-npx skills add gorets/wildix-skills --s wildix-send-message -y
 npx skills add gorets/wildix-skills --s wildix-react-message -y
-npx skills add gorets/wildix-skills --s wildix-update-message -y
 npx skills add gorets/wildix-skills --s wildix-stream -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
@@ -62,73 +56,13 @@ Fetches conference details (participants, duration, transcription, AI insights) 
 
 ---
 
-### `wildix-get-last-chats`
-
-Returns the user's x-bees inbox — list of chats sorted by last activity. For browsing chats by name, not for ID lookup.
-
-**Triggers:** "list my chats", "show inbox", "show all conversations", "find chat by name"
-
-**Depends on:** `wildix-auth`
-
----
-
-### `wildix-get-chat`
-
-Resolves a raw channel ID or x-bees inbox URL (`https://app.x-bees.com/inbox/<rawId>`) to a full chat object using the Wildix API.
-
-**Triggers:** x-bees inbox URL, bare raw channel ID that needs type resolution
-
-**Depends on:** `wildix-auth`
-
----
-
-### `wildix-get-messages-in-chat`
-
-Fetches messages from a specific x-bees chat with pagination support.
-
-**Triggers:** "read messages in chat X", "show chat history", "what was said in group Y"
-
-**Depends on:** `wildix-auth`, `wildix-get-last-chats`
-
----
-
-### `wildix-get-unread-messages`
-
-Fetches unread channels and their recent messages.
-
-**Triggers:** "show unread messages", "what did I miss", "any unread chats"
-
-**Depends on:** `wildix-auth`
-
----
-
-### `wildix-send-message`
-
-Sends a text message to an x-bees channel as a bot or as the authenticated user, as plain text or Markdown, with replies and file attachments.
-
-**Triggers:** "send a message to channel X", "notify channel", "post to chat"
-
-**Depends on:** `wildix-auth`
-
----
-
 ### `wildix-react-message`
 
 Adds, removes or lists a reaction (`eyes`, `thumbsup`, `white_check_mark`, …) on an x-bees message as the authenticated user, so the reaction shows under their own name.
 
 **Triggers:** "put eyes on that message", "react with a check mark", "mark the message as taken", "remove my reaction", "who reacted to this message"
 
-**Depends on:** `wildix-auth`, `wildix-get-messages-in-chat`
-
----
-
-### `wildix-update-message`
-
-Edits the text of a message you sent to an x-bees chat, or deletes it. A message of someone else is never touched: the author is checked first.
-
-**Triggers:** "edit my message", "fix the typo in that message", "update the text of my message", "delete my message"
-
-**Depends on:** `wildix-auth`, `wildix-get-messages-in-chat`
+**Depends on:** `wildix-auth`
 
 ---
 
@@ -172,6 +106,21 @@ against Confluence.
 ```bash
 cp commands/adr.md ~/.claude/commands/adr.md
 ```
+
+## Migrating from 1.x
+
+Version 2.0.0 removed six skills that went through the old x-bees conversations API; `wildix-stream` does the same on the new Stream service, as the logged-in user:
+
+| Removed | Now |
+|---|---|
+| `wildix-get-last-chats` | `channels.sh list`, `inbox.sh get` |
+| `wildix-get-chat` | `channels.sh get <channel or inbox link>` |
+| `wildix-get-messages-in-chat` | `messages.sh list <channel>` |
+| `wildix-get-unread-messages` | `inbox.sh get`, `messages.sh list <channel> --unread` |
+| `wildix-send-message` | `messages.sh send` (`--markdown`, `--reply-to`, `--file`) |
+| `wildix-update-message` | `messages.sh edit`, `messages.sh delete` |
+
+Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-react-message` and `wildix-chats-overview` stay for now: the new service does not tell who reacted, and there is no overview by date yet.
 
 ## Authentication
 

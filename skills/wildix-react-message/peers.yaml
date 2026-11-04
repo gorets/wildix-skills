@@ -4,9 +4,3 @@ peers:
     install: npx skills add gorets/wildix-skills --s wildix-auth
     install_policy: ask
     purpose: Authenticate with Wildix x-bees via AWS Cognito and obtain the IdToken of the user.
-
-  - name: wildix-get-messages-in-chat
-    glob: ~/.claude/skills/wildix-get-messages-in-chat/SKILL.md
-    install: npx skills add gorets/wildix-skills --s wildix-get-messages-in-chat
-    install_policy: ask
-    purpose: Find the messageId of the message to react to.
