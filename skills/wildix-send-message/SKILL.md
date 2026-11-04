@@ -118,6 +118,22 @@ bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>" \
 
 ---
 
+## Mode 5: Markdown text
+
+Add `--markdown` to send the text as Markdown (`**bold**`, lists, links, code). It combines with `--reply-to` and `--attach`.
+
+```bash
+# Bot:
+bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "**Build** passed: [log](https://example.com)" --markdown
+
+# User (token via env):
+ID_TOKEN="$ID_TOKEN" bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<markdown text>" --markdown
+```
+
+Without `--markdown` the text is sent as plain text, as before.
+
+---
+
 ## API
 
 | Operation | Endpoint |
@@ -131,6 +147,7 @@ bash <BASE_DIR>/scripts/send-message.sh "<channelId>" "<text>" \
 - `text` — message text (required unless attachments present)
 - `quote.messageId` — messageId to reply to
 - `attachments` — array of `MessageAttachment` objects from upload step
+- `markdown` — `true` when `text` is Markdown (`--markdown`)
 
 ---
 

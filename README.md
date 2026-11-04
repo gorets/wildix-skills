@@ -27,6 +27,7 @@ npx skills add gorets/wildix-skills --s wildix-get-messages-in-chat -y
 npx skills add gorets/wildix-skills --s wildix-get-unread-messages -y
 npx skills add gorets/wildix-skills --s wildix-send-message -y
 npx skills add gorets/wildix-skills --s wildix-react-message -y
+npx skills add gorets/wildix-skills --s wildix-update-message -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -102,7 +103,7 @@ Fetches unread channels and their recent messages.
 
 ### `wildix-send-message`
 
-Sends a text message to an x-bees channel as a bot or as the authenticated user.
+Sends a text message to an x-bees channel as a bot or as the authenticated user, as plain text or Markdown, with replies and file attachments.
 
 **Triggers:** "send a message to channel X", "notify channel", "post to chat"
 
@@ -115,6 +116,16 @@ Sends a text message to an x-bees channel as a bot or as the authenticated user.
 Adds, removes or lists a reaction (`eyes`, `thumbsup`, `white_check_mark`, …) on an x-bees message as the authenticated user, so the reaction shows under their own name.
 
 **Triggers:** "put eyes on that message", "react with a check mark", "mark the message as taken", "remove my reaction", "who reacted to this message"
+
+**Depends on:** `wildix-auth`, `wildix-get-messages-in-chat`
+
+---
+
+### `wildix-update-message`
+
+Edits the text of a message you sent to an x-bees chat, or deletes it. A message of someone else is never touched: the author is checked first.
+
+**Triggers:** "edit my message", "fix the typo in that message", "update the text of my message", "delete my message"
 
 **Depends on:** `wildix-auth`, `wildix-get-messages-in-chat`
 

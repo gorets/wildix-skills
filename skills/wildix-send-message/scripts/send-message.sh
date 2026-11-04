@@ -1,25 +1,28 @@
 #!/usr/bin/env bash
-# Usage: send-message.sh <channelId> <text> [--token <tok>] [--reply-to <messageId>] [--attach <json>] ...
+# Usage: send-message.sh <channelId> <text> [--token <tok>] [--reply-to <messageId>] [--attach <json>] [--markdown] ...
 #
 #   --token      ID_TOKEN (user) or leave blank to use BOT_TOKEN from .env
 #   --reply-to   messageId of the message to reply/quote (same channel)
 #   --attach     MessageAttachment JSON string (repeat for multiple files;
 #                use upload-file.sh to get this JSON)
+#   --markdown   the text is Markdown ({"markdown": true})
 set -euo pipefail
 
-CHANNEL_ID="${1:?Usage: send-message.sh <channelId> <text> [--token <tok>] [--reply-to <msgId>] [--attach <json>] ...}"
+CHANNEL_ID="${1:?Usage: send-message.sh <channelId> <text> [--token <tok>] [--reply-to <msgId>] [--attach <json>] [--markdown] ...}"
 TEXT="${2:?text required}"
 shift 2
 
 TOKEN=""
 REPLY_TO=""
 ATTACHMENTS=()
+MARKDOWN=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --token)    TOKEN="$2";     shift 2 ;;
     --reply-to) REPLY_TO="$2";  shift 2 ;;
     --attach)   ATTACHMENTS+=("$2"); shift 2 ;;
+    --markdown) MARKDOWN=1; shift ;;
     *) echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
@@ -75,17 +78,21 @@ print(json.dumps(q))
 fi
 
 # Build JSON body via python3 to handle escaping correctly
-BODY=$(python3 - "$TEXT" "$QUOTE_JSON" "${ATTACHMENTS[@]+"${ATTACHMENTS[@]}"}" <<'EOF'
+BODY=$(python3 - "$TEXT" "$QUOTE_JSON" "$MARKDOWN" "${ATTACHMENTS[@]+"${ATTACHMENTS[@]}"}" <<'EOF'
 import json, sys
 
 text = sys.argv[1]
 quote_raw = sys.argv[2]
-attachments_raw = sys.argv[3:]
+markdown = sys.argv[3] == "1"
+attachments_raw = sys.argv[4:]
 
 body = {"text": text}
 
 if quote_raw:
     body["quote"] = json.loads(quote_raw)
+
+if markdown:
+    body["markdown"] = True
 
 if attachments_raw:
     body["attachments"] = [json.loads(a) for a in attachments_raw]
