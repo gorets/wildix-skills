@@ -26,6 +26,7 @@ npx skills add gorets/wildix-skills --s wildix-get-chat -y
 npx skills add gorets/wildix-skills --s wildix-get-messages-in-chat -y
 npx skills add gorets/wildix-skills --s wildix-get-unread-messages -y
 npx skills add gorets/wildix-skills --s wildix-send-message -y
+npx skills add gorets/wildix-skills --s wildix-react-message -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -106,6 +107,16 @@ Sends a text message to an x-bees channel as a bot or as the authenticated user.
 **Triggers:** "send a message to channel X", "notify channel", "post to chat"
 
 **Depends on:** `wildix-auth`
+
+---
+
+### `wildix-react-message`
+
+Adds, removes or lists a reaction (`eyes`, `thumbsup`, `white_check_mark`, …) on an x-bees message as the authenticated user, so the reaction shows under their own name.
+
+**Triggers:** "put eyes on that message", "react with a check mark", "mark the message as taken", "remove my reaction", "who reacted to this message"
+
+**Depends on:** `wildix-auth`, `wildix-get-messages-in-chat`
 
 ---
 
