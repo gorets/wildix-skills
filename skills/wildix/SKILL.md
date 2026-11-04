@@ -10,7 +10,7 @@ allowed-tools: >-
 
 # Wildix — skill router
 
-Routes user requests to the appropriate Wildix sub-skill and auto-installs missing ones.
+Routes user requests to the appropriate Wildix sub-skill. A missing sub-skill is never installed on its own: the user is asked to install it.
 
 > **Peer manifest:** [`peers.yaml`](peers.yaml) is the single source of truth for sub-skill names, Glob paths, install commands, and install policies. Read it before routing.
 
@@ -32,14 +32,14 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 ## Peer skill procedure
 
 1. **Glob** the target skill's path from `peers.yaml` to check if it's installed
-2. If missing — run the `install` command from `peers.yaml` (all are `silent` — no confirmation needed)
+2. If missing — tell the user which skill is needed and give the `install` command from `peers.yaml`; run it only after the user agrees
 3. Invoke with the `Skill` tool
 
 ```bash
 # Example: check if wildix-chats-overview is installed
 Glob ~/.claude/skills/wildix-chats-overview/SKILL.md
-# If missing:
-# npx skills add gorets/wildix-skills --s wildix-chats-overview -y
+# If missing: do not install it yourself; ask the user to run
+# npx skills add gorets/wildix-skills --s wildix-chats-overview
 ```
 
 > Do not call `Skill` before the Glob — it will fail with "Unknown skill" if not installed.
@@ -50,7 +50,7 @@ Every sub-skill requires authentication. Before routing to any skill other than 
 
 ```bash
 Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: npx skills add gorets/wildix-skills --s wildix-auth -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
 ```
 
 Then invoke `wildix-auth` to get a valid `ID_TOKEN` before the target sub-skill runs.

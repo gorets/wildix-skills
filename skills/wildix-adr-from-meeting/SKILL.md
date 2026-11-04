@@ -28,7 +28,7 @@ The `wda.wildix.com` token comes from the `wildix-auth` skill. Check that it is 
 
 ```bash
 ls ~/.claude/skills/wildix-auth/scripts/get-token.sh
-# if missing: npx skills add gorets/wildix-skills --s wildix-auth -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
 ```
 
 ---

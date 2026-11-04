@@ -19,11 +19,11 @@ Before running, check if required peer skills are installed:
 ```bash
 # Check wildix-auth
 Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: npx skills add gorets/wildix-skills --s wildix-auth -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
 
 # Check wildix-get-conference
 Glob ~/.claude/skills/wildix-get-conference/SKILL.md
-# If missing: npx skills add gorets/wildix-skills --s wildix-get-conference -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-get-conference`
 ```
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.

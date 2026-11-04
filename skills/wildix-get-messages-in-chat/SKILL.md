@@ -18,11 +18,11 @@ Before running, check if required peer skills are installed:
 ```bash
 # Check wildix-auth
 Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: npx skills add gorets/wildix-skills --s wildix-auth -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
 
 # Check wildix-get-last-chats (needed to find channelId)
 Glob ~/.claude/skills/wildix-get-last-chats/SKILL.md
-# If missing: npx skills add gorets/wildix-skills --s wildix-get-last-chats -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-get-last-chats`
 ```
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.

@@ -17,7 +17,7 @@ Fetches unread channels and messages for an x-bees user via Stream Chat API.
 Before running, check if `wildix-auth` is installed:
 ```bash
 Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: npx skills add gorets/wildix-skills --s wildix-auth -y
+# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
 ```
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
