@@ -94,6 +94,10 @@ case "$cmd" in
     if [[ "$cmd" == react ]]; then stream_call PUT "/channels/$ch/messages/$msg/reactions/$3"; else stream_call DELETE "/channels/$ch/messages/$msg/reactions/$3"; fi ;;
   reactions)
     [[ $# -eq 2 ]] || usage
-    stream_call GET "/channels/$(norm_channel "$1")/messages/$(norm_message "$2")" | jq -c '.message | {messageId, reactionCounts, latestReactions}' ;;
+    r=$(stream_call GET "/channels/$(norm_channel "$1")/messages/$(norm_message "$2")" | jq -c '.message | {messageId, reactionCounts, latestReactions}')
+    printf '%s\n' "$r"
+    if [[ "$(jq -r '(.reactionCounts // {} | length > 0) and (.latestReactions == null)' <<<"$r")" == true ]]; then
+      echo "Note: the service returns only the counts for now; who reacted (latestReactions) is not returned yet." >&2
+    fi ;;
   *) usage ;;
 esac
