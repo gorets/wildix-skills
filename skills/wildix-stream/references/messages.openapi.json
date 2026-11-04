@@ -1,0 +1,3795 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stream service: Messages",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://{serviceRegion}.stream.wildix.com",
+      "description": "Production",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stable.wildix.com",
+      "description": "Stable",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stage.wildix.com",
+      "description": "Stage",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/channels/{channelId}/giphys": {
+      "post": {
+        "description": "Persists a Giphy message to a channel. Returns the full message snapshot in the same shape as one `ListMessages` item.\n\n### Allowed Auth Scopes\n\n- messaging:SendGiphy",
+        "operationId": "SendGiphy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendGiphyRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SendGiphy 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendGiphyResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/messages": {
+      "get": {
+        "description": "Returns one page of messages, newest-first by `timelineSeq`. `from` and `to` are optional bounds and can be set independently; when both are omitted, returns the most recent page. Maximum page size is 30 messages.\n\n### Allowed Auth Scopes\n\n- messaging:ListMessages\n- messaging:read",
+        "operationId": "ListMessages",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Optional inclusive lower bound on `timelineSeq`. Combine with `to` for a bounded window, or use alone to scroll forward from a known anchor.",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Optional inclusive lower bound on `timelineSeq`. Combine with `to` for a bounded window, or use alone to scroll forward from a known anchor."
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Optional inclusive upper bound on `timelineSeq`. Combine with `from` for a bounded window, or use alone to scroll back from a known anchor.",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Optional inclusive upper bound on `timelineSeq`. Combine with `from` for a bounded window, or use alone to scroll back from a known anchor."
+            }
+          },
+          {
+            "name": "anchor",
+            "in": "query",
+            "description": "Server-resolved starting point. `firstUnread` returns a window beginning at the caller's first unread message (from their read cursor), so a channel can open positioned on it in one request; `from`/`to` are ignored when set.",
+            "schema": {
+              "$ref": "#/components/schemas/MessageAnchor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListMessages 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListMessagesResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      },
+      "post": {
+        "description": "Persists a new user message to a channel. Supports text, attachments, rich `elements`, replies (`quote`), forwards (`forward`), and targeted user mentions (`mentions[]`). File attachments must be uploaded first to the file service and referenced by `attachments[].fsId`. Returns the full message snapshot in the same shape as one `ListMessages` item.\n\n### Allowed Auth Scopes\n\n- messaging:SendMessage",
+        "operationId": "SendMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SendMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/messages/{messageId}": {
+      "get": {
+        "description": "Returns a single message by id. Used by goto-message to resolve a `messageId` to its `timelineSeq` before loading a window with `ListMessages`.\n\n### Allowed Auth Scopes\n\n- messaging:GetMessage\n- messaging:read",
+        "operationId": "GetMessage",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      },
+      "put": {
+        "description": "Replaces the editable content of an existing message in place. Updates never move the message in the timeline. The server rejects payloads that would empty both `text` and `attachments`. Returns the rewritten message snapshot with `messageVersion` incremented and `editedAt` set.\n\n### Allowed Auth Scopes\n\n- messaging:UpdateMessage",
+        "operationId": "UpdateMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMessageRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "UpdateMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      },
+      "delete": {
+        "description": "Tombstones one message. The row stays in place so timeline ordering is stable; clients render the gap as a deleted-message placeholder. Hard purge is owned by retention, not by this endpoint. Only the sender or an admin may delete.\n\n### Allowed Auth Scopes\n\n- messaging:DeleteMessage",
+        "operationId": "DeleteMessage",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "DeleteMessage 204 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      },
+      "patch": {
+        "description": "NOT IMPLEMENTED YET in the service (checked 2026-11-05): it answers HTTP 400 \"Operation PartialUpdateMessage is not implemented.\" Partially updates an existing message. Use `set` to write fields and `unset` to clear them. Updates never move the message in the timeline or advance unread counters.\n\n### Allowed Auth Scopes\n\n- messaging:PartialUpdateMessage",
+        "operationId": "PartialUpdateMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartialUpdateMessageRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PartialUpdateMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartialUpdateMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ],
+        "x-not-implemented": true
+      }
+    },
+    "/api/v1/channels/{channelId}/messages/{messageId}/pin": {
+      "put": {
+        "description": "Pins one message at channel scope. Pin is channel-level and not per-user; every member sees the same pin state. Duplicate calls on an already-pinned message are absorbed and do not advance `messageVersion`. Pinning a deleted / tombstoned message is rejected.\n\n### Allowed Auth Scopes\n\n- messaging:PinMessage",
+        "operationId": "PinMessage",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PinMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      },
+      "delete": {
+        "description": "Unpins one message at channel scope. Duplicate calls on an already-unpinned message are absorbed and do not advance `messageVersion`.\n\n### Allowed Auth Scopes\n\n- messaging:UnpinMessage",
+        "operationId": "UnpinMessage",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "UnpinMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnpinMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/messages/{messageId}/reactions/{type}": {
+      "put": {
+        "description": "Adds the current user's reaction of `<type>` on one message. Duplicate adds are absorbed and only the first apply advances `messageVersion`. Reactions on a deleted message are rejected.\n\n### Allowed Auth Scopes\n\n- messaging:SendMessageReaction",
+        "operationId": "SendMessageReaction",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`).",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_+-]+$",
+              "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`)."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SendMessageReaction 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendMessageReactionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      },
+      "delete": {
+        "description": "Removes the current user's reaction of `<type>` on one message. Duplicate removes are absorbed and only the first apply advances `messageVersion`.\n\n### Allowed Auth Scopes\n\n- messaging:DeleteMessageReaction",
+        "operationId": "DeleteMessageReaction",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`).",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_+-]+$",
+              "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`)."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DeleteMessageReaction 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteMessageReactionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MessageNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/system-messages": {
+      "post": {
+        "description": "Persists a backend-generated system message to a channel. Available with S2S authorization only. Each `message` variant maps to a server-side template; optional `event` carries a client rendering hint.\n\n### Allowed Auth Scopes\n\n- messaging:SendSystemMessage",
+        "operationId": "SendSystemMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSystemMessageRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SendSystemMessage 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendSystemMessageResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/typing/start": {
+      "post": {
+        "description": "Broadcasts a typing-start indicator for the current user in a channel.\n\n### Allowed Auth Scopes\n\n- messaging:SendTypingStart",
+        "operationId": "SendTypingStart",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SendTypingStart 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/typing/stop": {
+      "post": {
+        "description": "Broadcasts a typing-stop indicator for the current user in a channel.\n\n### Allowed Auth Scopes\n\n- messaging:SendTypingStop",
+        "operationId": "SendTypingStop",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SendTypingStop 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionElement": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "button",
+            "properties": {
+              "button": {
+                "$ref": "#/components/schemas/ButtonElement"
+              }
+            },
+            "required": [
+              "button"
+            ]
+          }
+        ]
+      },
+      "ButtonActionHandler": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "description": "A unique ID of the action within the message."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ButtonElement": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 96,
+            "minLength": 1
+          },
+          "handler": {
+            "$ref": "#/components/schemas/ButtonHandler"
+          },
+          "variant": {
+            "$ref": "#/components/schemas/ButtonVariant"
+          },
+          "disabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "handler",
+          "text"
+        ]
+      },
+      "ButtonHandler": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "link",
+            "properties": {
+              "link": {
+                "$ref": "#/components/schemas/ButtonLinkHandler"
+              }
+            },
+            "required": [
+              "link"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "reply",
+            "properties": {
+              "reply": {
+                "$ref": "#/components/schemas/ButtonReplyHandler"
+              }
+            },
+            "required": [
+              "reply"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "action",
+            "properties": {
+              "action": {
+                "$ref": "#/components/schemas/ButtonActionHandler"
+              }
+            },
+            "required": [
+              "action"
+            ]
+          }
+        ]
+      },
+      "ButtonLinkHandler": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 3
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "ButtonReplyHandler": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          }
+        }
+      },
+      "ButtonVariant": {
+        "type": "string",
+        "enum": [
+          "contained",
+          "outlined"
+        ]
+      },
+      "ChannelNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "DeleteMessageReactionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Element": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "template",
+            "properties": {
+              "template": {
+                "$ref": "#/components/schemas/MessageTemplateConfig"
+              }
+            },
+            "required": [
+              "template"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "actions",
+            "properties": {
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ActionElement"
+                }
+              }
+            },
+            "required": [
+              "actions"
+            ]
+          }
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "GetMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ListMessagesResponseContent": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "description": "Messages ordered newest-first by `timelineSeq`."
+          },
+          "firstUnreadVisibleSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Present on an `anchor=firstUnread` response: the `visibleSeq` of the caller's first unread message, resolved from their authoritative read cursor. Absent when the channel is fully read."
+          }
+        },
+        "required": [
+          "messages"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "description": "Message row returned by listing and lookup endpoints. Deleted messages keep their position with `deletedAt` set and empty body.",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "Author of the message."
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/MessageType"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body. Empty for attachment-only or deleted messages."
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageAttachment"
+            },
+            "description": "Attached files."
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "description": "Users directly mentioned in the message."
+          },
+          "quote": {
+            "$ref": "#/components/schemas/MessageQuote"
+          },
+          "forward": {
+            "$ref": "#/components/schemas/MessageForward"
+          },
+          "reactionCounts": {
+            "$ref": "#/components/schemas/ReactionCounts"
+          },
+          "latestReactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reaction"
+            },
+            "description": "Most recent reactions per type. Fetch the full list on demand."
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "True when the message is currently pinned at channel scope."
+          },
+          "pinnedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp at which the message was pinned. Absent when not pinned."
+          },
+          "pinnedBy": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "User that pinned the message. Absent when not pinned."
+          },
+          "system": {
+            "type": "boolean",
+            "description": "True when the message is system-generated."
+          },
+          "timelineSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monotonic per-channel sequence covering every channel mutation. Used to page the channel timeline."
+          },
+          "visibleSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monotonic per-channel sequence covering only visible messages. Used for unread counts and read pointers."
+          },
+          "channelVersion": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Channel version. Increments on every channel mutation."
+          },
+          "messageVersion": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Message version. Increments on every message mutation."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "ISO-8601 UTC timestamp with millisecond precision (e.g. `2026-05-07T05:35:00.000Z`)."
+          },
+          "editedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp of the most recent edit."
+          },
+          "deletedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Tombstone timestamp."
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Element"
+            }
+          },
+          "whatsapp": {
+            "type": "boolean"
+          },
+          "whatsappStatus": {
+            "$ref": "#/components/schemas/MessageWhatsAppStatus"
+          },
+          "sms": {
+            "type": "boolean"
+          },
+          "smsStatus": {
+            "$ref": "#/components/schemas/MessageSmsStatus"
+          },
+          "markdown": {
+            "type": "boolean"
+          },
+          "giphy": {
+            "$ref": "#/components/schemas/MessageGiphy"
+          },
+          "silent": {
+            "type": "boolean"
+          },
+          "event": {
+            "type": "string",
+            "description": "System event identifier for client rendering."
+          },
+          "pollId": {
+            "type": "string",
+            "description": "Poll identifier for client rendering."
+          },
+          "messagingChannel": {
+            "$ref": "#/components/schemas/MessagingChannel"
+          },
+          "messagingStatus": {
+            "$ref": "#/components/schemas/MessageMessagingStatus"
+          }
+        },
+        "required": [
+          "attachments",
+          "channelVersion",
+          "createdAt",
+          "mentions",
+          "messageId",
+          "messageType",
+          "messageVersion",
+          "pinned",
+          "reactionCounts",
+          "system",
+          "timelineSeq",
+          "userId",
+          "visibleSeq"
+        ]
+      },
+      "MessageAnchor": {
+        "type": "string",
+        "description": "Server-resolved starting point for `ListMessages`, as an alternative to `from`/`to`.",
+        "enum": [
+          "firstUnread"
+        ]
+      },
+      "MessageAttachment": {
+        "type": "object",
+        "description": "File attached to a message as returned by listing and lookup endpoints.",
+        "properties": {
+          "fsId": {
+            "type": "string",
+            "description": "Identifier of the stored file in the file service. Returned by the upload flow and referenced verbatim on the message row."
+          },
+          "mime": {
+            "type": "string",
+            "description": "MIME type."
+          },
+          "name": {
+            "type": "string",
+            "description": "Original file name."
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0,
+            "description": "File size in bytes."
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video width in pixels."
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video height in pixels."
+          },
+          "thumbnail": {
+            "type": "string",
+            "description": "Thumbnail URL when available."
+          },
+          "id": {
+            "type": "string",
+            "description": "Attachment identifier within the message."
+          }
+        },
+        "required": [
+          "fsId",
+          "id",
+          "name",
+          "size"
+        ]
+      },
+      "MessageAttachmentRequest": {
+        "type": "object",
+        "description": "Attachment record supplied by the client when sending or editing a message. The server assigns the attachment `id` after persistence.",
+        "properties": {
+          "fsId": {
+            "type": "string",
+            "description": "Identifier of the stored file in the file service. Returned by the upload flow and referenced verbatim on the message row."
+          },
+          "mime": {
+            "type": "string",
+            "description": "MIME type."
+          },
+          "name": {
+            "type": "string",
+            "description": "Original file name."
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0,
+            "description": "File size in bytes."
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video width in pixels."
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video height in pixels."
+          },
+          "thumbnail": {
+            "type": "string",
+            "description": "Thumbnail URL when available."
+          }
+        },
+        "required": [
+          "fsId",
+          "name",
+          "size"
+        ]
+      },
+      "MessageForward": {
+        "type": "object",
+        "description": "Reference to the original forwarded message.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Channel of the original message."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "description": "Message ID of the original message."
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "User ID of the original author."
+          },
+          "companyId": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3,
+            "description": "Company ID of the original message channel."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Creation timestamp of the original message."
+          }
+        },
+        "required": [
+          "channelId",
+          "messageId",
+          "userId"
+        ]
+      },
+      "MessageForwardRef": {
+        "type": "object",
+        "description": "Forward reference supplied by the client. The server resolves the original author and snapshot fields at write time.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          }
+        },
+        "required": [
+          "channelId",
+          "messageId"
+        ]
+      },
+      "MessageGiphy": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "size": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "height": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "width": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          }
+        },
+        "required": [
+          "height",
+          "id",
+          "size",
+          "url",
+          "width"
+        ]
+      },
+      "MessageMessagingStatus": {
+        "type": "string",
+        "description": "The delivery state of a message an agent sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS today). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
+        "enum": [
+          "trying",
+          "sent",
+          "error",
+          "delivered"
+        ]
+      },
+      "MessageNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "MessageQuote": {
+        "type": "object",
+        "description": "Reference to a quoted message.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "Author of the quoted message."
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body captured at quote time."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "ISO-8601 UTC timestamp with millisecond precision (e.g. `2026-05-07T05:35:00.000Z`)."
+          }
+        },
+        "required": [
+          "channelId",
+          "createdAt",
+          "messageId",
+          "userId"
+        ]
+      },
+      "MessageQuoteRef": {
+        "type": "object",
+        "description": "Quote reference supplied by the client. The server resolves the author and snapshot fields at write time.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          }
+        },
+        "required": [
+          "channelId",
+          "messageId"
+        ]
+      },
+      "MessageSmsStatus": {
+        "type": "string",
+        "enum": [
+          "sent",
+          "delivered",
+          "trying",
+          "error"
+        ]
+      },
+      "MessageTemplateConfig": {
+        "type": "object",
+        "properties": {
+          "whatsapp": {
+            "$ref": "#/components/schemas/TemplateWithParameters"
+          }
+        }
+      },
+      "MessageType": {
+        "type": "string",
+        "description": "Type of message row.",
+        "enum": [
+          "regular",
+          "system",
+          "deleted"
+        ]
+      },
+      "MessageUnsetFields": {
+        "type": "string",
+        "enum": [
+          "text",
+          "mentions",
+          "elements",
+          "attachments",
+          "quote",
+          "forward",
+          "whatsapp",
+          "whatsappStatus",
+          "sms",
+          "smsStatus",
+          "markdown"
+        ]
+      },
+      "MessageWhatsAppStatus": {
+        "type": "string",
+        "enum": [
+          "trying",
+          "sent",
+          "delivered",
+          "error"
+        ]
+      },
+      "MessagingChannel": {
+        "type": "string",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. RCS is listed but not accepted yet: whether an RCS conversation is a telephony channel is still open, so conversations refuses it until its ticket decides.",
+        "enum": [
+          "messenger",
+          "instagram",
+          "rcs"
+        ]
+      },
+      "MultipleMembersJoinedSystemMessage": {
+        "type": "object",
+        "description": "System message emitted when multiple members join a channel.",
+        "properties": {
+          "addedMembers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            }
+          }
+        },
+        "required": [
+          "addedMembers"
+        ]
+      },
+      "PartialUpdateMessageRequestContent": {
+        "type": "object",
+        "properties": {
+          "set": {
+            "$ref": "#/components/schemas/PartialUpdateMessageSetInput"
+          },
+          "unset": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageUnsetFields"
+            },
+            "description": "Fields to clear during the partial update."
+          },
+          "silent": {
+            "type": "boolean",
+            "description": "Suppress the updated indicator for this edit."
+          }
+        }
+      },
+      "PartialUpdateMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "PartialUpdateMessageSetInput": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body. Required unless `attachments` is non-empty."
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Element"
+            },
+            "description": "Structured rich content blocks."
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageAttachmentRequest"
+            },
+            "description": "Pre-uploaded file references. Required unless `text` is provided."
+          },
+          "quote": {
+            "$ref": "#/components/schemas/MessageQuoteRef"
+          },
+          "forward": {
+            "$ref": "#/components/schemas/MessageForwardRef"
+          },
+          "markdown": {
+            "type": "boolean",
+            "description": "When true, the message body is interpreted as Markdown."
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "description": "Direct `@user` ids."
+          },
+          "whatsapp": {
+            "type": "boolean",
+            "description": "Mark as a WhatsApp message. The server may infer this from the channel type."
+          },
+          "whatsappStatus": {
+            "$ref": "#/components/schemas/MessageWhatsAppStatus"
+          },
+          "sms": {
+            "type": "boolean",
+            "description": "Mark as an SMS message. The server may infer this from the channel type."
+          },
+          "smsStatus": {
+            "$ref": "#/components/schemas/MessageSmsStatus"
+          },
+          "messagingChannel": {
+            "$ref": "#/components/schemas/MessagingChannel"
+          },
+          "messagingStatus": {
+            "$ref": "#/components/schemas/MessageMessagingStatus"
+          }
+        }
+      },
+      "PinMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "RateLimitExceededExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Too Many Requests"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Reaction": {
+        "type": "object",
+        "description": "One reaction on a message.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[a-z0-9_+-]+$",
+            "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`)."
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          }
+        },
+        "required": [
+          "messageId",
+          "type",
+          "userId"
+        ]
+      },
+      "ReactionCounts": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "number"
+        },
+        "propertyNames": {
+          "type": "string"
+        },
+        "description": "Per-emoji reaction counters. Keys are reaction type ids (e.g. `thumbsup`)."
+      },
+      "SendGiphyRequestContent": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "description": "Optional client-supplied message id. Auto-generated when omitted."
+          },
+          "giphy": {
+            "$ref": "#/components/schemas/MessageGiphy"
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "description": "Direct `@user` ids."
+          },
+          "quote": {
+            "$ref": "#/components/schemas/MessageQuoteRef"
+          },
+          "silent": {
+            "type": "boolean",
+            "description": "Suppress push notifications and unread indicators."
+          }
+        },
+        "required": [
+          "giphy"
+        ]
+      },
+      "SendGiphyResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SendMessageReactionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SendMessageRequestContent": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body. Required unless `attachments` is non-empty."
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Element"
+            },
+            "description": "Structured rich content blocks."
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageAttachmentRequest"
+            },
+            "description": "Pre-uploaded file references. Required unless `text` is provided."
+          },
+          "quote": {
+            "$ref": "#/components/schemas/MessageQuoteRef"
+          },
+          "forward": {
+            "$ref": "#/components/schemas/MessageForwardRef"
+          },
+          "markdown": {
+            "type": "boolean",
+            "description": "When true, the message body is interpreted as Markdown."
+          },
+          "silent": {
+            "type": "boolean",
+            "description": "Suppress push notifications and unread indicators."
+          },
+          "whatsapp": {
+            "type": "boolean",
+            "description": "Mark as a WhatsApp message. The server may infer this from the channel type."
+          },
+          "whatsappStatus": {
+            "$ref": "#/components/schemas/MessageWhatsAppStatus"
+          },
+          "sms": {
+            "type": "boolean",
+            "description": "Mark as an SMS message. The server may infer this from the channel type."
+          },
+          "smsStatus": {
+            "$ref": "#/components/schemas/MessageSmsStatus"
+          },
+          "messagingChannel": {
+            "$ref": "#/components/schemas/MessagingChannel"
+          },
+          "messagingStatus": {
+            "$ref": "#/components/schemas/MessageMessagingStatus"
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "description": "Optional client-supplied message id. Auto-generated when omitted."
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "description": "Direct `@user` ids. `@all`, `@here`, and `@channel` are not supported."
+          },
+          "messageType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageType"
+              },
+              {
+                "default": "regular"
+              }
+            ]
+          }
+        }
+      },
+      "SendMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SendSystemMessageRequestContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/SystemMessage"
+          },
+          "event": {
+            "type": "string",
+            "description": "Optional system event identifier for client rendering."
+          },
+          "silent": {
+            "type": "boolean",
+            "description": "Suppress push notifications and unread indicators."
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SendSystemMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "StreamServiceExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SystemMessage": {
+        "description": "Typed system message payload. Each variant maps to a server-generated message template.",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "whatsAppClosed",
+            "properties": {
+              "whatsAppClosed": {
+                "$ref": "#/components/schemas/WhatsAppClosedSystemMessage"
+              }
+            },
+            "required": [
+              "whatsAppClosed"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "multipleMembersJoined",
+            "properties": {
+              "multipleMembersJoined": {
+                "$ref": "#/components/schemas/MultipleMembersJoinedSystemMessage"
+              }
+            },
+            "required": [
+              "multipleMembersJoined"
+            ]
+          }
+        ]
+      },
+      "TemplateParameter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      },
+      "TemplateWithParameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TemplateParameter"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UnauthorizedExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UnpinMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UpdateMessageRequestContent": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body. Required unless `attachments` is non-empty."
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Element"
+            },
+            "description": "Structured rich content blocks."
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageAttachmentRequest"
+            },
+            "description": "Pre-uploaded file references. Required unless `text` is provided."
+          },
+          "quote": {
+            "$ref": "#/components/schemas/MessageQuoteRef"
+          },
+          "forward": {
+            "$ref": "#/components/schemas/MessageForwardRef"
+          },
+          "markdown": {
+            "type": "boolean",
+            "description": "When true, the message body is interpreted as Markdown."
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "description": "Direct `@user` ids."
+          },
+          "whatsapp": {
+            "type": "boolean",
+            "description": "Mark as a WhatsApp message. The server may infer this from the channel type."
+          },
+          "whatsappStatus": {
+            "$ref": "#/components/schemas/MessageWhatsAppStatus"
+          },
+          "sms": {
+            "type": "boolean",
+            "description": "Mark as an SMS message. The server may infer this from the channel type."
+          },
+          "smsStatus": {
+            "$ref": "#/components/schemas/MessageSmsStatus"
+          },
+          "messagingChannel": {
+            "$ref": "#/components/schemas/MessagingChannel"
+          },
+          "messagingStatus": {
+            "$ref": "#/components/schemas/MessageMessagingStatus"
+          },
+          "silent": {
+            "type": "boolean",
+            "description": "Suppress the updated indicator for this edit."
+          }
+        }
+      },
+      "UpdateMessageResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "WhatsAppClosedSystemMessage": {
+        "type": "object",
+        "description": "Empty payload for the WhatsApp 24-hour window closed system message."
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}

@@ -1,0 +1,852 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stream service: Files",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://{serviceRegion}.stream.wildix.com",
+      "description": "Production",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stable.wildix.com",
+      "description": "Stable",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stage.wildix.com",
+      "description": "Stage",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/channels/{channelId}/files": {
+      "post": {
+        "description": "Creates a presigned URL for uploading a file into a channel. The returned `fsId` is referenced verbatim as `attachments[].fsId` when sending or editing a message.\n\n### Allowed Auth Scopes\n\n- messaging:UploadFile",
+        "operationId": "UploadFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadFileRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "UploadFile 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadFileResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "MemberNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/files/{fsId}": {
+      "get": {
+        "description": "Returns metadata for an uploaded file in a channel.\n\n### Allowed Auth Scopes\n\n- messaging:GetUploadedFileInfo\n- messaging:read",
+        "operationId": "GetUploadedFileInfo",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "fsId",
+            "in": "path",
+            "description": "File service identifier returned by `UploadFile`.",
+            "schema": {
+              "type": "string",
+              "description": "File service identifier returned by `UploadFile`."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "File category. Defaults to `channels`.",
+            "schema": {
+              "$ref": "#/components/schemas/FileCategory"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetUploadedFileInfo 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUploadedFileInfoResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "FileNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/api/v1/channels/{channelId}/messages/{messageId}/files/{fsId}/download-url": {
+      "get": {
+        "description": "Returns a presigned URL for downloading a file attached to a message.\n\n### Allowed Auth Scopes\n\n- messaging:GetFilePresignedDownloadUrl\n- messaging:read",
+        "operationId": "GetFilePresignedDownloadUrl",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "required": true
+          },
+          {
+            "name": "fsId",
+            "in": "path",
+            "description": "File service identifier of the attachment to download.",
+            "schema": {
+              "type": "string",
+              "description": "File service identifier of the attachment to download."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "File storage category.",
+            "schema": {
+              "$ref": "#/components/schemas/FileCategory"
+            }
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "Download behavior. `0` opens inline for audio/video when supported; `1` always forces download.",
+            "schema": {
+              "$ref": "#/components/schemas/DownloadStrategy"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetFilePresignedDownloadUrl 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFilePresignedDownloadUrlResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "FileNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DownloadStrategy": {
+        "type": "number",
+        "description": "Download URL behavior for presigned download links.",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      "FileCategory": {
+        "type": "string",
+        "description": "File storage category.",
+        "enum": [
+          "channels",
+          "recordings",
+          "wizyconfRecordings"
+        ]
+      },
+      "FileNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "GetFilePresignedDownloadUrlResponseContent": {
+        "type": "object",
+        "properties": {
+          "presignedDownloadUrl": {
+            "type": "string",
+            "description": "Presigned URL for downloading the file."
+          }
+        },
+        "required": [
+          "presignedDownloadUrl"
+        ]
+      },
+      "GetUploadedFileInfoResponseContent": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "$ref": "#/components/schemas/UploadedFileInfo"
+          }
+        },
+        "required": [
+          "file"
+        ]
+      },
+      "MemberNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "RateLimitExceededExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Too Many Requests"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "StreamServiceExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UnauthorizedExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UploadFileOptions": {
+        "type": "object",
+        "description": "Optional parameters for the upload presign flow.",
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/FileCategory"
+          },
+          "region": {
+            "type": "string",
+            "description": "Target upload region. S2S only; ignored for user tokens."
+          }
+        }
+      },
+      "UploadFileRequestContent": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "description": "Original file name. Unreadable characters are replaced with underscores."
+          },
+          "options": {
+            "$ref": "#/components/schemas/UploadFileOptions"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UploadFileResponseContent": {
+        "type": "object",
+        "properties": {
+          "fsId": {
+            "type": "string",
+            "description": "File service identifier. Pass this value as `attachments[].fsId` on send and edit."
+          },
+          "presignedUploadUrl": {
+            "type": "string",
+            "description": "Presigned URL for uploading the file contents."
+          }
+        },
+        "required": [
+          "fsId",
+          "presignedUploadUrl"
+        ]
+      },
+      "UploadedFileInfo": {
+        "type": "object",
+        "description": "Metadata for a file uploaded to the channel file store but not yet attached to a message.",
+        "properties": {
+          "fsId": {
+            "type": "string",
+            "description": "Identifier of the stored file in the file service. Returned by the upload flow and referenced verbatim on the message row."
+          },
+          "mime": {
+            "type": "string",
+            "description": "MIME type."
+          },
+          "name": {
+            "type": "string",
+            "description": "Original file name."
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0,
+            "description": "File size in bytes."
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video width in pixels."
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video height in pixels."
+          },
+          "thumbnail": {
+            "type": "string",
+            "description": "Thumbnail URL when available."
+          }
+        },
+        "required": [
+          "fsId",
+          "name",
+          "size"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}

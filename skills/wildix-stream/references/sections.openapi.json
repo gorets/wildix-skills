@@ -1,0 +1,1211 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stream service: Sections",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://{serviceRegion}.stream.wildix.com",
+      "description": "Production",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stable.wildix.com",
+      "description": "Stable",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stage.wildix.com",
+      "description": "Stage",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/channels/{channelId}/sections/{sectionId}": {
+      "put": {
+        "description": "NOT IMPLEMENTED YET in the service (checked 2026-11-05): it answers HTTP 400 \"Operation MoveChannelToSection is not implemented.\" Adds a channel to a custom section for the current user.\n\n### Allowed Auth Scopes\n\n- messaging:MoveChannelToSection",
+        "operationId": "MoveChannelToSection",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+$",
+              "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MoveChannelToSection 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoveChannelToSectionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SectionNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Sections"
+        ],
+        "x-not-implemented": true
+      },
+      "delete": {
+        "description": "NOT IMPLEMENTED YET in the service (checked 2026-11-05): it answers HTTP 400 \"Operation RemoveChannelFromSection is not implemented.\" Removes a channel from a custom section for the current user.\n\n### Allowed Auth Scopes\n\n- messaging:RemoveChannelFromSection",
+        "operationId": "RemoveChannelFromSection",
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+$",
+              "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RemoveChannelFromSection 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoveChannelFromSectionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SectionNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Sections"
+        ],
+        "x-not-implemented": true
+      }
+    },
+    "/api/v1/sections": {
+      "post": {
+        "description": "NOT IMPLEMENTED YET in the service (checked 2026-11-05): it answers HTTP 400 \"Operation CreateSection is not implemented.\" Creates a custom inbox section.\n\n### Allowed Auth Scopes\n\n- messaging:CreateSection",
+        "operationId": "CreateSection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSectionRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CreateSection 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSectionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Sections"
+        ],
+        "x-not-implemented": true
+      }
+    },
+    "/api/v1/sections/{sectionId}": {
+      "delete": {
+        "description": "NOT IMPLEMENTED YET in the service (checked 2026-11-05): it answers HTTP 400 \"Operation DeleteSection is not implemented.\" Deletes a custom inbox section.\n\n### Allowed Auth Scopes\n\n- messaging:DeleteSection",
+        "operationId": "DeleteSection",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+$",
+              "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "DeleteSection 204 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SectionNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Sections"
+        ],
+        "x-not-implemented": true
+      },
+      "patch": {
+        "description": "NOT IMPLEMENTED YET in the service (checked 2026-11-05): it answers HTTP 400 \"Operation RenameSection is not implemented.\" Renames a custom inbox section.\n\n### Allowed Auth Scopes\n\n- messaging:RenameSection",
+        "operationId": "RenameSection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameSectionRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+$",
+              "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RenameSection 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RenameSectionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SectionNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Sections"
+        ],
+        "x-not-implemented": true
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateSectionRequestContent": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-z0-9_-]+$",
+            "description": "Client-supplied section id."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name",
+          "sectionId"
+        ]
+      },
+      "CreateSectionResponseContent": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "$ref": "#/components/schemas/Section"
+          }
+        },
+        "required": [
+          "section"
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "InboxState": {
+        "type": "object",
+        "description": "Per-user inbox state for a channel: mute and hide flags, unread counters, and read pointers.",
+        "properties": {
+          "sectionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+$",
+              "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined."
+            },
+            "description": "Sections that include this channel."
+          },
+          "unreadCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Number of unread visible messages."
+          },
+          "mentionUnreadCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Number of unread mentions of the current user."
+          },
+          "lastReadVisibleSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Highest `visibleSeq` the user has read in this channel."
+          },
+          "lastReadTimelineSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Timeline anchor paired with lastReadVisibleSeq: a timelineSeq near the read boundary, so a client can load a bounded message window and jump to the first unread. Exact when the cursor was set from a resolved message (MarkRead with messageId, message.new, member add, repair, or a tail read); best-effort on the legacy visibleSeq-only MarkRead and unreadMarkAt MarkUnread paths, where the prior value is retained and may lag or lead lastReadVisibleSeq. Absent until the cursor is first written. Treat as a positioning hint, not an exact bound."
+          },
+          "lastReadAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp of the most recent read event."
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "True when the channel is hidden (archived)."
+          },
+          "muted": {
+            "type": "boolean",
+            "description": "True when the channel is muted."
+          },
+          "mutedUntil": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Expiry timestamp for a temporary mute."
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "True when the user has pinned this channel."
+          },
+          "pinnedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "When the user pinned this channel, stamped once at pin time and unchanged by later activity. Absent whenever `pinned` is false, and on the rare pinned row whose pin instant predates pin-time sort ordering."
+          },
+          "unreadMarkAt": {
+            "type": "number",
+            "minimum": 0,
+            "description": "`visibleSeq` from which the user manually marked the channel as unread."
+          }
+        },
+        "required": [
+          "hidden",
+          "mentionUnreadCount",
+          "muted",
+          "pinned",
+          "sectionIds",
+          "unreadCount"
+        ]
+      },
+      "MoveChannelToSectionResponseContent": {
+        "type": "object",
+        "properties": {
+          "inbox": {
+            "$ref": "#/components/schemas/InboxState"
+          }
+        },
+        "required": [
+          "inbox"
+        ]
+      },
+      "RateLimitExceededExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Too Many Requests"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "RemoveChannelFromSectionResponseContent": {
+        "type": "object",
+        "properties": {
+          "inbox": {
+            "$ref": "#/components/schemas/InboxState"
+          }
+        },
+        "required": [
+          "inbox"
+        ]
+      },
+      "RenameSectionRequestContent": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "RenameSectionResponseContent": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "$ref": "#/components/schemas/Section"
+          }
+        },
+        "required": [
+          "section"
+        ]
+      },
+      "Section": {
+        "type": "object",
+        "description": "Inbox section with metadata, channel count, and unread counters.",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-z0-9_-]+$",
+            "description": "Identifier of an inbox section. System ids: `all`, `direct`, `group`, `external`, `mentions`. Custom ids are user-defined."
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the section."
+          },
+          "type": {
+            "$ref": "#/components/schemas/SectionType"
+          },
+          "channelCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Total channels assigned to this section."
+          },
+          "unmutedUnreadChannelCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Unmuted channels with at least one unread message."
+          },
+          "unmutedUnreadMessageCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Total unread messages across unmuted channels."
+          },
+          "mutedUnreadMessageCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Total unread messages across muted channels."
+          },
+          "unreadMentionCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Unread direct mentions of the current user."
+          }
+        },
+        "required": [
+          "channelCount",
+          "mutedUnreadMessageCount",
+          "name",
+          "sectionId",
+          "type",
+          "unmutedUnreadChannelCount",
+          "unmutedUnreadMessageCount",
+          "unreadMentionCount"
+        ]
+      },
+      "SectionNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "SectionType": {
+        "type": "string",
+        "description": "Whether the section is system-managed or user-defined.",
+        "enum": [
+          "system",
+          "custom"
+        ]
+      },
+      "StreamServiceExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UnauthorizedExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}

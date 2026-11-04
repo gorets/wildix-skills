@@ -1,0 +1,16 @@
+{
+  "checked": "2026-11-05",
+  "operations": [
+    "QueryChannels",
+    "PartialUpdateChannel",
+    "JoinChannel",
+    "AssignChannel",
+    "GetChannelMember",
+    "PartialUpdateMessage",
+    "CreateSection",
+    "RenameSection",
+    "DeleteSection",
+    "MoveChannelToSection",
+    "RemoveChannelFromSection"
+  ]
+}

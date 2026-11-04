@@ -1,0 +1,435 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stream service: Users",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://{serviceRegion}.stream.wildix.com",
+      "description": "Production",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stable.wildix.com",
+      "description": "Stable",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stage.wildix.com",
+      "description": "Stage",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/users/query": {
+      "post": {
+        "description": "Returns the users that match a batch query by ids, emails and phones. Only users that exist and are visible in the caller's scope are returned, each one once; an email or phone that several users share returns all of them. A service token without a company reads the whole directory; any other token is limited to its own company.\n\n### Allowed Auth Scopes\n\n- messaging:QueryUsers\n- messaging:read",
+        "operationId": "QueryUsers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryUsersRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QueryUsers 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryUsersResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "QueryUsersRequestContent": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "$ref": "#/components/schemas/UsersQuery"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "QueryUsersResponseContent": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StreamUser"
+            },
+            "description": "Users that matched, each one once, in no particular order."
+          }
+        },
+        "required": [
+          "users"
+        ]
+      },
+      "RateLimitExceededExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Too Many Requests"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "StreamServiceExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "StreamUser": {
+        "type": "object",
+        "description": "A user of the directory. Every field except `id`, `displayName` and `bot` is present only when the directory holds it and the caller may see it.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "User id."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "What to call the user: their name, or when they have none the part of their email before the @, or when they have neither their id. Always present."
+          },
+          "bot": {
+            "type": "boolean",
+            "description": "True when the user is a bot."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name."
+          },
+          "email": {
+            "type": "string",
+            "pattern": "^(^[\\w+-]+(\\.[\\w+-]+)*)@(([\\w-]+\\.)+\\w{2,}$)$",
+            "description": "Email address."
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{4,17}$",
+            "description": "Phone number."
+          },
+          "companyId": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3,
+            "description": "Company the user belongs to."
+          },
+          "picture": {
+            "type": "string",
+            "description": "Picture URL."
+          },
+          "pbxExtension": {
+            "type": "string",
+            "description": "Extension on the PBX the user is linked to."
+          },
+          "locale": {
+            "type": "string",
+            "description": "Language of the user's client, as a locale tag."
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "IANA time zone of the user."
+          },
+          "deactivatedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "When the user was deactivated. Absent for an active user."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "When the user was created."
+          },
+          "updatedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "When the directory entry of the user was last written."
+          }
+        },
+        "required": [
+          "bot",
+          "displayName",
+          "id"
+        ]
+      },
+      "UnauthorizedExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UsersQuery": {
+        "type": "object",
+        "description": "Batch user lookup. At least one of the lists must be given; the lists are alternatives, not filters, so a user that matches any of them is returned.",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "description": "User ids."
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(^[\\w+-]+(\\.[\\w+-]+)*)@(([\\w-]+\\.)+\\w{2,}$)$"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "description": "Email addresses."
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\+?[0-9]{4,17}$"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "description": "Phone numbers."
+          }
+        }
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}

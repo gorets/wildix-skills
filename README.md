@@ -28,6 +28,7 @@ npx skills add gorets/wildix-skills --s wildix-get-unread-messages -y
 npx skills add gorets/wildix-skills --s wildix-send-message -y
 npx skills add gorets/wildix-skills --s wildix-react-message -y
 npx skills add gorets/wildix-skills --s wildix-update-message -y
+npx skills add gorets/wildix-skills --s wildix-stream -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -131,6 +132,18 @@ Edits the text of a message you sent to an x-bees chat, or deletes it. A message
 
 ---
 
+### `wildix-stream`
+
+Chats on the new Wildix Stream service (`stream.wildix.com`), the replacement of the x-bees conversations API, **as the logged-in user**, never as a bot: channels, messages (send, edit, delete, pin, reactions), members, inbox and unread, search over messages, channels and users (the user search is fuzzy: names in any script, typos, names as they sound, exact by e-mail or phone), files, mentions, users. One script per section, and the OpenAPI of each section as its reference, read piece by piece with `openapi.sh`.
+
+**Triggers:** "show my chats", "read the messages in this chat", "react with a check mark", "search the chats for X", "what did I miss", "who is in this channel"
+
+**Depends on:** `wildix-auth`
+
+The service is still being built: a call to an operation that is not ready answers `Operation … is not implemented`. The skill lists what was missing when it was written.
+
+---
+
 ### `wildix-adr-from-meeting`
 
 Downloads a meeting transcription from `wda.wildix.com`, turns it into an Architecture Decision
@@ -163,6 +176,16 @@ cp commands/adr.md ~/.claude/commands/adr.md
 ## Authentication
 
 Log in once with `wildix-auth`. After that every script of the other skills gets its token itself, through `wildix-auth`: the agent never sees, passes or prints a token. With several accounts logged in, set `WILDIX_EMAIL=<email>` to choose one. A script that finds no session stops with exit code 2 and tells you to log in.
+
+## Maintaining
+
+The references of `wildix-stream` are generated from the OpenAPI of the service, one file per section:
+
+```bash
+node tools/split-stream-openapi.mjs <path to>/stream-client.openapi.json skills/wildix-stream/references
+```
+
+Operations the service does not implement yet are listed in `tools/stream-not-implemented.json`; the generator marks them (`x-not-implemented`) and `openapi.sh ops` shows `[NOT IMPLEMENTED YET]`. When the service gets one ready, remove it from that file, regenerate, and update the tables in `skills/wildix-stream/SKILL.md` (Sections and Known gaps).
 
 ## Requirements
 

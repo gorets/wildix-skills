@@ -1,7 +1,7 @@
 {
   "name": "wildix",
-  "version": "1.6.0",
-  "description": "Unofficial AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, messaging, reactions, editing your own messages, and turning meeting transcriptions into published ADRs. Not an official Wildix product.",
+  "version": "1.7.0",
+  "description": "Unofficial AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, messaging, the new Wildix Stream service, reactions, editing your own messages, and turning meeting transcriptions into published ADRs. Not an official Wildix product.",
   "author": {
     "name": "Vladimir Gorobets",
     "url": "https://github.com/gorets"
@@ -19,7 +19,8 @@
     "reactions",
     "adr",
     "confluence",
-    "documentation"
+    "documentation",
+    "stream"
   ],
   "skills": "./skills/"
 }

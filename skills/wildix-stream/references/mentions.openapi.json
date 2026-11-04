@@ -1,0 +1,1057 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stream service: Mentions",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://{serviceRegion}.stream.wildix.com",
+      "description": "Production",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stable.wildix.com",
+      "description": "Stable",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    },
+    {
+      "url": "https://{serviceRegion}.stream-stage.wildix.com",
+      "description": "Stage",
+      "variables": {
+        "serviceRegion": {
+          "default": "eu-1",
+          "description": "Stream service region, e.g. eu-1 or us-1."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/mentions": {
+      "get": {
+        "description": "Returns messages where the current user was directly mentioned, ordered by most recent mention. Default page size is 30 mentions, but a page may return more when the scanned window contains extra rows after filtering. Use `filter=unread` for unread-only.\n\n### Allowed Auth Scopes\n\n- messaging:ListMentions\n- messaging:read",
+        "operationId": "ListMentions",
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Optional refinement.",
+            "schema": {
+              "$ref": "#/components/schemas/MentionsFilter"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque continuation token from the previous response.",
+            "schema": {
+              "type": "string",
+              "maxLength": 4096,
+              "minLength": 1,
+              "description": "Opaque continuation token from the previous response."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListMentions 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListMentionsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Mentions"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionElement": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "button",
+            "properties": {
+              "button": {
+                "$ref": "#/components/schemas/ButtonElement"
+              }
+            },
+            "required": [
+              "button"
+            ]
+          }
+        ]
+      },
+      "ButtonActionHandler": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "description": "A unique ID of the action within the message."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ButtonElement": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 96,
+            "minLength": 1
+          },
+          "handler": {
+            "$ref": "#/components/schemas/ButtonHandler"
+          },
+          "variant": {
+            "$ref": "#/components/schemas/ButtonVariant"
+          },
+          "disabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "handler",
+          "text"
+        ]
+      },
+      "ButtonHandler": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "link",
+            "properties": {
+              "link": {
+                "$ref": "#/components/schemas/ButtonLinkHandler"
+              }
+            },
+            "required": [
+              "link"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "reply",
+            "properties": {
+              "reply": {
+                "$ref": "#/components/schemas/ButtonReplyHandler"
+              }
+            },
+            "required": [
+              "reply"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "action",
+            "properties": {
+              "action": {
+                "$ref": "#/components/schemas/ButtonActionHandler"
+              }
+            },
+            "required": [
+              "action"
+            ]
+          }
+        ]
+      },
+      "ButtonLinkHandler": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 3
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "ButtonReplyHandler": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          }
+        }
+      },
+      "ButtonVariant": {
+        "type": "string",
+        "enum": [
+          "contained",
+          "outlined"
+        ]
+      },
+      "ChannelType": {
+        "type": "string",
+        "description": "Type of channel.",
+        "enum": [
+          "direct",
+          "group"
+        ]
+      },
+      "Element": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "template",
+            "properties": {
+              "template": {
+                "$ref": "#/components/schemas/MessageTemplateConfig"
+              }
+            },
+            "required": [
+              "template"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "actions",
+            "properties": {
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ActionElement"
+                }
+              }
+            },
+            "required": [
+              "actions"
+            ]
+          }
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ListMentionsResponseContent": {
+        "type": "object",
+        "properties": {
+          "mentions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MentionEntry"
+            },
+            "description": "Mentions ordered by most recent `mentionAddedAt` first."
+          },
+          "nextCursor": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "description": "Cursor for the next page. Absent when there are no more pages."
+          }
+        },
+        "required": [
+          "mentions"
+        ]
+      },
+      "MentionChannelPreview": {
+        "type": "object",
+        "description": "Compact channel preview returned alongside a mention entry.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+          },
+          "channelType": {
+            "$ref": "#/components/schemas/ChannelType"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Channel subject."
+          },
+          "picture": {
+            "type": "string",
+            "description": "Channel picture URL."
+          },
+          "memberCount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Current number of members."
+          },
+          "channelVersion": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Channel version. Increments on every channel mutation."
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "ISO-8601 UTC timestamp with millisecond precision (e.g. `2026-05-07T05:35:00.000Z`)."
+          },
+          "peerId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "Direct channels only: the other member's user id, relative to the caller. Absent for group channels and for direct channels that do not have exactly two members."
+          }
+        },
+        "required": [
+          "channelId",
+          "channelType",
+          "channelVersion",
+          "lastActivityAt",
+          "memberCount"
+        ]
+      },
+      "MentionEntry": {
+        "type": "object",
+        "description": "Mention entry. Identifies a message that mentioned the current user, with the user's read state and an embedded copy of the message and its channel.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          },
+          "timelineSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monotonic per-channel sequence covering every channel mutation. Used to page the channel timeline."
+          },
+          "visibleSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monotonic per-channel sequence covering only visible messages. Used for unread counts and read pointers."
+          },
+          "mentionAddedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp at which the mention was recorded."
+          },
+          "read": {
+            "type": "boolean",
+            "description": "True when the user has read this mention."
+          },
+          "readAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp at which the mention was read."
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/MentionChannelPreview"
+          }
+        },
+        "required": [
+          "channel",
+          "channelId",
+          "mentionAddedAt",
+          "message",
+          "messageId",
+          "read",
+          "timelineSeq"
+        ]
+      },
+      "MentionsFilter": {
+        "type": "string",
+        "description": "Optional refinement for `ListMentions`.",
+        "enum": [
+          "unread"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "description": "Message row returned by listing and lookup endpoints. Deleted messages keep their position with `deletedAt` set and empty body.",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "Author of the message."
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/MessageType"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body. Empty for attachment-only or deleted messages."
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageAttachment"
+            },
+            "description": "Attached files."
+          },
+          "mentions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12
+            },
+            "description": "Users directly mentioned in the message."
+          },
+          "quote": {
+            "$ref": "#/components/schemas/MessageQuote"
+          },
+          "forward": {
+            "$ref": "#/components/schemas/MessageForward"
+          },
+          "reactionCounts": {
+            "$ref": "#/components/schemas/ReactionCounts"
+          },
+          "latestReactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reaction"
+            },
+            "description": "Most recent reactions per type. Fetch the full list on demand."
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "True when the message is currently pinned at channel scope."
+          },
+          "pinnedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp at which the message was pinned. Absent when not pinned."
+          },
+          "pinnedBy": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "User that pinned the message. Absent when not pinned."
+          },
+          "system": {
+            "type": "boolean",
+            "description": "True when the message is system-generated."
+          },
+          "timelineSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monotonic per-channel sequence covering every channel mutation. Used to page the channel timeline."
+          },
+          "visibleSeq": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monotonic per-channel sequence covering only visible messages. Used for unread counts and read pointers."
+          },
+          "channelVersion": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Channel version. Increments on every channel mutation."
+          },
+          "messageVersion": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Message version. Increments on every message mutation."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "ISO-8601 UTC timestamp with millisecond precision (e.g. `2026-05-07T05:35:00.000Z`)."
+          },
+          "editedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Timestamp of the most recent edit."
+          },
+          "deletedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Tombstone timestamp."
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Element"
+            }
+          },
+          "whatsapp": {
+            "type": "boolean"
+          },
+          "whatsappStatus": {
+            "$ref": "#/components/schemas/MessageWhatsAppStatus"
+          },
+          "sms": {
+            "type": "boolean"
+          },
+          "smsStatus": {
+            "$ref": "#/components/schemas/MessageSmsStatus"
+          },
+          "markdown": {
+            "type": "boolean"
+          },
+          "giphy": {
+            "$ref": "#/components/schemas/MessageGiphy"
+          },
+          "silent": {
+            "type": "boolean"
+          },
+          "event": {
+            "type": "string",
+            "description": "System event identifier for client rendering."
+          },
+          "pollId": {
+            "type": "string",
+            "description": "Poll identifier for client rendering."
+          },
+          "messagingChannel": {
+            "$ref": "#/components/schemas/MessagingChannel"
+          },
+          "messagingStatus": {
+            "$ref": "#/components/schemas/MessageMessagingStatus"
+          }
+        },
+        "required": [
+          "attachments",
+          "channelVersion",
+          "createdAt",
+          "mentions",
+          "messageId",
+          "messageType",
+          "messageVersion",
+          "pinned",
+          "reactionCounts",
+          "system",
+          "timelineSeq",
+          "userId",
+          "visibleSeq"
+        ]
+      },
+      "MessageAttachment": {
+        "type": "object",
+        "description": "File attached to a message as returned by listing and lookup endpoints.",
+        "properties": {
+          "fsId": {
+            "type": "string",
+            "description": "Identifier of the stored file in the file service. Returned by the upload flow and referenced verbatim on the message row."
+          },
+          "mime": {
+            "type": "string",
+            "description": "MIME type."
+          },
+          "name": {
+            "type": "string",
+            "description": "Original file name."
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0,
+            "description": "File size in bytes."
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video width in pixels."
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Image or video height in pixels."
+          },
+          "thumbnail": {
+            "type": "string",
+            "description": "Thumbnail URL when available."
+          },
+          "id": {
+            "type": "string",
+            "description": "Attachment identifier within the message."
+          }
+        },
+        "required": [
+          "fsId",
+          "id",
+          "name",
+          "size"
+        ]
+      },
+      "MessageForward": {
+        "type": "object",
+        "description": "Reference to the original forwarded message.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Channel of the original message."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "description": "Message ID of the original message."
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "User ID of the original author."
+          },
+          "companyId": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3,
+            "description": "Company ID of the original message channel."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "Creation timestamp of the original message."
+          }
+        },
+        "required": [
+          "channelId",
+          "messageId",
+          "userId"
+        ]
+      },
+      "MessageGiphy": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "size": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "height": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "width": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          }
+        },
+        "required": [
+          "height",
+          "id",
+          "size",
+          "url",
+          "width"
+        ]
+      },
+      "MessageMessagingStatus": {
+        "type": "string",
+        "description": "The delivery state of a message an agent sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS today). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
+        "enum": [
+          "trying",
+          "sent",
+          "error",
+          "delivered"
+        ]
+      },
+      "MessageQuote": {
+        "type": "object",
+        "description": "Reference to a quoted message.",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12,
+            "description": "Author of the quoted message."
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "description": "Text body captured at quote time."
+          },
+          "createdAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+            "description": "ISO-8601 UTC timestamp with millisecond precision (e.g. `2026-05-07T05:35:00.000Z`)."
+          }
+        },
+        "required": [
+          "channelId",
+          "createdAt",
+          "messageId",
+          "userId"
+        ]
+      },
+      "MessageSmsStatus": {
+        "type": "string",
+        "enum": [
+          "sent",
+          "delivered",
+          "trying",
+          "error"
+        ]
+      },
+      "MessageTemplateConfig": {
+        "type": "object",
+        "properties": {
+          "whatsapp": {
+            "$ref": "#/components/schemas/TemplateWithParameters"
+          }
+        }
+      },
+      "MessageType": {
+        "type": "string",
+        "description": "Type of message row.",
+        "enum": [
+          "regular",
+          "system",
+          "deleted"
+        ]
+      },
+      "MessageWhatsAppStatus": {
+        "type": "string",
+        "enum": [
+          "trying",
+          "sent",
+          "delivered",
+          "error"
+        ]
+      },
+      "MessagingChannel": {
+        "type": "string",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. RCS is listed but not accepted yet: whether an RCS conversation is a telephony channel is still open, so conversations refuses it until its ticket decides.",
+        "enum": [
+          "messenger",
+          "instagram",
+          "rcs"
+        ]
+      },
+      "RateLimitExceededExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Too Many Requests"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Reaction": {
+        "type": "object",
+        "description": "One reaction on a message.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[a-z0-9_+-]+$",
+            "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`)."
+          },
+          "userId": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12
+          },
+          "messageId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32
+          }
+        },
+        "required": [
+          "messageId",
+          "type",
+          "userId"
+        ]
+      },
+      "ReactionCounts": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "number"
+        },
+        "propertyNames": {
+          "type": "string"
+        },
+        "description": "Per-emoji reaction counters. Keys are reaction type ids (e.g. `thumbsup`)."
+      },
+      "StreamServiceExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "TemplateParameter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      },
+      "TemplateWithParameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TemplateParameter"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UnauthorizedExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}
