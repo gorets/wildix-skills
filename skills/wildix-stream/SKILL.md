@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Vladimir Gorobets
 allowed-tools: >-
-  Bash, Glob, Skill
+  Bash, Skill
 ---
 
 # Wildix Stream
@@ -29,11 +29,7 @@ The exact request and response shapes are the OpenAPI references of this skill, 
 
 ## Peer Skills
 
-Before running, check that `wildix-auth` is installed:
-```bash
-Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
-```
+Needs the `wildix-auth` skill. If it is not among the skills you can use, or a script stops with exit code 2 saying it is not installed, do not install it yourself: ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`.
 
 See [`peers.yaml`](peers.yaml) for the full peer manifest.
 

@@ -16,7 +16,7 @@ MESSAGE_ID="${3:?$USAGE}"
 TYPE="${4:-}"
 
 # Authentication belongs to the wildix-auth skill: it loads ID_TOKEN without ever printing it.
-for _d in "$(dirname "$0")/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+for _d in "$(dirname "$0")/../.." "${WILDIX_SKILLS_DIR:-}" "$HOME/.agents/skills" "$HOME/.claude/skills"; do
   [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
 done
 command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }

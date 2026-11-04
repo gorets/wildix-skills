@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Vladimir Gorobets
 allowed-tools: >-
-  Bash, Glob, Skill
+  Bash, Skill
 ---
 
 # React to a Message
@@ -14,11 +14,7 @@ Adds, removes or lists a reaction on a chat message **as the user whose token is
 
 ## Peer Skills
 
-Before running, check that `wildix-auth` is installed:
-```bash
-Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
-```
+Needs the `wildix-auth` skill. If it is not among the skills you can use, or a script stops with exit code 2 saying it is not installed, do not install it yourself: ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`.
 
 See [`peers.yaml`](peers.yaml) for the full peer manifest.
 

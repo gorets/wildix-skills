@@ -24,12 +24,7 @@ skill" line supplied when the skill loads, so the paths hold wherever the skill 
 
 ## Peer skills
 
-The `wda.wildix.com` token comes from the `wildix-auth` skill. Check that it is installed:
-
-```bash
-ls ~/.claude/skills/wildix-auth/scripts/get-token.sh
-# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
-```
+The `wda.wildix.com` token comes from the `wildix-auth` skill. If it is not among the skills you can use, or the download script stops with exit code 2 saying it is not installed, do not install it yourself: ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`.
 
 ---
 

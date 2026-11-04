@@ -16,7 +16,7 @@ STREAM_UA="wildix-agent-skills/1.1.0"
 command -v jq >/dev/null   || { echo "Error: jq is required (brew install jq)" >&2; exit 1; }
 command -v curl >/dev/null || { echo "Error: curl is required" >&2; exit 1; }
 
-for _d in "$STREAM_LIB_DIR/../.." "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+for _d in "$STREAM_LIB_DIR/../.." "${WILDIX_SKILLS_DIR:-}" "$HOME/.agents/skills" "$HOME/.claude/skills"; do
   [ -f "$_d/wildix-auth/scripts/load-token.sh" ] && { . "$_d/wildix-auth/scripts/load-token.sh"; break; } || true
 done
 command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth skill is not installed. Ask the user to run: npx skills add gorets/wildix-skills --s wildix-auth" >&2; exit 2; }

@@ -2,38 +2,32 @@
 #
 # One entry per skill in the Wildix pack. The router (skills/wildix/SKILL.md)
 # uses this file as the single source of truth for:
-#   - glob: path to detect whether a peer is installed
 #   - install: command to run if missing
 #   - install_policy: "silent" (auto) or "ask" (confirm with user first)
 #   - purpose: one-sentence description used for routing decisions
 
 peers:
   - name: wildix-auth
-    glob: ~/.claude/skills/wildix-auth/SKILL.md
     install: npx skills add gorets/wildix-skills --s wildix-auth
     install_policy: ask
     purpose: Authenticate with Wildix x-bees via AWS Cognito. Required by all other skills.
 
   - name: wildix-chats-overview
-    glob: ~/.claude/skills/wildix-chats-overview/SKILL.md
     install: npx skills add gorets/wildix-skills --s wildix-chats-overview
     install_policy: ask
     purpose: Fetch and summarize x-bees chats for today, yesterday, a specific date, or a date range.
 
   - name: wildix-get-conference
-    glob: ~/.claude/skills/wildix-get-conference/SKILL.md
     install: npx skills add gorets/wildix-skills --s wildix-get-conference
     install_policy: ask
     purpose: Fetch conference details, participants, transcription status, and AI insights from wda.wildix.com.
 
   - name: wildix-react-message
-    glob: ~/.claude/skills/wildix-react-message/SKILL.md
     install: npx skills add gorets/wildix-skills --s wildix-react-message
     install_policy: ask
     purpose: Add, remove or list a reaction on an x-bees message as the authenticated user.
 
   - name: wildix-stream
-    glob: ~/.claude/skills/wildix-stream/SKILL.md
     install: npx skills add gorets/wildix-skills --s wildix-stream
     install_policy: ask
     purpose: Chats on the new Wildix Stream service as the authenticated user: channels, messages, inbox, search, members, files, mentions, users.

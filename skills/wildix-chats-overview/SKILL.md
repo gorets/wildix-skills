@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Vladimir Gorobets
 allowed-tools: >-
-  Bash, Glob, Skill
+  Bash, Skill
 ---
 
 # Wildix Chats Overview
@@ -14,17 +14,7 @@ Fetches and summarizes x-bees messages for a given period (single day or date ra
 
 ## Peer Skills
 
-Before running, check if required peer skills are installed:
-
-```bash
-# Check wildix-auth
-Glob ~/.claude/skills/wildix-auth/SKILL.md
-# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`
-
-# Check wildix-get-conference
-Glob ~/.claude/skills/wildix-get-conference/SKILL.md
-# If missing: do not install it yourself; ask the user to run `npx skills add gorets/wildix-skills --s wildix-get-conference`
-```
+Needs the `wildix-auth` skill, and `wildix-get-conference` for the conference details. If one is not among the skills you can use, or a script stops with exit code 2 saying `wildix-auth` is not installed, do not install it yourself: ask the user to run `npx skills add gorets/wildix-skills --s <name>`.
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 

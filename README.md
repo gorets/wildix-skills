@@ -126,6 +126,8 @@ Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-r
 
 Log in once with `wildix-auth`. After that every script of the other skills gets its token itself, through `wildix-auth`: the agent never sees, passes or prints a token. With several accounts logged in, set `WILDIX_EMAIL=<email>` to choose one. A script that finds no session stops with exit code 2 and tells you to log in.
 
+The scripts look for `wildix-auth` next to their own skill, so it does not matter whether the skills were installed into `~/.agents/skills` or `~/.claude/skills` (often a symlink to the former) or elsewhere; `WILDIX_SKILLS_DIR` names the folder when the skills are apart. Whether a skill is installed is judged by the agent seeing it, not by a file path.
+
 ## Maintaining
 
 The references of `wildix-stream` are generated from the OpenAPI of the service, one file per section:
