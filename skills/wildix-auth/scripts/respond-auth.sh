@@ -1,11 +1,13 @@
 #!/bin/bash
 # Completes Wildix/Cognito CUSTOM_CHALLENGE. Saves tokens per-email.
-# Usage: bash respond-auth.sh <email> <session> <code>
+# Usage: bash respond-auth.sh <email> <session | @file> <code>
+#   "@file" reads the Cognito session from that file (the one initiate-auth.sh wrote), so it need not travel in argv.
 set -e
 source "$(dirname "$0")/config.sh"
 
 EMAIL="${1:?Usage: $0 <email> <session> <code>}"
 SESSION="${2:?Session required}"
+if [[ "$SESSION" == @* ]]; then SESSION=$(cat -- "${SESSION#@}") || { echo "Cannot read the session file ${SESSION#@}" >&2; exit 1; }; fi
 CODE="${3:?Code required}"
 
 wildix_ensure_tokens_dir

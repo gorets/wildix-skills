@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Vladimir Gorobets
 allowed-tools: >-
-  Bash, Read, Write, Edit, Glob, Grep, Skill, mcp__claude_ai_Atlassian__*
+  Bash, Read, Write, Edit, Glob, Grep, Skill, mcp__claude_ai_Atlassian__getAccessibleAtlassianResources, mcp__claude_ai_Atlassian__getConfluencePage, mcp__claude_ai_Atlassian__searchConfluenceUsingCql, mcp__claude_ai_Atlassian__getContentFormatGuide, mcp__claude_ai_Atlassian__createConfluencePage, mcp__claude_ai_Atlassian__getTeamworkGraphContext, mcp__claude_ai_Atlassian__search, mcp__claude_ai_Atlassian__fetch
 ---
 
 # Wildix ADR from Meeting
@@ -50,6 +50,10 @@ Fields:
 | `confluence.indexPageId` | the "ADR index" page holding the Page Properties Report macro |
 | `confluence.folders` | series → Confluence folder id (plus `ADR`, the root folder) |
 
+A value that still starts with `<` (copied from the template and not filled in) means the config is
+unfinished: stop and ask the user for it instead of using it. A leading `~` in `vaultAdrDir` and
+`participantsFile` stands for the home directory: expand it before use.
+
 Reading the config is silent — say nothing about it when the file is there. What the config
 resolved to is reported once, at the end (Step 8).
 
@@ -85,8 +89,9 @@ Degrade without failing:
 
 ## Step 2. Download the transcription
 
-Extract the `conferenceId`: if the argument contains `/`, take everything after the last `/`
-(a link like `https://app.x-bees.com/insights/conferences/<id>`); otherwise use it as is.
+Extract the `conferenceId`: from a link like `https://app.x-bees.com/insights/conferences/<id>` take the
+last path segment, after dropping a `?query`, a `#fragment` and a trailing `/`; otherwise use the
+argument as it is. (The script does the same, so a link can be passed to it as it is.)
 
 The script gets the token itself through the `wildix-auth` skill, so you never handle one. The account
 is the email from the config:
@@ -112,12 +117,19 @@ in x-bees). The header is assembled from `GET .../conferences/<id>`. File format
 [MM:SS] First Last: text
 ```
 
-Exit codes: **2** — the API rejected the token (re-authenticate through `wildix-auth` and retry);
-**3** — there is no transcription, it was never enabled on the call. On exit 3, stop and tell the
-user plainly; do not try to reconstruct the meeting from insights, chat or memory.
+Exit codes: **1** — an error (the conference was not found or is not accessible, a bad id, or the output
+path already exists and is not this conference's transcript); the message says which. **2** — the user is
+not logged in or the API rejected the token (re-authenticate through `wildix-auth` and retry). **3** —
+there is no transcription (it was never enabled on the call), or it is still being processed
+(`POST_TRANSCRIPTION`: try again later); the message says which. On exit 3, stop and tell the user plainly;
+do not try to reconstruct the meeting from insights, chat or memory.
 
-Check the result: the file exists, it is larger than 5 KB, and it contains lines shaped like
-`[MM:SS] First Last: text`. If the file is empty or it is the HTML of a login page, stop and say so.
+The header of the file gives the start time in **UTC**. The transcript is confidential: the script
+creates the file and its folder private, and it never replaces a file that is not a transcript of this
+same conference.
+
+Check the result: the file exists, is not empty, and contains lines shaped like
+`[MM:SS] First Last: text`. If it is empty or it is the HTML of a login page, stop and say so.
 
 ## Step 3. Read the whole transcription
 

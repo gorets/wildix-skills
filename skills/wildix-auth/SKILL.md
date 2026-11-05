@@ -43,7 +43,7 @@ When you need a token yourself (not through another skill's script), retrieve it
 ID_TOKEN=$(bash <BASE_DIR>/scripts/get-token.sh "<email>")
 ```
 
-Exit code 2 = token rejected by API → go to Mode 2 (re-auth).
+Exit code 1 (no tokens, or the refresh failed because the refresh token expired or was revoked) or 2 (the API rejected the token) → go to Mode 2 (re-auth).
 
 ---
 
@@ -66,6 +66,8 @@ ls "${WILDIX_CONFIG_DIR:-$HOME/.wildix}"/tokens/*.json 2>/dev/null | xargs -I{} 
 ID_TOKEN=$(bash <BASE_DIR>/scripts/get-token.sh "<email>")
 ```
 
+If it exits 1 or 2 there is no usable session: go to Mode 2.
+
 ---
 
 ## Mode 2: Authenticate (new session or re-auth)
@@ -77,7 +79,8 @@ If email is unknown, use `AskUserQuestion`.
 ### 2. Initiate auth — sends code to email
 
 ```bash
-bash <BASE_DIR>/scripts/initiate-auth.sh "<email>" | tee /tmp/wildix_auth_session.txt
+SESSION_FILE=$(mktemp); chmod 600 "$SESSION_FILE"      # keep this path for step 4; the session is not shown
+bash <BASE_DIR>/scripts/initiate-auth.sh "<email>" > "$SESSION_FILE"
 ```
 
 ### 3. Ask user for the code
@@ -88,8 +91,8 @@ Use `AskUserQuestion` (user types code via "Other"):
 ### 4. Complete auth
 
 ```bash
-SESSION=$(cat /tmp/wildix_auth_session.txt)
-bash <BASE_DIR>/scripts/respond-auth.sh "<email>" "$SESSION" "<CODE>"
+bash <BASE_DIR>/scripts/respond-auth.sh "<email>" "@$SESSION_FILE" "<CODE>"
+rm -f "$SESSION_FILE"
 ```
 
 ### 5. Return token
@@ -162,6 +165,8 @@ bash <BASE_DIR>/scripts/global-signout.sh "<email>"
 ```
 
 Calls Cognito `GlobalSignOut` using the AccessToken — invalidates all sessions for the account — and deletes the local token file.
+
+> **If a script exits 1, nothing was revoked or signed out and the local token file was kept:** read the message, fix the cause (for example run `get-token.sh` first) and run it again.
 
 > **Note:** `GlobalSignOut` requires a non-expired AccessToken. If the local token is expired (>1h old), run `get-token.sh` first to refresh it, then run `global-signout.sh`.
 

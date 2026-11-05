@@ -1,7 +1,7 @@
 {
   "email": "firstname.lastname@wildix.com",
   "adrLanguage": "ru",
-  "vaultAdrDir": "~/ObsidianFiles/Work/ARD",
+  "vaultAdrDir": "~/notes/adr",
   "participantsFile": "~/.claude/data/adr-participants.json",
   "confluence": {
     "cloudId": "<your-site>.atlassian.net",

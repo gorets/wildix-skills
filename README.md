@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, read chats, browse channels, fetch conference details, send messages, and turn a meeting transcription into a published Architecture Decision Record — all from Claude Code.
+AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
 > **Unofficial project.** These skills are a personal project, not an official Wildix product. They
 > are not released, endorsed or supported by Wildix, and Wildix gives no warranty for them. They
@@ -27,6 +27,12 @@ npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
 ## Skills
+
+### `wildix` *(router)*
+
+Names the skill that does a thing: chats, calls and meetings after the fact, ADRs. It reads nothing and changes nothing itself; it only points at the right sub-skill, and says what to install when one is missing.
+
+---
 
 ### `wildix-auth` *(required by all others)*
 
@@ -92,7 +98,7 @@ passing an `app.x-bees.com/insights/conferences/<id>` link
 **Extra setup.** This skill needs a config file of its own — space, folder ids, your account:
 
 ```bash
-cp ~/.claude/skills/wildix-adr-from-meeting/config.example.json ~/.claude/adr.config.json
+cp <the folder of the installed wildix-adr-from-meeting skill>/config.example.json ~/.claude/adr.config.json
 ```
 
 It also needs an Atlassian MCP server connected in Claude Code for the Confluence half; without it
@@ -157,7 +163,7 @@ The references of `wildix-calls-history` are built the same way from the OpenAPI
 node tools/split-wda-openapi.mjs <path to>/wda-history-client.openapi.json <path to>/wda-insights-client.openapi.json
 ```
 
-Both sources are produced by the SDK generator (`yarn install`, then `node scripts/build-clients -s wda-history-client`, and the same for `wda-insights-client`, in `sdk-ts`): they land in `packages/<client>/etc/<client>.openapi.json`. Note that the generator also rewrites the tracked client sources of those packages.
+Both sources are produced by the SDK generator (the same documents are also published, a little older, under `sdk-docs/static/codegen/api/`) (`yarn install`, then `node scripts/build-clients -s wda-history-client`, and the same for `wda-insights-client`, in `sdk-ts`): they land in `packages/<client>/etc/<client>.openapi.json`. Note that the generator also rewrites the tracked client sources of those packages.
 
 Operations the service does not implement yet are listed in `tools/stream-not-implemented.json`; the generator marks them (`x-not-implemented`) and `openapi.sh ops` shows `[NOT IMPLEMENTED YET]`. When the service gets one ready, remove it from that file, regenerate, and update the tables in `skills/wildix-chats/SKILL.md` (Sections and Known gaps).
 

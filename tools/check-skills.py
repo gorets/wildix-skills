@@ -6,7 +6,7 @@
 For every skills/<name>/: SKILL.md has a frontmatter that a strict YAML parser reads, `name` equals the
 folder, `description` is up to 1024 characters; peers.yaml parses and names existing skills; the relative
 links of SKILL.md point at files that exist; every script passes `bash -n`. Also: no hard-coded
-`~/.claude/skills` path in SKILL.md, peers.yaml or commands, and every script that is run (not sourced)
+`~/.claude/skills` path in SKILL.md, peers.yaml, commands or a command line of the README, and every script that is run (not sourced)
 is executable. Needs PyYAML (`pip install pyyaml`). Exit code 1 when anything is wrong.
 """
 import glob, os, re, subprocess, sys
@@ -55,6 +55,9 @@ for n in names:
 
 for f in glob.glob("commands/*.md"):
     if "~/.claude/skills" in open(f, encoding="utf-8").read(): bad(f"{f}: hard-coded ~/.claude/skills path")
+# the README may talk about the folder, but a command line of it must not depend on it
+for n, line in enumerate(open("README.md", encoding="utf-8"), 1):
+    if re.match(r"\s*(cp|bash|ls|cat|node|python3?)\b.*~/\.claude/skills", line): bad(f"README.md:{n}: a command with a hard-coded ~/.claude/skills path")
 
 # scripts that are run by the agent must be executable; libraries that are only sourced need not be
 sourced = {"config.sh", "load-token.sh", "lib.sh"}

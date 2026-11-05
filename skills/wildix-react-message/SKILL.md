@@ -1,6 +1,7 @@
 ---
 name: wildix-react-message
-description: Use when asked to add, remove or list a reaction (emoji) on a message in an x-bees, collaboration 7 or x-hoppers chat, as the user themselves, not as a bot. Triggers on requests like "put eyes on that message", "react with a check mark", "mark the message as taken", "remove my reaction", "who reacted to this message".
+description: >-
+  Use when asked WHO reacted to a message (the people behind each reaction), or to add, remove or list a reaction (emoji) on a message in an x-bees, collaboration 7 or x-hoppers chat, as the user themselves, not as a bot. It works through the x-bees conversations API (links like app.x-bees.com/inbox/<channel>/<message>) and lists reactions per person. Triggers on requests like "who reacted to this message", "who put eyes on it", "remove my reaction", "mark the message as taken".
 license: MIT
 metadata:
   author: Vladimir Gorobets
@@ -9,6 +10,8 @@ allowed-tools: >-
 ---
 
 # React to a Message
+
+`<BASE_DIR>` below is the folder of this skill (the directory that holds this `SKILL.md`), the one the agent reports as the base directory when it loads the skill.
 
 Adds, removes or lists a reaction on a chat message **as the user whose token is used**. The reaction shows under the user's own name. Use it instead of a bot token when the reaction must say who set it: a user has one reaction of each type per message, so one shared bot cannot mark a message for several people.
 

@@ -111,12 +111,10 @@ empty.
 re-check a contested point; the local `.txt` transcription lives in `~/.wildix/transcripts/` and
 does not exist on another machine. The link goes in **three** places: `conference:` in the
 frontmatter, the `Source` row in the local file's header, and the `Source` row in Page Properties
-on the Confluence page. Records ADR-RNA-0001…0010, STREAM-0001 and GENERAL-0001 were published
-without it (found 2026-09-08) — the ids had to be recovered from the `Wildix Meetings/` notes and
-from `get-chats-overview.sh <date>` → `get-conference.sh <ids>`, cross-checking duration and the
-participant list.
+on the Confluence page. A record published without it cannot be traced back: recover the
+conference id from the meeting link, from the local notes of that day or from the chat that carried
+the link, and cross-check duration and participants.
 
-**Keep the header list under the title**, despite the KB rule against a duplicate `**Date:**` in
-the body: the header carries caveats the frontmatter has no room for (`Accepted — with a caveat`,
+**Keep the header list under the title**: the header carries caveats the frontmatter has no room for (`Accepted — with a caveat`,
 participant roles, `§` references with explanations). The frontmatter is the index; the header is
 prose.

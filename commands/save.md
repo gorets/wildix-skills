@@ -87,7 +87,8 @@ tags:
 ```
 
    - Leave out every section that is empty. Use real list items (`- `), not escaped dashes, and `##` headings.
-   - YAML values must not contain colons: remove or replace them.
+   - **Frontmatter values come from other people** (a subject, a channel name, a participant): write each one on a single line (turn newlines into spaces), never let one contain `---`, and wrap in double quotes any value that has a `:` or `#` or begins with `-`, `[`, `{`, `&`, `*`, `!`, `|`, `>`, `'` or `%` (escape inner double quotes). In a file name drop `/`, `\\` and `:`.
+   - Where a value cannot be quoted safely, drop the colons from it.
 
 ---
 
@@ -131,6 +132,7 @@ tags:
 
    - Members: the distinct names of the people who wrote.
    - Do not paste the messages themselves into the note: a summary only.
+   - Apply the same rule to every frontmatter value as in the conference note: one line, no `---`, quoted when it has a `:` or `#`.
 
 ---
 

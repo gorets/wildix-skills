@@ -61,9 +61,8 @@ Mandatory details:
   `<thead>` does not preserve it — the stored page comes back with `<th>`. So when you rewrite the
   body of a page whose header table still has a `<thead>`, **move those rows into `<tbody>` in the
   same pass**; "the second cell is still a `<td>`, leave it alone" is wrong, because your own
-  rewrite is what breaks it. Learned the hard way 2026-09-10 while migrating the corpus to English
-  labels: nine records were rewritten with the `<thead>` preserved and lost their `Status` value in
-  the index;
+  rewrite is what breaks it: a page rewritten with its `<thead>` preserved loses its `Status` value
+  in the index;
 - `data-layout="wide"` on the `<div data-type="bodied-extension">` itself and on its table
   (see below);
 - the `Project` row is needed **always**, even when the local file has no such line (then use the
@@ -112,7 +111,7 @@ on read — that is what shows whether the widths are set on the page or not.
 ## Column widths
 
 `wide` alone is not enough: without explicit widths the first column stretches and the table looks
-loose. The layout the corpus settled on (2026-09-08, set by hand by the owner):
+loose. The layout the corpus settled on:
 
 | Table | Widths |
 |---|---|
@@ -142,17 +141,16 @@ Roles and clarifications (`(BE)`, `(presenter)`) stay as ordinary text after the
 In the local `.md` file participants stay plain text — mentions exist only in Confluence.
 
 **Take AAIDs from the directory** at `participantsFile` from the config (by default
-`~/.claude/data/adr-participants.json`). It holds the whole organisation: it was filled from an
-Atlassian People directory export ("People directory - Atlassian Teams", the saved page
-`/o/<orgId>/people`, 2026-09-08), where names and ids sit in the cards as
+`~/.claude/data/adr-participants.json`). It maps a name to an Atlassian account id. Build it from a
+saved export of your organisation's Atlassian People directory, where names and ids sit in the cards as
 `data-testid="user-member-card-link-<AAID>"` and `<span …>First Last's profile</span>` (the name
-inside the span wraps across lines — collapse whitespace when parsing). It used to be built from
-the mention nodes of already published ADRs; those 18 values matched the exported ones exactly.
+inside the span wraps across lines — collapse whitespace when parsing), or from the mention nodes of
+already published ADRs.
 
 The directory is **user-local and is not part of the skill's repository** — it holds real employee
 names and their Atlassian account ids. If the file is missing, go straight to step 0 below.
 
-If a participant is not in the directory (a new hire — the export is from 2026-09-08), or there is
+If a participant is not in the directory (a new hire, added after the export), or there is
 no directory at all:
 
 0. **Ask Teamwork Graph — this works and costs one call:**
@@ -166,7 +164,7 @@ no directory at all:
    ```
 
    The response carries `data.object.accountId` and `userName`. It resolves both a corporate email
-   (`firstname.lastname@wildix.com`) and a display name. Verified on three people — matched the
+   (`firstname.lastname@example.com`) and a display name. Verified on three people — matched the
    directory exactly. Limits: one person per call, up to 10 Rovo credits per call; traversing
    relationships (`user_has_top_collaborators`) returns
    `No accessible relationships found for the given parameters and scopes` — the graph cannot be
@@ -175,8 +173,8 @@ no directory at all:
    whole directory (see above): the MCP has no user list and no arbitrary GraphQL/REST passthrough
    either (`fetch` only accepts an ARI for a Jira issue / Confluence page), so an operation like
    `DirectoryViewPeopleQuery` is not available through the MCP.
-2. `mcp__claude_ai_Atlassian__lookupJiraAccountId` **does not work** on this instance — it returns
-   `403 The app is not installed on this instance`. Do not spend an attempt on it. The MCP's Jira
+2. `mcp__claude_ai_Atlassian__lookupJiraAccountId` may not work: on some instances it returns
+   `403 The app is not installed on this instance`. When it does, do not retry it; the MCP's Jira
    tools (`searchJiraIssuesUsingJql` and the rest) return the same 403 — also a dead end.
 3. Read any earlier ADR page where this person was a participant with `contentFormat: "html"`
    (`getConfluencePage`) — the mention nodes hold the real AAIDs. Find candidates by the
@@ -185,7 +183,7 @@ no directory at all:
    **Do not invent an AAID** — a wrong id produces a broken mention pointing at someone else or at
    nobody.
 
-Write newly found AAIDs into the directory so the next run already knows them.
+When `participantsFile` is set, write newly found AAIDs into it so the next run already knows them.
 
 ## Editing an already published page
 
@@ -194,7 +192,7 @@ rules follow from that.
 
 1. **Read the page before any edit** (`getConfluencePage`, `contentFormat: "html"`) and build the
    new body on what you read. This applies to a page published five minutes ago in this same
-   session too: on 2026-09-08 someone else's version was overwritten this way — the
+   session too: someone else's edit was overwritten this way once — the
    `updateConfluencePage` response came back with `version: 4` where 3 was expected, meaning
    somebody had edited the page by hand between the two edits. A version number mismatch in the
    response is the only signal that this happened; earlier versions cannot be read through the MCP,
@@ -207,5 +205,5 @@ rules follow from that.
    rendering nor inline comments (those have their own `data-annotation-id`). What does need
    carrying across from what you read is `data-colwidth` on tables and any `data-annotation-id`.
 
-When you hit a limit of Confluence-through-MCP that is not written down here, add it to this file —
-it is the record.
+When you hit a limit of Confluence-through-MCP that is not written down here, tell the user about it
+(the files of a skill are not edited during a run).
