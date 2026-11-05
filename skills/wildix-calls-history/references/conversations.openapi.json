@@ -1785,6 +1785,18 @@
           "whatsappStatus": {
             "$ref": "#/components/schemas/ChannelWhatsAppStatus"
           },
+          "messagingChannel": {
+            "$ref": "#/components/schemas/MessagingChannel"
+          },
+          "messagingStatus": {
+            "$ref": "#/components/schemas/ChannelMessagingStatus"
+          },
+          "messagingSenderId": {
+            "type": "string"
+          },
+          "messagingReplyUntil": {
+            "type": "number"
+          },
           "broadcast": {
             "type": "boolean"
           },
@@ -1793,6 +1805,10 @@
           },
           "autoRecord": {
             "type": "boolean"
+          },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
           },
           "transcriptionLanguage": {
             "type": "string"
@@ -1804,7 +1820,8 @@
             "type": "string",
             "maxLength": 32,
             "minLength": 32,
-            "pattern": "^[0-9a-z]{8}\\b-[0-9a-z]{4}\\b-[0-9a-z]{4}\\b-[0-9a-z]{4}\\b-[0-9a-z]{8}$"
+            "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
           },
           "channelType": {
             "$ref": "#/components/schemas/ChannelType"
@@ -1923,6 +1940,13 @@
         "type": "string",
         "enum": [
           "kite"
+        ]
+      },
+      "ChannelMessagingStatus": {
+        "type": "string",
+        "description": "Set when classound refused a reply because the person's messaging window is closed (a 409 on the send). Unset by the next inbound message, which is the only thing that reopens the window.",
+        "enum": [
+          "window_closed"
         ]
       },
       "ChannelType": {
@@ -3587,6 +3611,15 @@
         },
         "required": [
           "tags"
+        ]
+      },
+      "MessagingChannel": {
+        "type": "string",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. An RCS conversation is not a telephony channel, and its customer id is the person's phone number.",
+        "enum": [
+          "messenger",
+          "instagram",
+          "rcs"
         ]
       },
       "PbxLicenseType": {
