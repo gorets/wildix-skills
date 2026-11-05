@@ -1,0 +1,1901 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WDA conversation history: conferences",
+    "version": "v2"
+  },
+  "servers": [
+    {
+      "url": "https://wda.wildix.com",
+      "description": "Production"
+    },
+    {
+      "url": "https://wda-stable.wildix.com",
+      "description": "Stable"
+    },
+    {
+      "url": "https://wda-stage.wildix.com",
+      "description": "Stage"
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/history/conferences/{conferenceId}": {
+      "get": {
+        "description": "Gets a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- history:GetConference\n- history:read",
+        "operationId": "GetConference",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConference 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ConferenceNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConferenceNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/history/conferences/{conferenceId}/annotations": {
+      "get": {
+        "description": "Gets annotations for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- history:GetConferenceAnnotations\n- history:read",
+        "operationId": "GetConferenceAnnotations",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceAnnotations 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceAnnotationsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ConferenceAnnotationsNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConferenceAnnotationsNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/history/conferences/{conferenceId}/transcription": {
+      "get": {
+        "description": "Gets the transcription for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- history:GetConferenceTranscription\n- history:read",
+        "operationId": "GetConferenceTranscription",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceTranscription 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceTranscriptionResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ConferenceTranscriptionNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConferenceTranscriptionNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/history/conferences/{conferenceId}/transcription/text": {
+      "get": {
+        "description": "Gets the transcription text and chunks for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- history:GetConferenceTranscriptionText\n- history:read",
+        "operationId": "GetConferenceTranscriptionText",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceTranscriptionText 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceTranscriptionTextResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ConferenceTranscriptionNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConferenceTranscriptionNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conferences/{conferenceId}/insights": {
+      "get": {
+        "description": "Gets the insights for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- insights:GetConferenceInsights\n- insights:read",
+        "operationId": "GetConferenceInsights",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceInsights 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceInsightsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conferences/{conferenceId}/schedule_summary_generation": {
+      "post": {
+        "operationId": "ScheduleConferenceSummaryGeneration",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ScheduleConferenceSummaryGeneration 200 response"
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conferences/{conferenceId}/state": {
+      "get": {
+        "description": "Gets the summary for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- insights:GetConferenceState\n- insights:read",
+        "operationId": "GetConferenceState",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or tenant token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or tenant token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceState 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceStateResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conferences/{conferenceId}/summary": {
+      "get": {
+        "description": "Gets the summary for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- insights:GetConferenceSummary\n- insights:read",
+        "operationId": "GetConferenceSummary",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceSummary 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceSummaryResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conferences/{conferenceId}/timeframes": {
+      "get": {
+        "description": "Gets the time frames for a conference by conferenceId.\n\n### Allowed Auth Scopes\n\n- insights:GetConferenceTimeFrames\n- insights:read",
+        "operationId": "GetConferenceTimeFrames",
+        "parameters": [
+          {
+            "name": "conferenceId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceTimeFrames 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceTimeFramesResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conferences/recording/download_url": {
+      "get": {
+        "description": "Retrieves a presigned URL for downloading a specific recording.\n\n### Allowed Auth Scopes\n\n- insights:GetConferenceRecordingPresignedDownloadUrl\n- insights:read",
+        "operationId": "GetConferenceRecordingPresignedDownloadUrl",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "query",
+            "description": "The unique identifier of the recording to download.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the recording to download."
+            },
+            "required": true
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "The category of the file, either channel files or conference recordings.",
+            "schema": {
+              "$ref": "#/components/schemas/ConversationFileCategory"
+            },
+            "required": true
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "URL behavior, 0 - open(play) for audio/video, others are downloaded; 1 — always download.",
+            "schema": {
+              "$ref": "#/components/schemas/DownloadStrategy"
+            }
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetConferenceRecordingPresignedDownloadUrl 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConferenceRecordingPresignedDownloadUrlResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "FileNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Annotation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identity of this emission. Annotations are applied once per id: re-sending one already recorded on the conversation is ignored."
+          },
+          "time": {
+            "type": "number"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+            "description": "Identity of the value, when the annotation is one reading of something that changes over the conversation. See AnnotationKey."
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AnnotationPayload"
+          },
+          "source": {
+            "$ref": "#/components/schemas/AnnotationSource"
+          }
+        },
+        "required": [
+          "id",
+          "payload",
+          "source",
+          "time"
+        ]
+      },
+      "AnnotationMetricValue": {
+        "type": "object",
+        "description": "A named value observed during the conversation, and the reading it replaces — a CSAT score, a\n    talk ratio, the outcome of an evaluation. Emitted with an `AnnotationKey`, which is what makes\n    the newest reading addressable in `annotationsByKey` while the series stays in `annotations`.\n\n    Runtime services enforce serialized payload size limits.",
+        "properties": {
+          "value": {
+            "description": "The reading, as its producer models it: a score, a label, a number, or an object such as `{\"customerRatio\": 0.42, \"agentRatio\": 0.58}`."
+          },
+          "previous": {
+            "description": "The reading this one replaces, so a consumer can render the change without loading the history. Absent on the first reading."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Human-readable name of the value, e.g. 'CSAT' or 'Talk ratio'."
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "AnnotationPayload": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "tag",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "maxLength": 50
+              }
+            },
+            "required": [
+              "tag"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "text",
+            "properties": {
+              "text": {
+                "type": "string",
+                "maxLength": 4096
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "variables",
+            "properties": {
+              "variables": {
+                "$ref": "#/components/schemas/AnnotationVariablesValue"
+              }
+            },
+            "required": [
+              "variables"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "result",
+            "properties": {
+              "result": {
+                "$ref": "#/components/schemas/AnnotationResultValue"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "metric",
+            "properties": {
+              "metric": {
+                "$ref": "#/components/schemas/AnnotationMetricValue"
+              }
+            },
+            "required": [
+              "metric"
+            ]
+          }
+        ]
+      },
+      "AnnotationResultValue": {
+        "type": "object",
+        "description": "Tool result captured for an annotation. Runtime services enforce serialized payload size limits.",
+        "properties": {
+          "value": {}
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "AnnotationSource": {
+        "type": "object",
+        "description": "Producer of an annotation. Generic identifiers allow callers to attach context such as tool id/name, user id/name, etc., without constraining the source type to a fixed shape.",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AnnotationSourceType"
+          },
+          "id": {
+            "type": "string",
+            "description": "Stable identifier of the producer (e.g. tool id, user id, copilot session id)."
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the producer (e.g. tool name, user display name)."
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "AnnotationSourceType": {
+        "type": "string",
+        "enum": [
+          "chatbot",
+          "voicebot",
+          "user",
+          "system",
+          "copilot"
+        ]
+      },
+      "AnnotationVariablesValue": {
+        "type": "object",
+        "description": "Capability variable values captured for an annotation. Runtime services enforce serialized payload size limits.",
+        "properties": {
+          "value": {}
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "AnnotationsMap": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Annotation"
+        },
+        "propertyNames": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "description": "Identity of the *value* an annotation carries, as opposed to `Annotation.id`, which identifies\n    one emission of it. Two annotations sharing a key are two readings of the same thing — a CSAT\n    score that moved, a talk ratio recomputed — so the conversation exposes the newest of them in\n    `annotationsByKey` while every reading stays in `annotations`.\n\n    Namespaced by producer to keep keys collision-free across annotation sources, e.g.\n    `copilot.csat`, `copilot.talk_ratio`, `copilot.evaluation.objection_handled`. An annotation\n    without a key is a one-off record and is not projected."
+        },
+        "maxProperties": 50,
+        "description": "The newest annotation per `AnnotationKey`: the current value of everything the conversation\n    tracks, without reading the history. Keyed annotations only — a one-off annotation appears\n    solely in `annotations`."
+      },
+      "AnnotationsStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "UNAVAILABLE"
+        ]
+      },
+      "ConferenceAnalyticsRecordParticipant": {
+        "type": "object",
+        "properties": {
+          "jid": {
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/ConferenceParticipant"
+          },
+          "totalDuration": {
+            "type": "number"
+          },
+          "totalSpeakDuration": {
+            "type": "number"
+          },
+          "joinTime": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "info",
+          "jid",
+          "joinTime",
+          "totalDuration",
+          "totalSpeakDuration"
+        ]
+      },
+      "ConferenceAnnotationsNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ConferenceAnnotationsRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecordType"
+              },
+              {
+                "default": "conference_annotations"
+              }
+            ]
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "maxItems": 250,
+            "description": "Every annotation recorded on the conversation, oldest first — the history of what was observed,\n    superseded readings of a keyed value included."
+          }
+        },
+        "required": [
+          "annotations",
+          "company",
+          "id",
+          "time",
+          "type"
+        ]
+      },
+      "ConferenceDirection": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INBOUND",
+          "OUTBOUND"
+        ]
+      },
+      "ConferenceNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ConferenceParticipant": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ConferenceParticipantType"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ConferenceParticipantRole"
+          },
+          "jid": {
+            "type": "string",
+            "description": "A unique identifier to avoid duplicates if user re-connect from different devices."
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "pbxSerial": {
+            "type": "string"
+          },
+          "pbxExtension": {
+            "type": "string"
+          },
+          "pbxGroupId": {
+            "type": "string"
+          },
+          "xbsId": {
+            "type": "string"
+          },
+          "license": {
+            "$ref": "#/components/schemas/PbxLicenseType"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "ConferenceParticipantRole": {
+        "type": "string",
+        "enum": [
+          "CLIENT",
+          "AGENT"
+        ]
+      },
+      "ConferenceParticipantType": {
+        "type": "string",
+        "enum": [
+          "EXTERNAL",
+          "EXTERNAL_DIAL_IN",
+          "PBX",
+          "PBX_SIP",
+          "XBS"
+        ]
+      },
+      "ConferenceRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "pbx": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "number"
+          },
+          "endTime": {
+            "type": "number"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "waitTime": {
+            "type": "number"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/ConferenceDirection"
+          },
+          "service": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConversationStatus"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceAnalyticsRecordParticipant"
+            }
+          },
+          "recordings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceRecording"
+            }
+          },
+          "transcriptionStatus": {
+            "$ref": "#/components/schemas/ConferenceTranscriptionStatus"
+          },
+          "transcriptionLanguage": {
+            "type": "string"
+          },
+          "transcriptionSeconds": {
+            "type": "number"
+          },
+          "annotationsStatus": {
+            "$ref": "#/components/schemas/AnnotationsStatus"
+          },
+          "annotationsByKey": {
+            "$ref": "#/components/schemas/AnnotationsMap"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecordType"
+              },
+              {
+                "default": "conference"
+              }
+            ]
+          }
+        },
+        "required": [
+          "company",
+          "direction",
+          "duration",
+          "endTime",
+          "id",
+          "participants",
+          "startTime",
+          "time",
+          "transcriptionStatus",
+          "type"
+        ]
+      },
+      "ConferenceRecording": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "end",
+          "start",
+          "url"
+        ]
+      },
+      "ConferenceTimeFramesChunk": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "end",
+          "start"
+        ]
+      },
+      "ConferenceTimeFramesListItem": {
+        "type": "object",
+        "properties": {
+          "jid": {
+            "type": "string"
+          },
+          "frames": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceTimeFramesChunk"
+            }
+          }
+        },
+        "required": [
+          "frames",
+          "jid"
+        ]
+      },
+      "ConferenceTranscription": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "chunks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceTranscriptionChunk"
+            }
+          }
+        },
+        "required": [
+          "chunks",
+          "end",
+          "start"
+        ]
+      },
+      "ConferenceTranscriptionChunk": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number"
+          },
+          "jid": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "isFinal": {
+            "type": "boolean"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/TranscriptionSentiment"
+          }
+        },
+        "required": [
+          "end",
+          "id",
+          "isFinal",
+          "jid",
+          "start",
+          "text",
+          "time"
+        ]
+      },
+      "ConferenceTranscriptionInteractionParticipantRecord": {
+        "type": "object",
+        "properties": {
+          "jid": {
+            "type": "string",
+            "description": "Unique identifier (JID) of the participant."
+          },
+          "wordsPerMinute": {
+            "type": "number",
+            "description": "Average words per minute spoken by the participant during the call."
+          },
+          "talkRatio": {
+            "type": "number",
+            "description": "Percentage of the call duration during which the participant was speaking."
+          },
+          "interruptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceTranscriptionInterruption"
+            },
+            "description": "List of interruptions where this participant interrupted or was interrupted during the conversation."
+          }
+        },
+        "required": [
+          "jid"
+        ]
+      },
+      "ConferenceTranscriptionInteractionRecord": {
+        "type": "object",
+        "properties": {
+          "talkRatio": {
+            "type": "number",
+            "description": "Percentage of the call duration during which the agent was speaking."
+          },
+          "wordsPerMinute": {
+            "type": "number",
+            "description": "Average words per minute spoken by the agent during their speaking time."
+          },
+          "interruptions": {
+            "type": "number",
+            "description": "Number of times the agent interrupted another participant during the conversation."
+          },
+          "patience": {
+            "type": "number",
+            "description": "Average time in seconds the agent waited after another participant finished speaking before responding.",
+            "format": "float"
+          },
+          "longestMonologue": {
+            "type": "number",
+            "description": "Duration in seconds of the agent's longest uninterrupted monologue."
+          },
+          "longestCustomerStory": {
+            "type": "number",
+            "description": "Duration in seconds of another participant’s longest uninterrupted story or response."
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceTranscriptionInteractionParticipantRecord"
+            },
+            "description": "Detailed statistics for each participant in the call."
+          }
+        }
+      },
+      "ConferenceTranscriptionInterruption": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "number",
+            "description": "Time in milliseconds from the start of the call (e.g., flowStartTime) when the interruption occurred."
+          },
+          "chunks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs of the conversation chunks involved in the interruption, including both the interrupting and interrupted speakers."
+          }
+        },
+        "required": [
+          "chunks",
+          "time"
+        ]
+      },
+      "ConferenceTranscriptionNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ConferenceTranscriptionRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecordType"
+              },
+              {
+                "default": "conference_transcription"
+              }
+            ]
+          },
+          "transcriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceTranscription"
+            }
+          }
+        },
+        "required": [
+          "company",
+          "id",
+          "time",
+          "transcriptions",
+          "type"
+        ]
+      },
+      "ConferenceTranscriptionStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "POST_TRANSCRIPTION",
+          "UNAVAILABLE"
+        ]
+      },
+      "ConversationFileCategory": {
+        "type": "string",
+        "enum": [
+          "channels",
+          "recordings",
+          "wizyconfRecordings"
+        ]
+      },
+      "ConversationPlaybackState": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "number"
+          },
+          "duration": {
+            "type": "number"
+          }
+        }
+      },
+      "ConversationState": {
+        "type": "object",
+        "properties": {
+          "playlists": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            }
+          },
+          "playback": {
+            "$ref": "#/components/schemas/ConversationPlaybackState"
+          },
+          "firstWatchedAt": {
+            "type": "string"
+          },
+          "lastWatchedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "ConversationStatus": {
+        "type": "string",
+        "enum": [
+          "COMPLETED",
+          "MISSED"
+        ]
+      },
+      "DownloadStrategy": {
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      "FileNotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "GetConferenceAnnotationsResponseContent": {
+        "type": "object",
+        "properties": {
+          "annotations": {
+            "$ref": "#/components/schemas/ConferenceAnnotationsRecord"
+          }
+        },
+        "required": [
+          "annotations"
+        ]
+      },
+      "GetConferenceInsightsResponseContent": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InsightsStatus"
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectionInsights"
+            }
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "GetConferenceRecordingPresignedDownloadUrlResponseContent": {
+        "type": "object",
+        "properties": {
+          "presignedDownloadUrl": {
+            "type": "string",
+            "description": "The presigned URL for downloading the recording."
+          }
+        },
+        "required": [
+          "presignedDownloadUrl"
+        ]
+      },
+      "GetConferenceResponseContent": {
+        "type": "object",
+        "properties": {
+          "conference": {
+            "$ref": "#/components/schemas/ConferenceRecord"
+          }
+        },
+        "required": [
+          "conference"
+        ]
+      },
+      "GetConferenceStateResponseContent": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/ConversationState"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "GetConferenceSummaryResponseContent": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InsightsStatus"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/TranscriptionSummary"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "GetConferenceTimeFramesResponseContent": {
+        "type": "object",
+        "properties": {
+          "timeFrames": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceTimeFramesListItem"
+            }
+          }
+        }
+      },
+      "GetConferenceTranscriptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "transcription": {
+            "$ref": "#/components/schemas/ConferenceTranscriptionRecord"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/ConferenceTranscriptionInteractionRecord"
+          }
+        },
+        "required": [
+          "transcription"
+        ]
+      },
+      "GetConferenceTranscriptionTextResponseContent": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "chunks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranscriptionTextChunk"
+            }
+          }
+        },
+        "required": [
+          "chunks",
+          "filename",
+          "text"
+        ]
+      },
+      "InsightsReason": {
+        "type": "string",
+        "enum": [
+          "TRANSCRIPTION_TOO_SMALL",
+          "CONDITIONS_NOT_MATCH",
+          "INTERNAL_ERROR"
+        ]
+      },
+      "InsightsStatus": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "UNAVAILABLE",
+          "SCHEDULED",
+          "STARTED",
+          "SUCCEEDED",
+          "FAILED"
+        ]
+      },
+      "NotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Not found"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "PbxLicenseType": {
+        "type": "string",
+        "enum": [
+          "basic",
+          "essential",
+          "business",
+          "premium",
+          "wizyconf"
+        ]
+      },
+      "ProjectionInsights": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          },
+          "version": {
+            "type": "number",
+            "description": "A version of projection that was used to generate the insights."
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "status": {
+            "$ref": "#/components/schemas/InsightsStatus"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/InsightsReason"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectionInsightsField"
+            }
+          }
+        },
+        "required": [
+          "fields",
+          "id",
+          "name",
+          "status",
+          "version"
+        ]
+      },
+      "ProjectionInsightsField": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          },
+          "value": {}
+        },
+        "required": [
+          "id",
+          "name",
+          "value"
+        ]
+      },
+      "RecordType": {
+        "type": "string",
+        "enum": [
+          "call",
+          "call_transcription",
+          "call_annotations",
+          "conference",
+          "conference_transcription",
+          "conference_annotations",
+          "chat",
+          "chat_transcription",
+          "chat_annotations"
+        ]
+      },
+      "TranscriptionSentiment": {
+        "type": "string",
+        "description": "Sentiment label for a transcription chunk. Shared between calls and conferences.",
+        "enum": [
+          "POSITIVE",
+          "NEGATIVE",
+          "MIXED",
+          "NEUTRAL"
+        ]
+      },
+      "TranscriptionSummary": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "brief": {
+            "type": "string"
+          },
+          "json": {
+            "$ref": "#/components/schemas/TranscriptionSummaryJson"
+          }
+        }
+      },
+      "TranscriptionSummaryCsat": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "TranscriptionSummaryJson": {
+        "type": "object",
+        "properties": {
+          "callBriefVeryShortTitle": {
+            "type": "string"
+          },
+          "callBrief": {
+            "type": "string"
+          },
+          "customerInsights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "keyPoints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "competitiveInformation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "implementationTimeline": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "budget": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customerResponse": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "salesProposals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actionItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "nextSteps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "csat": {
+            "$ref": "#/components/schemas/TranscriptionSummaryCsat"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "review": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "progress": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TranscriptionTextChunk": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          },
+          "offset": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "offset",
+          "text",
+          "time"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}

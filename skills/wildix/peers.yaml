@@ -27,7 +27,12 @@ peers:
     install_policy: ask
     purpose: Add, remove or list a reaction on an x-bees message as the authenticated user.
 
-  - name: wildix-stream
-    install: npx skills add gorets/wildix-skills --s wildix-stream
+  - name: wildix-chat
+    install: npx skills add gorets/wildix-skills --s wildix-chat
     install_policy: ask
     purpose: Chats on the new Wildix Stream service as the authenticated user: channels, messages, inbox, search, members, files, mentions, users.
+
+  - name: wildix-conversation-history
+    install: npx skills add gorets/wildix-skills --s wildix-conversation-history
+    install_policy: ask
+    purpose: Calls and meetings that are over, as the authenticated user: record, transcript, AI summary and insights, recording link, call history, search.

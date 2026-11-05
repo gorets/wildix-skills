@@ -22,7 +22,8 @@ npx skills add gorets/wildix-skills --s wildix-auth -y
 npx skills add gorets/wildix-skills --s wildix-chats-overview -y
 npx skills add gorets/wildix-skills --s wildix-get-conference -y
 npx skills add gorets/wildix-skills --s wildix-react-message -y
-npx skills add gorets/wildix-skills --s wildix-stream -y
+npx skills add gorets/wildix-skills --s wildix-chat -y
+npx skills add gorets/wildix-skills --s wildix-conversation-history -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -66,7 +67,7 @@ Adds, removes or lists a reaction (`eyes`, `thumbsup`, `white_check_mark`, …) 
 
 ---
 
-### `wildix-stream`
+### `wildix-chat`
 
 Chats on the new Wildix Stream service (`stream.wildix.com`), the replacement of the x-bees conversations API, **as the logged-in user**, never as a bot: channels, messages (send, edit, delete, pin, reactions), members, inbox and unread, search over messages, channels and users (the user search is fuzzy: names in any script, typos, names as they sound, exact by e-mail or phone), files, mentions, users. One script per section, and the OpenAPI of each section as its reference, read piece by piece with `openapi.sh`.
 
@@ -75,6 +76,16 @@ Chats on the new Wildix Stream service (`stream.wildix.com`), the replacement of
 **Depends on:** `wildix-auth`
 
 The service is still being built: a call to an operation that is not ready answers `Operation … is not implemented`. The skill lists what was missing when it was written.
+
+---
+
+### `wildix-conversation-history`
+
+What is on record about calls and meetings (conferences) that are over, as the logged-in user: the record and its participants, the transcript, the AI summary and insights, the recording link, the user's call history and missed calls, and a search over calls, conferences and chats by date, person, tag or language. It reads the past: it does not start, join or control a live call. One script per section (conferences, calls, conversations), and the OpenAPI of each section as its reference.
+
+**Triggers:** "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls", "find the meeting with Anna on Monday"
+
+**Depends on:** `wildix-auth`
 
 ---
 
@@ -109,7 +120,7 @@ cp commands/adr.md ~/.claude/commands/adr.md
 
 ## Migrating from 1.x
 
-Version 2.0.0 removed six skills that went through the old x-bees conversations API; `wildix-stream` does the same on the new Stream service, as the logged-in user:
+Version 2.0.0 removed six skills that went through the old x-bees conversations API; `wildix-chat` does the same on the new Stream service, as the logged-in user:
 
 | Removed | Now |
 |---|---|
@@ -130,13 +141,19 @@ The scripts look for `wildix-auth` next to their own skill, so it does not matte
 
 ## Maintaining
 
-The references of `wildix-stream` are generated from the OpenAPI of the service, one file per section:
+The references of `wildix-chat` are generated from the OpenAPI of the service, one file per section:
 
 ```bash
-node tools/split-stream-openapi.mjs <path to>/stream-client.openapi.json skills/wildix-stream/references
+node tools/split-stream-openapi.mjs <path to>/stream-client.openapi.json skills/wildix-chat/references
 ```
 
-Operations the service does not implement yet are listed in `tools/stream-not-implemented.json`; the generator marks them (`x-not-implemented`) and `openapi.sh ops` shows `[NOT IMPLEMENTED YET]`. When the service gets one ready, remove it from that file, regenerate, and update the tables in `skills/wildix-stream/SKILL.md` (Sections and Known gaps).
+The references of `wildix-conversation-history` are built the same way from the OpenAPI of the two services behind it, WDA History and WDA Insights:
+
+```bash
+node tools/split-wda-openapi.mjs <path to>/wda-history-client.openapi.json <path to>/wda-insights-client.openapi.json
+```
+
+Operations the service does not implement yet are listed in `tools/stream-not-implemented.json`; the generator marks them (`x-not-implemented`) and `openapi.sh ops` shows `[NOT IMPLEMENTED YET]`. When the service gets one ready, remove it from that file, regenerate, and update the tables in `skills/wildix-chat/SKILL.md` (Sections and Known gaps).
 
 ## Requirements
 

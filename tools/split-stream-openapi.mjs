@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 // Splits the OpenAPI document of the Wildix stream service into one file per section (tag), each with
 // only the paths of the section and the schemas those paths reach. The files are the reference of the
-// wildix-stream skill: skills/wildix-stream/references/<section>.openapi.json.
+// wildix-chat skill: skills/wildix-chat/references/<section>.openapi.json.
 //
 // Operations listed in tools/stream-not-implemented.json get `x-not-implemented: true` and a note in their description.
 //
 // Usage: node tools/split-stream-openapi.mjs <stream-client.openapi.json> [outDir]
 //   source: wildix-sdk/sdk-ts/packages/stream-client/etc/stream-client.openapi.json
-//   outDir: skills/wildix-stream/references (default)
+//   outDir: skills/wildix-chat/references (default)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const [src, outDir = 'skills/wildix-stream/references'] = process.argv.slice(2);
+const [src, outDir = 'skills/wildix-chat/references'] = process.argv.slice(2);
 if (!src) { console.error('usage: split-stream-openapi.mjs <openapi.json> [outDir]'); process.exit(1); }
 
 const doc = JSON.parse(fs.readFileSync(src, 'utf8'));

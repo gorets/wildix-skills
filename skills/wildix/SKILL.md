@@ -23,8 +23,9 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 | "log in", "authenticate", token missing/expired | `wildix-auth` |
 | "show today's chats", "summarize messages", "what was discussed" | `wildix-chats-overview` |
 | "conference details", "meeting summary", conferenceId or x-bees URL | `wildix-get-conference` |
+| a call or meeting that is over: transcript, AI summary, decisions, recording, call history, missed calls, find a meeting, as the user | `wildix-conversation-history` |
 | "react with…", "put eyes on that message", "who reacted" | `wildix-react-message` |
-| chats, messages, inbox and unread, search, members, files, mentions, find a colleague, send, edit or delete a message, as the user | `wildix-stream` |
+| chats, messages, inbox and unread, search, members, files, mentions, find a colleague, send, edit or delete a message, as the user | `wildix-chat` |
 
 ## Peer skill procedure
 

@@ -1,0 +1,3813 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WDA conversation history: conversations",
+    "version": "v2"
+  },
+  "servers": [
+    {
+      "url": "https://wda.wildix.com",
+      "description": "Production"
+    },
+    {
+      "url": "https://wda-stable.wildix.com",
+      "description": "Stable"
+    },
+    {
+      "url": "https://wda-stage.wildix.com",
+      "description": "Stage"
+    }
+  ],
+  "security": [
+    {
+      "wildix.auth.xbs": []
+    },
+    {
+      "wildix.auth.s2s": []
+    },
+    {
+      "wildix.auth.pbx": []
+    },
+    {
+      "wildix.auth.apiKeys": []
+    },
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/history/conversations": {
+      "post": {
+        "description": "Retrieves list of conversations using filters.\n\n### Allowed Auth Scopes\n\n- history:QueryConversations\n- history:read",
+        "operationId": "QueryConversations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryConversationsRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "Company id. eg. it_w123123. Required for s2s auth.",
+            "schema": {
+              "type": "string",
+              "description": "Company id. eg. it_w123123. Required for s2s auth."
+            }
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "description": "PBX user id. eg. 123123123. Can be applied only for s2s and pbx authorization.",
+            "schema": {
+              "type": "string",
+              "description": "PBX user id. eg. 123123123. Can be applied only for s2s and pbx authorization."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QueryConversations 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryConversationsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations": {
+      "post": {
+        "description": "Insights API are currently in active development. All interfaces are subject to change.\n\n### Allowed Auth Scopes\n\n- insights:ListConversations\n- insights:read",
+        "operationId": "ListConversations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListConversationsRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListConversations 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListConversationsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations/aggregations": {
+      "post": {
+        "description": "Lists multiple independent insights in parallel.\n\n### Allowed Auth Scopes\n\n- insights:ListConversationsAggregations\n- insights:read",
+        "operationId": "ListConversationsAggregations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListConversationsAggregationsRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListConversationsAggregations 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListConversationsAggregationsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations/aggregations/nested": {
+      "post": {
+        "description": "Lists nested drill-down data showing relationships between dimensions.\n\n### Allowed Auth Scopes\n\n- insights:ListConversationsNestedAggregations\n- insights:read",
+        "operationId": "ListConversationsNestedAggregations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListConversationsNestedAggregationsRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListConversationsNestedAggregations 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListConversationsNestedAggregationsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations/count": {
+      "post": {
+        "description": "Insights API are currently in active development. All interfaces are subject to change.\n\n### Allowed Auth Scopes\n\n- insights:QueryConversationsCount\n- insights:read",
+        "operationId": "QueryConversationsCount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryConversationsCountRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QueryConversationsCount 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryConversationsCountResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations/insights": {
+      "post": {
+        "description": "Lists multiple independent insights in parallel.\n\n### Allowed Auth Scopes\n\n- insights:ListConversationsInsights\n- insights:read",
+        "operationId": "ListConversationsInsights",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListConversationsInsightsRequestContent"
+              }
+            }
+          }
+        },
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListConversationsInsights 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListConversationsInsightsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations/insights/aggregations": {
+      "post": {
+        "description": "Lists nested drill-down data showing relationships between dimensions.\n\n### Allowed Auth Scopes\n\n- insights:ListConversationsInsightsAggregations\n- insights:read",
+        "operationId": "ListConversationsInsightsAggregations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListConversationsInsightsAggregationsRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListConversationsInsightsAggregations 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListConversationsInsightsAggregationsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/insights/conversations/tags": {
+      "get": {
+        "description": "Lists raw tag values matching a case-sensitive prefix for conversations autocomplete.\n\n### Allowed Auth Scopes\n\n- insights:ListConversationsTags\n- insights:read",
+        "operationId": "ListConversationsTags",
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3
+            }
+          },
+          {
+            "name": "tagPrefix",
+            "in": "query",
+            "description": "Case-sensitive tag prefix used to filter autocomplete results.",
+            "schema": {
+              "type": "string",
+              "maxLength": 128,
+              "minLength": 1,
+              "description": "Case-sensitive tag prefix used to filter autocomplete results."
+            },
+            "required": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of matching tags to return. Defaults to 10.",
+            "schema": {
+              "type": "number",
+              "default": 10,
+              "maximum": 20,
+              "minimum": 1,
+              "description": "Maximum number of matching tags to return. Defaults to 10."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListConversationsTags 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListConversationsTagsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AggregationBucket": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The value for this bucket. For example, 'INBOUND' if grouping by direction, or '0-5min' if grouping by duration."
+          },
+          "count": {
+            "type": "number",
+            "description": "Number of conversations falling into this bucket."
+          },
+          "interval": {
+            "$ref": "#/components/schemas/AggregationDateInterval"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          },
+          "aggregation": {
+            "$ref": "#/components/schemas/AggregationResult"
+          }
+        },
+        "required": [
+          "count",
+          "key"
+        ]
+      },
+      "AggregationDateDefinition": {
+        "type": "object",
+        "properties": {
+          "timeZone": {
+            "type": "string"
+          }
+        }
+      },
+      "AggregationDateInterval": {
+        "type": "string",
+        "enum": [
+          "month",
+          "week",
+          "day",
+          "hour",
+          "minute"
+        ]
+      },
+      "AggregationDayOfWeekDefinition": {
+        "type": "object",
+        "properties": {
+          "timeZone": {
+            "type": "string"
+          }
+        }
+      },
+      "AggregationDefinition": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "projection",
+            "properties": {
+              "projection": {
+                "$ref": "#/components/schemas/AggregationProjectionDefinition"
+              }
+            },
+            "required": [
+              "projection"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "direction",
+            "properties": {
+              "direction": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "direction"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "duration",
+            "properties": {
+              "duration": {
+                "$ref": "#/components/schemas/AggregationDurationDefinition"
+              }
+            },
+            "required": [
+              "duration"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "connectTime",
+            "properties": {
+              "connectTime": {
+                "$ref": "#/components/schemas/AggregationDurationDefinition"
+              }
+            },
+            "required": [
+              "connectTime"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "talkTime",
+            "properties": {
+              "talkTime": {
+                "$ref": "#/components/schemas/AggregationDurationDefinition"
+              }
+            },
+            "required": [
+              "talkTime"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "waitTime",
+            "properties": {
+              "waitTime": {
+                "$ref": "#/components/schemas/AggregationDurationDefinition"
+              }
+            },
+            "required": [
+              "waitTime"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "queueTime",
+            "properties": {
+              "queueTime": {
+                "$ref": "#/components/schemas/AggregationDurationDefinition"
+              }
+            },
+            "required": [
+              "queueTime"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "holdTime",
+            "properties": {
+              "holdTime": {
+                "$ref": "#/components/schemas/AggregationDurationDefinition"
+              }
+            },
+            "required": [
+              "holdTime"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "service",
+            "properties": {
+              "service": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "service"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "extension",
+            "properties": {
+              "extension": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "extension"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "chatbot",
+            "properties": {
+              "chatbot": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "chatbot"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "voicebot",
+            "properties": {
+              "voicebot": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "voicebot"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "group",
+            "properties": {
+              "group": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "group"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "department",
+            "properties": {
+              "department": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "department"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "tag",
+            "properties": {
+              "tag": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "tag"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "pbx",
+            "properties": {
+              "pbx": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "pbx"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "trunk",
+            "properties": {
+              "trunk": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "trunk"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "queue",
+            "properties": {
+              "queue": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "queue"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "country",
+            "properties": {
+              "country": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "country"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "location",
+            "properties": {
+              "location": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "location"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "language",
+            "properties": {
+              "language": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "language"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "entity",
+            "properties": {
+              "entity": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "entity"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "channel",
+            "properties": {
+              "channel": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "channel"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "recorded",
+            "properties": {
+              "recorded": {
+                "$ref": "#/components/schemas/AggregationNoConfigurationDefinition"
+              }
+            },
+            "required": [
+              "recorded"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "date",
+            "properties": {
+              "date": {
+                "$ref": "#/components/schemas/AggregationDateDefinition"
+              }
+            },
+            "required": [
+              "date"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "dayOfWeek",
+            "properties": {
+              "dayOfWeek": {
+                "$ref": "#/components/schemas/AggregationDayOfWeekDefinition"
+              }
+            },
+            "required": [
+              "dayOfWeek"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "hourOfDay",
+            "properties": {
+              "hourOfDay": {
+                "$ref": "#/components/schemas/AggregationHourOfDayDefinition"
+              }
+            },
+            "required": [
+              "hourOfDay"
+            ]
+          }
+        ]
+      },
+      "AggregationDurationDefinition": {
+        "type": "object",
+        "properties": {
+          "buckets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DurationGroupBucket"
+            },
+            "description": "A custom list of buckets to use for the duration aggregation. If not provided, default buckets will be used."
+          }
+        }
+      },
+      "AggregationHourOfDayDefinition": {
+        "type": "object",
+        "properties": {
+          "timeZone": {
+            "type": "string"
+          }
+        }
+      },
+      "AggregationNoConfigurationDefinition": {
+        "type": "object"
+      },
+      "AggregationProjectionDefinition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          },
+          "fieldId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          }
+        },
+        "required": [
+          "fieldId",
+          "id"
+        ]
+      },
+      "AggregationResult": {
+        "type": "object",
+        "properties": {
+          "aggregation": {
+            "$ref": "#/components/schemas/AggregationDefinition"
+          },
+          "buckets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AggregationBucket"
+            },
+            "description": "The list of buckets generated for this aggregation level."
+          }
+        },
+        "required": [
+          "aggregation",
+          "buckets"
+        ]
+      },
+      "Annotation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identity of this emission. Annotations are applied once per id: re-sending one already recorded on the conversation is ignored."
+          },
+          "time": {
+            "type": "number"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+            "description": "Identity of the value, when the annotation is one reading of something that changes over the conversation. See AnnotationKey."
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AnnotationPayload"
+          },
+          "source": {
+            "$ref": "#/components/schemas/AnnotationSource"
+          }
+        },
+        "required": [
+          "id",
+          "payload",
+          "source",
+          "time"
+        ]
+      },
+      "AnnotationMetricValue": {
+        "type": "object",
+        "description": "A named value observed during the conversation, and the reading it replaces — a CSAT score, a\n    talk ratio, the outcome of an evaluation. Emitted with an `AnnotationKey`, which is what makes\n    the newest reading addressable in `annotationsByKey` while the series stays in `annotations`.\n\n    Runtime services enforce serialized payload size limits.",
+        "properties": {
+          "value": {
+            "description": "The reading, as its producer models it: a score, a label, a number, or an object such as `{\"customerRatio\": 0.42, \"agentRatio\": 0.58}`."
+          },
+          "previous": {
+            "description": "The reading this one replaces, so a consumer can render the change without loading the history. Absent on the first reading."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Human-readable name of the value, e.g. 'CSAT' or 'Talk ratio'."
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "AnnotationPayload": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "tag",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "maxLength": 50
+              }
+            },
+            "required": [
+              "tag"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "text",
+            "properties": {
+              "text": {
+                "type": "string",
+                "maxLength": 4096
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "variables",
+            "properties": {
+              "variables": {
+                "$ref": "#/components/schemas/AnnotationVariablesValue"
+              }
+            },
+            "required": [
+              "variables"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "result",
+            "properties": {
+              "result": {
+                "$ref": "#/components/schemas/AnnotationResultValue"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "metric",
+            "properties": {
+              "metric": {
+                "$ref": "#/components/schemas/AnnotationMetricValue"
+              }
+            },
+            "required": [
+              "metric"
+            ]
+          }
+        ]
+      },
+      "AnnotationResultValue": {
+        "type": "object",
+        "description": "Tool result captured for an annotation. Runtime services enforce serialized payload size limits.",
+        "properties": {
+          "value": {}
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "AnnotationSource": {
+        "type": "object",
+        "description": "Producer of an annotation. Generic identifiers allow callers to attach context such as tool id/name, user id/name, etc., without constraining the source type to a fixed shape.",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AnnotationSourceType"
+          },
+          "id": {
+            "type": "string",
+            "description": "Stable identifier of the producer (e.g. tool id, user id, copilot session id)."
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the producer (e.g. tool name, user display name)."
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "AnnotationSourceType": {
+        "type": "string",
+        "enum": [
+          "chatbot",
+          "voicebot",
+          "user",
+          "system",
+          "copilot"
+        ]
+      },
+      "AnnotationVariablesValue": {
+        "type": "object",
+        "description": "Capability variable values captured for an annotation. Runtime services enforce serialized payload size limits.",
+        "properties": {
+          "value": {}
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "AnnotationsMap": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Annotation"
+        },
+        "propertyNames": {
+          "type": "string",
+          "maxLength": 100,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "description": "Identity of the *value* an annotation carries, as opposed to `Annotation.id`, which identifies\n    one emission of it. Two annotations sharing a key are two readings of the same thing — a CSAT\n    score that moved, a talk ratio recomputed — so the conversation exposes the newest of them in\n    `annotationsByKey` while every reading stays in `annotations`.\n\n    Namespaced by producer to keep keys collision-free across annotation sources, e.g.\n    `copilot.csat`, `copilot.talk_ratio`, `copilot.evaluation.objection_handled`. An annotation\n    without a key is a one-off record and is not projected."
+        },
+        "maxProperties": 50,
+        "description": "The newest annotation per `AnnotationKey`: the current value of everything the conversation\n    tracks, without reading the history. Keyed annotations only — a one-off annotation appears\n    solely in `annotations`."
+      },
+      "AnnotationsStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "UNAVAILABLE"
+        ]
+      },
+      "CallConversationTarget": {
+        "type": "object",
+        "properties": {
+          "callId": {
+            "type": "string"
+          },
+          "flowIndex": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "callId",
+          "flowIndex"
+        ]
+      },
+      "CallDevice": {
+        "type": "string",
+        "enum": [
+          "COLLABORATION_WEB",
+          "COLLABORATION_IOS",
+          "COLLABORATION_ANDROID",
+          "XBEES_WEB",
+          "XBEES_IOS",
+          "XBEES_ANDROID",
+          "WILDIX_PHONE",
+          "WILDIX_DEVICE",
+          "VOICEBOT",
+          "UNKNOWN",
+          "COLLABORATION7_WEB",
+          "COLLABORATION7_IOS",
+          "COLLABORATION7_ANDROID",
+          "XHOPPERS_WEB",
+          "XHOPPERS_IOS",
+          "XHOPPERS_ANDROID",
+          "TEAMS4WILDIX"
+        ]
+      },
+      "CallDirection": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INBOUND",
+          "OUTBOUND",
+          "UNDEFINED"
+        ]
+      },
+      "CallFlowAttachment": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "recording",
+            "properties": {
+              "recording": {
+                "$ref": "#/components/schemas/CallFlowRecording"
+              }
+            },
+            "required": [
+              "recording"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "fax",
+            "properties": {
+              "fax": {
+                "$ref": "#/components/schemas/CallFlowFax"
+              }
+            },
+            "required": [
+              "fax"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "voicemail",
+            "properties": {
+              "voicemail": {
+                "$ref": "#/components/schemas/CallFlowVoicemail"
+              }
+            },
+            "required": [
+              "voicemail"
+            ]
+          }
+        ]
+      },
+      "CallFlowAttachmentDestination": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "userExtension": {
+            "type": "string"
+          },
+          "userDepartment": {
+            "type": "string"
+          },
+          "groupId": {
+            "type": "string"
+          },
+          "groupName": {
+            "type": "string"
+          }
+        }
+      },
+      "CallFlowAttachmentStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "error"
+        ]
+      },
+      "CallFlowAttachmentType": {
+        "type": "string",
+        "enum": [
+          "VOICEMAIL",
+          "FAX"
+        ]
+      },
+      "CallFlowFax": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CallFlowAttachmentStatus"
+          },
+          "destinations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallFlowAttachmentDestination"
+            }
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CallRecordOwner"
+          },
+          "error": {
+            "type": "string",
+            "description": "Text with the reason for the error in case of unsuccessful fax delivery"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "CallFlowNotifications": {
+        "type": "object",
+        "properties": {
+          "destinations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallFlowAttachmentDestination"
+            }
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CallFlowRecording": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CallRecordOwner"
+          },
+          "url": {
+            "type": "string"
+          },
+          "pauses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallRecordPause"
+            }
+          }
+        },
+        "required": [
+          "end",
+          "fileName",
+          "owner",
+          "pauses",
+          "start",
+          "url"
+        ]
+      },
+      "CallFlowTranscriptionStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "POST_TRANSCRIPTION",
+          "UNAVAILABLE"
+        ]
+      },
+      "CallFlowVoicemail": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "destinations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallFlowAttachmentDestination"
+            }
+          },
+          "owner": {
+            "$ref": "#/components/schemas/CallRecordOwner"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "CallParticipant": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/CallParticipantType"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "email": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "userExtension": {
+            "type": "string"
+          },
+          "userDepartment": {
+            "type": "string"
+          },
+          "groupId": {
+            "type": "string"
+          },
+          "groupName": {
+            "type": "string"
+          },
+          "userAgent": {
+            "type": "string"
+          },
+          "userDevice": {
+            "$ref": "#/components/schemas/CallDevice"
+          },
+          "role": {
+            "$ref": "#/components/schemas/CallParticipantRole"
+          },
+          "license": {
+            "type": "string"
+          },
+          "sipCallId": {
+            "type": "string",
+            "description": "A unique identifier for the SIP call session used to control the call e.g., answer, hold, transfer, hang up."
+          },
+          "publicAddress": {
+            "type": "string",
+            "description": "Represents a network endpoint consisting of a public IP address and a port number. Example: '123.45.67.89:59317'"
+          },
+          "privateAddress": {
+            "type": "string",
+            "description": "Represents a network endpoint consisting of a private IP address and a port number. Example: '172.16.1.2:54003'"
+          },
+          "location": {
+            "type": "string",
+            "description": "The location specifies a geographic point using latitude and longitude coordinates. Example 'lat=29.3008&lon=1.7002'"
+          }
+        },
+        "required": [
+          "role",
+          "type"
+        ]
+      },
+      "CallParticipantRole": {
+        "type": "string",
+        "enum": [
+          "CLIENT",
+          "AGENT"
+        ]
+      },
+      "CallParticipantType": {
+        "type": "string",
+        "enum": [
+          "REMOTE",
+          "LOCAL"
+        ]
+      },
+      "CallRecord": {
+        "type": "object",
+        "properties": {
+          "flowIndex": {
+            "type": "number"
+          },
+          "startTime": {
+            "type": "number"
+          },
+          "endTime": {
+            "type": "number"
+          },
+          "connectTime": {
+            "type": "number",
+            "description": "Duration when the called party's phone rang (Ring Time in UI)"
+          },
+          "talkTime": {
+            "type": "number",
+            "description": "Duration of conversation from the moment the call is answered until it ends, excluding hold time"
+          },
+          "waitTime": {
+            "type": "number",
+            "description": "Duration spent on IVR, dialplan applications, playback, etc. before the call is answered"
+          },
+          "queueTime": {
+            "type": "number",
+            "description": "Duration of call waiting in queue"
+          },
+          "holdTime": {
+            "type": "number",
+            "description": "Duration the call was on hold after being answered"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Total duration = connectTime + waitTime + queueTime + talkTime + holdTime"
+          },
+          "caller": {
+            "$ref": "#/components/schemas/CallParticipant"
+          },
+          "callee": {
+            "$ref": "#/components/schemas/CallParticipant"
+          },
+          "service": {
+            "type": "string"
+          },
+          "serviceNumber": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/CallDirection"
+          },
+          "trunkName": {
+            "type": "string"
+          },
+          "trunkDirection": {
+            "type": "string"
+          },
+          "queueName": {
+            "type": "string"
+          },
+          "queueId": {
+            "type": "string"
+          },
+          "queuePosition": {
+            "type": "number",
+            "description": "Position of the call in the queue (1-based). Updated from consume events and emitted on live progress and record flows."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "callerMos": {
+            "type": "string"
+          },
+          "calleeMos": {
+            "type": "string"
+          },
+          "xhoppersConfId": {
+            "type": "string"
+          },
+          "recordings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "deprecated": true,
+            "description": "Consider to use `attachments` instead.\nThis shape is deprecated."
+          },
+          "recordingsData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallFlowRecording"
+            },
+            "deprecated": true,
+            "description": "Consider to use `attachments` instead.\nThis shape is deprecated."
+          },
+          "mergeWith": {
+            "type": "string"
+          },
+          "splitReason": {
+            "type": "string"
+          },
+          "splitTransferType": {
+            "type": "string"
+          },
+          "remotePhone": {
+            "type": "string"
+          },
+          "remotePhoneCountryCode": {
+            "type": "number"
+          },
+          "remotePhoneCountryCodeStr": {
+            "type": "string"
+          },
+          "remotePhoneLocation": {
+            "type": "string"
+          },
+          "callStatus": {
+            "$ref": "#/components/schemas/ConversationStatus"
+          },
+          "transcriptionStatus": {
+            "$ref": "#/components/schemas/CallFlowTranscriptionStatus"
+          },
+          "transcriptionLanguage": {
+            "type": "string"
+          },
+          "transcriptionSeconds": {
+            "type": "number"
+          },
+          "annotationsStatus": {
+            "$ref": "#/components/schemas/AnnotationsStatus"
+          },
+          "annotationsByKey": {
+            "$ref": "#/components/schemas/AnnotationsMap"
+          },
+          "attachment": {
+            "type": "string",
+            "deprecated": true,
+            "description": "Consider to use `attachments` instead.\nThis shape is deprecated."
+          },
+          "attachmentType": {
+            "$ref": "#/components/schemas/CallFlowAttachmentType",
+            "deprecated": true
+          },
+          "attachmentDestinations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallFlowAttachmentDestination"
+            },
+            "deprecated": true,
+            "description": "Consider to use `attachments` instead.\nThis shape is deprecated."
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallFlowAttachment"
+            }
+          },
+          "notifications": {
+            "$ref": "#/components/schemas/CallFlowNotifications"
+          },
+          "id": {
+            "type": "string"
+          },
+          "pbx": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/License"
+            }
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecordType"
+              },
+              {
+                "default": "call"
+              }
+            ]
+          }
+        },
+        "required": [
+          "company",
+          "duration",
+          "endTime",
+          "flowIndex",
+          "id",
+          "licenses",
+          "pbx",
+          "startTime",
+          "time",
+          "type"
+        ]
+      },
+      "CallRecordOwner": {
+        "type": "string",
+        "enum": [
+          "callee",
+          "caller",
+          "system"
+        ]
+      },
+      "CallRecordPause": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/CallRecordPauseReason"
+          }
+        }
+      },
+      "CallRecordPauseReason": {
+        "type": "string",
+        "enum": [
+          "pause",
+          "hold"
+        ]
+      },
+      "Channel": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string",
+            "description": "Picture URL"
+          },
+          "pictureColor": {
+            "type": "string",
+            "description": "Picture dominant color represented by a hex value."
+          },
+          "access": {
+            "$ref": "#/components/schemas/ChannelAccess"
+          },
+          "company": {
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/ChannelContext"
+          },
+          "kite": {
+            "type": "boolean"
+          },
+          "kiteTarget": {
+            "type": "string"
+          },
+          "kiteVariant": {
+            "type": "string"
+          },
+          "kiteAssign": {
+            "type": "string"
+          },
+          "kiteServiceName": {
+            "type": "string"
+          },
+          "kiteDefaultSubject": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "serviceTitle": {
+            "type": "string"
+          },
+          "serviceRecipient": {
+            "type": "string"
+          },
+          "assignee": {
+            "$ref": "#/components/schemas/User"
+          },
+          "telephony": {
+            "type": "boolean"
+          },
+          "sms": {
+            "type": "boolean"
+          },
+          "mms": {
+            "type": "boolean"
+          },
+          "whatsapp": {
+            "type": "boolean"
+          },
+          "whatsappStatus": {
+            "$ref": "#/components/schemas/ChannelWhatsAppStatus"
+          },
+          "broadcast": {
+            "type": "boolean"
+          },
+          "external": {
+            "type": "boolean"
+          },
+          "autoRecord": {
+            "type": "boolean"
+          },
+          "transcriptionLanguage": {
+            "type": "string"
+          },
+          "wizyGuestViewOnly": {
+            "type": "boolean"
+          },
+          "channelId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "pattern": "^[0-9a-z]{8}\\b-[0-9a-z]{4}\\b-[0-9a-z]{4}\\b-[0-9a-z]{4}\\b-[0-9a-z]{8}$"
+          },
+          "channelType": {
+            "$ref": "#/components/schemas/ChannelType"
+          },
+          "memberCount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "channelId",
+          "channelType",
+          "createdAt",
+          "createdBy",
+          "memberCount"
+        ]
+      },
+      "ChannelAccess": {
+        "type": "string",
+        "enum": [
+          "private",
+          "public"
+        ]
+      },
+      "ChannelContext": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/ChannelContextSource"
+          },
+          "target": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChannelContextEvent"
+            }
+          },
+          "ptt": {
+            "$ref": "#/components/schemas/ChannelContextPushToTalk"
+          }
+        }
+      },
+      "ChannelContextEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "attendees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChannelContextEventAttendee"
+            }
+          }
+        }
+      },
+      "ChannelContextEventAttendee": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ChannelContextEventAttendeeStatus"
+          }
+        },
+        "required": [
+          "email",
+          "status"
+        ]
+      },
+      "ChannelContextEventAttendeeStatus": {
+        "type": "string",
+        "enum": [
+          "accepted",
+          "tentative",
+          "declined",
+          "none"
+        ]
+      },
+      "ChannelContextPushToTalk": {
+        "type": "object",
+        "properties": {
+          "broadcastId": {
+            "type": "string",
+            "description": "A unique identifier of x-hoppers broadcast conference. If present x-hoppers application will use broadcast and push-to-talk functionality for the channel."
+          }
+        }
+      },
+      "ChannelContextSource": {
+        "type": "string",
+        "enum": [
+          "kite"
+        ]
+      },
+      "ChannelType": {
+        "type": "string",
+        "enum": [
+          "direct",
+          "group"
+        ]
+      },
+      "ChannelWhatsAppStatus": {
+        "type": "string",
+        "enum": [
+          "24h_channel_closed"
+        ]
+      },
+      "ChatConversationTarget": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chatId"
+        ]
+      },
+      "ChatDirection": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INBOUND",
+          "OUTBOUND"
+        ]
+      },
+      "ChatParticipant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/ChatParticipantInfo"
+          }
+        },
+        "required": [
+          "id",
+          "info"
+        ]
+      },
+      "ChatParticipantInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "pattern": "^(^[\\w+-]+(\\.[\\w+-]+)*)@(([\\w-]+\\.)+\\w{2,}$)$"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "bot": {
+            "type": "boolean"
+          },
+          "pbxDomain": {
+            "type": "string"
+          },
+          "pbxPort": {
+            "type": "string"
+          },
+          "pbxExtension": {
+            "type": "string"
+          },
+          "pbxSerial": {
+            "type": "string"
+          },
+          "pbxUserId": {
+            "type": "string"
+          },
+          "pbxGroupId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ChatParticipantType"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ChatParticipantRole"
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "type"
+        ]
+      },
+      "ChatParticipantRole": {
+        "type": "string",
+        "enum": [
+          "CLIENT",
+          "AGENT"
+        ]
+      },
+      "ChatParticipantType": {
+        "type": "string",
+        "enum": [
+          "REMOTE",
+          "LOCAL"
+        ]
+      },
+      "ChatRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique chat channel identifier, distinguish each chat channel across different types."
+          },
+          "chatId": {
+            "type": "string",
+            "description": "A unique identifier that distinguishes each chat session within a channel."
+          },
+          "time": {
+            "type": "number"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "pbx": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "number"
+          },
+          "endTime": {
+            "type": "number"
+          },
+          "waitTime": {
+            "type": "number"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/ChatDirection"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "serviceTitle": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatTag"
+            }
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ChatStatus"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatParticipant"
+            }
+          },
+          "annotationsStatus": {
+            "$ref": "#/components/schemas/AnnotationsStatus"
+          },
+          "annotationsByKey": {
+            "$ref": "#/components/schemas/AnnotationsMap"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecordType"
+              },
+              {
+                "default": "chat"
+              }
+            ]
+          }
+        },
+        "required": [
+          "channel",
+          "company",
+          "direction",
+          "duration",
+          "endTime",
+          "participants",
+          "startTime",
+          "time",
+          "type"
+        ]
+      },
+      "ChatStatus": {
+        "type": "string",
+        "enum": [
+          "WAITFIRSTREPLY",
+          "WAITREPLYFROMGUEST",
+          "WAITREPLYFROMAGENT",
+          "COMPLETED",
+          "MISSED"
+        ]
+      },
+      "ChatTag": {
+        "type": "string",
+        "enum": [
+          "sms",
+          "telephony",
+          "whatsapp"
+        ]
+      },
+      "ConferenceAnalyticsRecordParticipant": {
+        "type": "object",
+        "properties": {
+          "jid": {
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/ConferenceParticipant"
+          },
+          "totalDuration": {
+            "type": "number"
+          },
+          "totalSpeakDuration": {
+            "type": "number"
+          },
+          "joinTime": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "info",
+          "jid",
+          "joinTime",
+          "totalDuration",
+          "totalSpeakDuration"
+        ]
+      },
+      "ConferenceConversationTarget": {
+        "type": "object",
+        "properties": {
+          "conferenceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "conferenceId"
+        ]
+      },
+      "ConferenceDirection": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INBOUND",
+          "OUTBOUND"
+        ]
+      },
+      "ConferenceParticipant": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ConferenceParticipantType"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ConferenceParticipantRole"
+          },
+          "jid": {
+            "type": "string",
+            "description": "A unique identifier to avoid duplicates if user re-connect from different devices."
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "pbxSerial": {
+            "type": "string"
+          },
+          "pbxExtension": {
+            "type": "string"
+          },
+          "pbxGroupId": {
+            "type": "string"
+          },
+          "xbsId": {
+            "type": "string"
+          },
+          "license": {
+            "$ref": "#/components/schemas/PbxLicenseType"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "ConferenceParticipantRole": {
+        "type": "string",
+        "enum": [
+          "CLIENT",
+          "AGENT"
+        ]
+      },
+      "ConferenceParticipantType": {
+        "type": "string",
+        "enum": [
+          "EXTERNAL",
+          "EXTERNAL_DIAL_IN",
+          "PBX",
+          "PBX_SIP",
+          "XBS"
+        ]
+      },
+      "ConferenceRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 3
+          },
+          "pbx": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "number"
+          },
+          "endTime": {
+            "type": "number"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "waitTime": {
+            "type": "number"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/ConferenceDirection"
+          },
+          "service": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConversationStatus"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceAnalyticsRecordParticipant"
+            }
+          },
+          "recordings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConferenceRecording"
+            }
+          },
+          "transcriptionStatus": {
+            "$ref": "#/components/schemas/ConferenceTranscriptionStatus"
+          },
+          "transcriptionLanguage": {
+            "type": "string"
+          },
+          "transcriptionSeconds": {
+            "type": "number"
+          },
+          "annotationsStatus": {
+            "$ref": "#/components/schemas/AnnotationsStatus"
+          },
+          "annotationsByKey": {
+            "$ref": "#/components/schemas/AnnotationsMap"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecordType"
+              },
+              {
+                "default": "conference"
+              }
+            ]
+          }
+        },
+        "required": [
+          "company",
+          "direction",
+          "duration",
+          "endTime",
+          "id",
+          "participants",
+          "startTime",
+          "time",
+          "transcriptionStatus",
+          "type"
+        ]
+      },
+      "ConferenceRecording": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "end",
+          "start",
+          "url"
+        ]
+      },
+      "ConferenceTranscriptionStatus": {
+        "type": "string",
+        "enum": [
+          "AVAILABLE",
+          "POST_TRANSCRIPTION",
+          "UNAVAILABLE"
+        ]
+      },
+      "Conversation": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "call",
+            "properties": {
+              "call": {
+                "$ref": "#/components/schemas/CallRecord"
+              }
+            },
+            "required": [
+              "call"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "conference",
+            "properties": {
+              "conference": {
+                "$ref": "#/components/schemas/ConferenceRecord"
+              }
+            },
+            "required": [
+              "conference"
+            ]
+          }
+        ]
+      },
+      "ConversationDirection": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INBOUND",
+          "OUTBOUND"
+        ]
+      },
+      "ConversationFlag": {
+        "type": "string",
+        "enum": [
+          "FAX",
+          "VOICEMAIL"
+        ]
+      },
+      "ConversationStatus": {
+        "type": "string",
+        "enum": [
+          "COMPLETED",
+          "MISSED"
+        ]
+      },
+      "ConversationTarget": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "call",
+            "properties": {
+              "call": {
+                "$ref": "#/components/schemas/CallConversationTarget"
+              }
+            },
+            "required": [
+              "call"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "conference",
+            "properties": {
+              "conference": {
+                "$ref": "#/components/schemas/ConferenceConversationTarget"
+              }
+            },
+            "required": [
+              "conference"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "chat",
+            "properties": {
+              "chat": {
+                "$ref": "#/components/schemas/ChatConversationTarget"
+              }
+            },
+            "required": [
+              "chat"
+            ]
+          }
+        ]
+      },
+      "DurationGroupBucket": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The human-readable label for this duration bucket (e.g., '0-5 minutes')."
+          },
+          "from": {
+            "type": "number",
+            "description": "The lower bound for this duration bucket (greater than or equal to)."
+          },
+          "to": {
+            "type": "number",
+            "description": "The upper bound for this duration bucket (exclusive)."
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "FlatAggregationBucket": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The value for this bucket. For example, 'INBOUND' if grouping by direction, or '0-5min' if grouping by duration."
+          },
+          "count": {
+            "type": "number",
+            "description": "Number of conversations falling into this bucket."
+          },
+          "interval": {
+            "$ref": "#/components/schemas/AggregationDateInterval"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        },
+        "required": [
+          "count",
+          "key"
+        ]
+      },
+      "FlatAggregationResult": {
+        "type": "object",
+        "properties": {
+          "aggregation": {
+            "$ref": "#/components/schemas/AggregationDefinition"
+          },
+          "buckets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlatAggregationBucket"
+            },
+            "description": "The list of buckets generated for this insight."
+          }
+        },
+        "required": [
+          "aggregation",
+          "buckets"
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "InsightResult": {
+        "type": "object",
+        "deprecated": true,
+        "description": "This shape is deprecated.",
+        "properties": {
+          "insight": {
+            "$ref": "#/components/schemas/AggregationDefinition"
+          },
+          "buckets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InsightsBucket"
+            },
+            "deprecated": true,
+            "description": "The list of buckets generated for this insight."
+          }
+        },
+        "required": [
+          "buckets",
+          "insight"
+        ]
+      },
+      "InsightsBucket": {
+        "type": "object",
+        "deprecated": true,
+        "description": "This shape is deprecated.",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The value for this bucket. For example, 'INBOUND' if grouping by direction, or '0-5min' if grouping by duration."
+          },
+          "count": {
+            "type": "number",
+            "description": "Number of conversations falling into this bucket."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        },
+        "required": [
+          "count",
+          "key"
+        ]
+      },
+      "InsightsStatus": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "UNAVAILABLE",
+          "SCHEDULED",
+          "STARTED",
+          "SUCCEEDED",
+          "FAILED"
+        ]
+      },
+      "License": {
+        "type": "string",
+        "enum": [
+          "x-bees",
+          "uc"
+        ]
+      },
+      "ListConversationsAggregationsRequestContent": {
+        "type": "object",
+        "properties": {
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AggregationDefinition"
+            },
+            "description": "A list of insights to select. Default - all projections, direction, duration, connectTime, talkTime, waitTime, queueTime, and holdTime."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        }
+      },
+      "ListConversationsAggregationsResponseContent": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of conversations matching the filter (before breakdown into buckets)."
+          },
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlatAggregationResult"
+            },
+            "description": "Top-level distribution buckets as per the first grouping. Each bucket can contain nested child buckets for subsequent groupings."
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "ListConversationsFilter": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationTarget"
+            }
+          },
+          "entity": {
+            "$ref": "#/components/schemas/ListConversationsFilterEntity"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsFilterParticipant"
+            }
+          },
+          "participantsToInclude": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsFilterParticipant"
+            }
+          },
+          "participantsToExclude": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsFilterParticipant"
+            }
+          },
+          "chatbots": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "voicebots": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "service": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "group": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "department": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tag": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pbx": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "trunk": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "queue": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "country": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "language": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "duration": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "connectTime": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "talkTime": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "waitTime": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "queueTime": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "holdTime": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/ListConversationsFilterInteraction"
+          },
+          "recorded": {
+            "type": "boolean"
+          },
+          "transcribed": {
+            "type": "boolean"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/ListConversationsFilterDirection"
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsFilterInsight"
+            }
+          },
+          "channel": {
+            "$ref": "#/components/schemas/ListConversationsFilterChannel"
+          },
+          "date": {
+            "$ref": "#/components/schemas/ListConversationsFilterDate"
+          },
+          "dayOfWeek": {
+            "$ref": "#/components/schemas/ListConversationsFilterDateIndex"
+          },
+          "hourOfDay": {
+            "$ref": "#/components/schemas/ListConversationsFilterDateIndex"
+          },
+          "present": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsFilterField"
+            }
+          },
+          "absent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsFilterField"
+            }
+          }
+        }
+      },
+      "ListConversationsFilterAbsoluteDate": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        }
+      },
+      "ListConversationsFilterChannel": {
+        "type": "object",
+        "properties": {
+          "sms": {
+            "type": "boolean"
+          },
+          "whatsapp": {
+            "type": "boolean"
+          },
+          "kite": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ListConversationsFilterDate": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "absolute",
+            "properties": {
+              "absolute": {
+                "$ref": "#/components/schemas/ListConversationsFilterAbsoluteDate"
+              }
+            },
+            "required": [
+              "absolute"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "predefined",
+            "properties": {
+              "predefined": {
+                "$ref": "#/components/schemas/ListConversationsFilterPredefinedDate"
+              }
+            },
+            "required": [
+              "predefined"
+            ]
+          }
+        ]
+      },
+      "ListConversationsFilterDateIndex": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        }
+      },
+      "ListConversationsFilterDirection": {
+        "type": "object",
+        "properties": {
+          "inbound": {
+            "type": "boolean"
+          },
+          "outbound": {
+            "type": "boolean"
+          },
+          "internal": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ListConversationsFilterEntity": {
+        "type": "object",
+        "properties": {
+          "call": {
+            "type": "boolean"
+          },
+          "conference": {
+            "type": "boolean"
+          },
+          "chat": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ListConversationsFilterField": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "direction",
+            "properties": {
+              "direction": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "direction"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "service",
+            "properties": {
+              "service": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "service"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "group",
+            "properties": {
+              "group": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "group"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "department",
+            "properties": {
+              "department": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "department"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "chatbot",
+            "properties": {
+              "chatbot": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "chatbot"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "voicebot",
+            "properties": {
+              "voicebot": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "voicebot"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "tag",
+            "properties": {
+              "tag": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "tag"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "pbx",
+            "properties": {
+              "pbx": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "pbx"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "trunk",
+            "properties": {
+              "trunk": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "trunk"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "queue",
+            "properties": {
+              "queue": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "queue"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "country",
+            "properties": {
+              "country": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "country"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "location",
+            "properties": {
+              "location": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "location"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "language",
+            "properties": {
+              "language": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "language"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "projection",
+            "properties": {
+              "projection": {
+                "$ref": "#/components/schemas/ListConversationsFilterProjectionField"
+              }
+            },
+            "required": [
+              "projection"
+            ]
+          }
+        ]
+      },
+      "ListConversationsFilterFloat": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number",
+            "format": "float"
+          },
+          "to": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ListConversationsFilterInsight": {
+        "type": "object",
+        "properties": {
+          "projectionId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          },
+          "fieldId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          },
+          "match": {
+            "type": "string"
+          },
+          "matchAny": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "fieldId",
+          "projectionId"
+        ]
+      },
+      "ListConversationsFilterInteraction": {
+        "type": "object",
+        "properties": {
+          "talkRatio": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "wordsPerMinute": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "interruptions": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "patience": {
+            "$ref": "#/components/schemas/ListConversationsFilterFloat"
+          },
+          "longestMonologue": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          },
+          "longestCustomerStory": {
+            "$ref": "#/components/schemas/ListConversationsFilterNumber"
+          }
+        }
+      },
+      "ListConversationsFilterNumber": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number"
+          },
+          "to": {
+            "type": "number"
+          }
+        }
+      },
+      "ListConversationsFilterParticipant": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "email",
+            "properties": {
+              "email": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "email"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "phone",
+            "properties": {
+              "phone": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "phone"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "extension",
+            "properties": {
+              "extension": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "extension"
+            ]
+          }
+        ]
+      },
+      "ListConversationsFilterPredefinedDate": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ListConversationsFilterPredefinedDateType"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "ListConversationsFilterPredefinedDateType": {
+        "type": "string",
+        "enum": [
+          "THIS_QUARTER",
+          "THIS_MONTH",
+          "THIS_WEEK",
+          "TODAY",
+          "YESTERDAY",
+          "PREVIOUS_WEEK",
+          "PREVIOUS_MONTH",
+          "LAST_30_DAYS"
+        ]
+      },
+      "ListConversationsFilterProjectionField": {
+        "type": "object",
+        "properties": {
+          "projectionId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          },
+          "fieldId": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_]+$"
+          }
+        },
+        "required": [
+          "fieldId",
+          "projectionId"
+        ]
+      },
+      "ListConversationsInsightsAggregationsRequestContent": {
+        "type": "object",
+        "properties": {
+          "aggregations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AggregationDefinition"
+            },
+            "maxItems": 4,
+            "minItems": 1
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        },
+        "required": [
+          "aggregations"
+        ]
+      },
+      "ListConversationsInsightsAggregationsResponseContent": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of conversations matching the filter (before breakdown into buckets)."
+          },
+          "result": {
+            "$ref": "#/components/schemas/AggregationResult"
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "ListConversationsInsightsRequestContent": {
+        "type": "object",
+        "properties": {
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AggregationDefinition"
+            },
+            "description": "A list of insights to select. Default - all projections, direction, duration, connectTime, talkTime, waitTime, queueTime, and holdTime."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        }
+      },
+      "ListConversationsInsightsResponseContent": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of conversations matching the filter (before breakdown into buckets)."
+          },
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InsightResult"
+            },
+            "deprecated": true,
+            "description": "Top-level distribution buckets as per the first grouping. Each bucket can contain nested child buckets for subsequent groupings."
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "ListConversationsItem": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/ListConversationsItemEvent"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/ListConversationsItemInteraction"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ListConversationsItemSummary"
+          },
+          "highlight": {
+            "$ref": "#/components/schemas/ListConversationsItemHighlight"
+          }
+        },
+        "required": [
+          "event"
+        ]
+      },
+      "ListConversationsItemEvent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "call",
+            "properties": {
+              "call": {
+                "$ref": "#/components/schemas/CallRecord"
+              }
+            },
+            "required": [
+              "call"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "conference",
+            "properties": {
+              "conference": {
+                "$ref": "#/components/schemas/ConferenceRecord"
+              }
+            },
+            "required": [
+              "conference"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "chat",
+            "properties": {
+              "chat": {
+                "$ref": "#/components/schemas/ChatRecord"
+              }
+            },
+            "required": [
+              "chat"
+            ]
+          }
+        ]
+      },
+      "ListConversationsItemHighlight": {
+        "type": "object",
+        "properties": {
+          "transcription": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsItemHighlightTranscriptionItem"
+            }
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ListConversationsItemHighlightSummary"
+          },
+          "subject": {
+            "type": "string"
+          }
+        }
+      },
+      "ListConversationsItemHighlightSummary": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "brief": {
+            "type": "string"
+          }
+        }
+      },
+      "ListConversationsItemHighlightTranscriptionItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "start": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "text",
+          "user"
+        ]
+      },
+      "ListConversationsItemInsight": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "value"
+        ]
+      },
+      "ListConversationsItemInteraction": {
+        "type": "object",
+        "properties": {
+          "talkRatio": {
+            "type": "number",
+            "description": "Percentage of the call duration during which the agent was speaking."
+          },
+          "wordsPerMinute": {
+            "type": "number",
+            "description": "Average words per minute spoken by the agent during their speaking time."
+          },
+          "interruptions": {
+            "type": "number",
+            "description": "Number of times the agent interrupted another participant during the conversation."
+          },
+          "patience": {
+            "type": "number",
+            "description": "Average time in seconds the agent waited after another participant finished speaking before responding.",
+            "format": "float"
+          },
+          "longestMonologue": {
+            "type": "number",
+            "description": "Duration in seconds of the agent's longest uninterrupted monologue."
+          },
+          "longestCustomerStory": {
+            "type": "number",
+            "description": "Duration in seconds of another participant’s longest uninterrupted story or response."
+          }
+        }
+      },
+      "ListConversationsItemSummary": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InsightsStatus"
+          },
+          "title": {
+            "type": "string"
+          },
+          "brief": {
+            "type": "string"
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsItemInsight"
+            }
+          },
+          "language": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ListConversationsNestedAggregationsRequestContent": {
+        "type": "object",
+        "properties": {
+          "aggregations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AggregationDefinition"
+            },
+            "maxItems": 4,
+            "minItems": 1
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        },
+        "required": [
+          "aggregations"
+        ]
+      },
+      "ListConversationsNestedAggregationsResponseContent": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of conversations matching the filter (before breakdown into buckets)."
+          },
+          "result": {
+            "$ref": "#/components/schemas/AggregationResult"
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "ListConversationsRequestContent": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          },
+          "exclusiveStartKey": {
+            "type": "string",
+            "description": "A temporary parameter which would be removed in next updates."
+          }
+        }
+      },
+      "ListConversationsResponseContent": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListConversationsItem"
+            }
+          },
+          "lastEvaluatedKey": {
+            "type": "string",
+            "description": "A temporary parameter which would be removed in next updates."
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "ListConversationsTagsResponseContent": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "tags"
+        ]
+      },
+      "PbxLicenseType": {
+        "type": "string",
+        "enum": [
+          "basic",
+          "essential",
+          "business",
+          "premium",
+          "wizyconf"
+        ]
+      },
+      "QueryConversationsCountRequestContent": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ListConversationsFilter"
+          }
+        }
+      },
+      "QueryConversationsCountResponseContent": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of conversations matching the filter."
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "QueryConversationsFilter": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "$ref": "#/components/schemas/ConversationDirection"
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationFlag"
+            }
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConversationStatus"
+          },
+          "from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "to": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 512,
+              "minLength": 1
+            }
+          },
+          "search": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "hasAttachment": {
+            "type": "boolean"
+          }
+        }
+      },
+      "QueryConversationsRequestContent": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "default": 50,
+            "maximum": 100,
+            "minimum": 1,
+            "description": "The maximum number of rows to return."
+          },
+          "offset": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0,
+            "description": "The offset from which to start."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/QueryConversationsFilter"
+          }
+        }
+      },
+      "QueryConversationsResponseContent": {
+        "type": "object",
+        "properties": {
+          "conversations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conversation"
+            }
+          }
+        },
+        "required": [
+          "conversations"
+        ]
+      },
+      "RecordType": {
+        "type": "string",
+        "enum": [
+          "call",
+          "call_transcription",
+          "call_annotations",
+          "conference",
+          "conference_transcription",
+          "conference_annotations",
+          "chat",
+          "chat_transcription",
+          "chat_annotations"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 12
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "pattern": "^(^[\\w+-]+(\\.[\\w+-]+)*)@(([\\w-]+\\.)+\\w{2,}$)$"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "bot": {
+            "type": "boolean"
+          },
+          "pbxDomain": {
+            "type": "string"
+          },
+          "pbxPort": {
+            "type": "string"
+          },
+          "pbxExtension": {
+            "type": "string"
+          },
+          "pbxSerial": {
+            "type": "string"
+          },
+          "pbxUserId": {
+            "type": "string"
+          },
+          "pbxGroupId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.apiKeys": {
+        "type": "http",
+        "description": "Wildix API Keys authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.pbx": {
+        "type": "http",
+        "description": "Wildix PBX CPA authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.s2s": {
+        "type": "http",
+        "description": "Wildix s2s authentication",
+        "scheme": "Bearer"
+      },
+      "wildix.auth.xbs": {
+        "type": "http",
+        "description": "Wildix x-bees user authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}
