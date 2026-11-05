@@ -14,7 +14,7 @@ Fetches and summarizes x-bees messages for a given period (single day or date ra
 
 ## Peer Skills
 
-Needs the `wildix-auth` skill, and `wildix-get-conference` for the conference details. If one is not among the skills you can use, or a script stops with exit code 2 saying `wildix-auth` is not installed, do not install it yourself: ask the user to run `npx skills add gorets/wildix-skills --s <name>`.
+Needs the `wildix-auth` skill, and `wildix-calls-history` for the conference details. If one is not among the skills you can use, or a script stops with exit code 2 saying `wildix-auth` is not installed, do not install it yourself: ask the user to run `npx skills add gorets/wildix-skills --s <name>`.
 
 See [`peers.yaml`](peers.yaml) for full peer manifest.
 
@@ -26,7 +26,7 @@ The script authenticates itself through the `wildix-auth` skill: you never get, 
 
 1. **Determine the date range** from the user's request
 2. **Run the script** — fetches all channels, filters messages client-side
-3. **Fetch conference details** — if `conferenceIds` is non-empty, invoke `wildix-get-conference` skill
+3. **Fetch conference details** — if `conferenceIds` is non-empty, invoke `wildix-calls-history` skill (`conferences.sh brief <id>...`)
 4. **Display results** and provide a summary/analysis
 
 ## Steps
@@ -63,7 +63,7 @@ The script:
 
 ### 3. Fetch conference details
 
-If the script output contains `conferenceIds` (non-empty array), invoke the `wildix-get-conference` skill passing all IDs at once. Keep only conferences where the current user (`user_id`) appears in `participants[].info.xbsId`.
+If the script output contains `conferenceIds` (non-empty array), invoke the `wildix-calls-history` skill (`conferences.sh brief <id1> <id2> …`, all IDs at once). Keep only conferences where the current user (`user_id`) appears in `participants[].xbsId`.
 
 ### 4. Display results
 

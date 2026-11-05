@@ -6,7 +6,8 @@
 usage() { cat >&2 <<'U'
 Usage: conferences.sh <command> <conference> [args]
   get <conf>                      the record: subject, times, participants, recordings, transcription status
-  brief <conf>                    one readable object: record + participants + summary + insights
+  brief <conf>...                 one readable object per conference: record + participants + summary + insights;
+                                  with several conferences: an array, oldest first (one that fails is skipped with a warning)
   transcript <conf> [--out FILE] [--json] [--structured]
                                   the dialogue as text with a header (exit 3 when there is none);
                                   --json: the text and its chunks as the service gives them;
@@ -22,6 +23,31 @@ A conference is an id or a link https://app.x-bees.com/insights/conferences/<id>
 U
   exit 1; }
 
+# brief_one ID: the readable card of one conference. Call it as  card=$(brief_one ID) || ...  and mind that
+# bash ignores `set -e` inside a condition: every call that can fail is checked by hand.
+brief_one() {
+  id="$1"
+  conf=$(wda_call GET "/history/conferences/$id") || return 1
+  ins=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/insights" 2>/dev/null) || ins='{}'
+  sum=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/summary" 2>/dev/null) || sum='{}'
+  jq -c --argjson ins "$(jq -c "$compact_insights" <<<"$ins" 2>/dev/null || echo '{}')" --argjson sum "$sum" --arg id "$id" '.conference as $c | {
+      id: $id,
+      subject: $c.subject,
+      start: (($c.startTime // 0) / 1000 | todate),
+      durationMin: ((($c.duration // 0) / 60000) | round),
+      status: $c.status,
+      direction: $c.direction,
+      participants: ([($c.participants // [])[] | (.info // {}) as $i | {name: ($i.name // $i.email), email: $i.email, xbsId: $i.xbsId, speakMin: (((.totalSpeakDuration // 0) / 60000) | round)}] | unique_by(.name)),
+      transcriptionStatus: $c.transcriptionStatus,
+      transcriptionLanguage: $c.transcriptionLanguage,
+      hasRecording: (($c.recordings // []) | length > 0),
+      summary: (if ($sum.status // "") == "SUCCEEDED" then {title: $sum.summary.title, brief: $sum.summary.brief,
+          topics: ($sum.summary.json.topics // []), review: ($sum.summary.json.review // []), decisions: ($sum.summary.json.decisions // []), progress: ($sum.summary.json.progress // []),
+          issues: ($sum.summary.json.issues // []), actionItems: ($sum.summary.json.actionItems // []), nextSteps: ($sum.summary.json.nextSteps // [])} else {status: ($sum.status // "UNKNOWN")} end),
+      insights: $ins
+    }' <<<"$conf"
+}
+
 cmd="${1:-}"; [[ -n "$cmd" ]] || usage; shift
 
 # the insights that succeeded, as {projectionId: {fieldId: value}}
@@ -32,27 +58,19 @@ case "$cmd" in
     [[ $# -eq 1 ]] || usage
     wda_call GET "/history/conferences/$(norm_conference "$1")" ;;
   brief)
-    [[ $# -eq 1 ]] || usage
-    id=$(norm_conference "$1")
-    conf=$(wda_call GET "/history/conferences/$id")
-    ins=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/insights" 2>/dev/null) || ins='{}'
-    sum=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/summary" 2>/dev/null) || sum='{}'
-    jq -c --argjson ins "$(jq -c "$compact_insights" <<<"$ins" 2>/dev/null || echo '{}')" --argjson sum "$sum" --arg id "$id" '.conference as $c | {
-        id: $id,
-        subject: $c.subject,
-        start: (($c.startTime // 0) / 1000 | todate),
-        durationMin: ((($c.duration // 0) / 60000) | round),
-        status: $c.status,
-        direction: $c.direction,
-        participants: ([($c.participants // [])[] | (.info // {}) as $i | {name: ($i.name // $i.email), email: $i.email, xbsId: $i.xbsId, speakMin: (((.totalSpeakDuration // 0) / 60000) | round)}] | unique_by(.name)),
-        transcriptionStatus: $c.transcriptionStatus,
-        transcriptionLanguage: $c.transcriptionLanguage,
-        hasRecording: (($c.recordings // []) | length > 0),
-        summary: (if ($sum.status // "") == "SUCCEEDED" then {title: $sum.summary.title, brief: $sum.summary.brief,
-            topics: ($sum.summary.json.topics // []), decisions: ($sum.summary.json.decisions // []), progress: ($sum.summary.json.progress // []),
-            issues: ($sum.summary.json.issues // []), actionItems: ($sum.summary.json.actionItems // []), nextSteps: ($sum.summary.json.nextSteps // [])} else {status: ($sum.status // "UNKNOWN")} end),
-        insights: $ins
-      }' <<<"$conf" ;;
+    [[ $# -ge 1 ]] || usage
+    if [[ $# -eq 1 ]]; then
+      brief_one "$(norm_conference "$1")"
+    else
+      cards=()
+      for c in "$@"; do
+        id=$(norm_conference "$c")
+        card=$(brief_one "$id") || card=""
+        if [[ -n "$card" ]]; then cards+=("$card"); else echo "Warning: skipped $id (see the error above)" >&2; fi
+      done
+      [[ ${#cards[@]} -gt 0 ]] || exit 1
+      printf '%s\n' "${cards[@]}" | jq -cs 'sort_by(.start)'
+    fi ;;
   transcript)
     [[ $# -ge 1 ]] || usage
     id=$(norm_conference "$1"); shift

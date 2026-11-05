@@ -4,7 +4,7 @@ peers:
     install_policy: ask
     purpose: Authenticate with Wildix x-bees via AWS Cognito and obtain tokens for API calls.
 
-  - name: wildix-get-conference
-    install: npx skills add gorets/wildix-skills --s wildix-get-conference
+  - name: wildix-calls-history
+    install: npx skills add gorets/wildix-skills --s wildix-calls-history
     install_policy: ask
-    purpose: Fetch conference details, participants, transcription, and AI insights from wda.wildix.com.
+    purpose: Details of the conferences found in the messages: participants, AI summary and insights.

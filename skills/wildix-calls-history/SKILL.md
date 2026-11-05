@@ -79,7 +79,8 @@ A conference is an id or a link.
 
 ```bash
 conferences.sh get <conf>                        # the record
-conferences.sh brief <conf>                      # record + participants + summary + insights, one readable object
+conferences.sh brief <conf>...                 # record + participants + summary + insights, one readable object each;
+                                                 # several conferences: an array, oldest first
 conferences.sh transcript <conf> [--out FILE]    # the dialogue with a header; exit 3 when there is none
 conferences.sh transcript <conf> --json          # the text and its chunks (id, name, offset, text, time)
 conferences.sh transcript <conf> --structured    # the transcription record with the interaction data
@@ -128,6 +129,10 @@ conversations.sh tags <prefix> [--limit 1-20]
 - `find` is the search over calls, conferences and chats with the AI summary of each, 10 per page; the answer carries `nextCursor`, pass it as `--cursor` for the next page. `--brief` gives `type`, `id`, `flowIndex`, `start`, `durationSec`, `title`, `direction`, `status`, `participants` (of a conference) and the `summary`.
 - By default `find` and `count` look only at conversations the user took part in. `--email`, `--phone` and `--extension` name other participants (all of them must have taken part); `--everyone` drops the restriction.
 - Dates: `--when` takes a ready period; `--from`/`--to` take ISO times, with `--tz` for the time zone they are meant in.
+
+### What `brief` gives
+
+One object per conference: `id`, `subject`, `start` (UTC, ISO), `durationMin`, `status`, `direction`, `participants` (`name`, `email`, `xbsId`, `speakMin`; a person who joined twice appears once), `transcriptionStatus`, `transcriptionLanguage`, `hasRecording`, `summary` (`title`, `brief`, `topics`, `review`, `decisions`, `progress`, `issues`, `actionItems`, `nextSteps`; or just `{status}` when the summary is not there) and `insights` (`{projectionId: {fieldId: value}}`). It is the right call for a card of a meeting, for a list of meetings of a day, and for saving a meeting to notes.
 
 ## Reading the references
 

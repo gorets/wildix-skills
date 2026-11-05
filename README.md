@@ -20,7 +20,6 @@ Or install individual skills:
 ```bash
 npx skills add gorets/wildix-skills --s wildix-auth -y
 npx skills add gorets/wildix-skills --s wildix-chats-overview -y
-npx skills add gorets/wildix-skills --s wildix-get-conference -y
 npx skills add gorets/wildix-skills --s wildix-react-message -y
 npx skills add gorets/wildix-skills --s wildix-chats -y
 npx skills add gorets/wildix-skills --s wildix-calls-history -y
@@ -43,17 +42,7 @@ Fetches and summarizes x-bees messages for a given period: today, yesterday, a s
 
 **Triggers:** "show me today's chats", "summarize x-bees for this week", "what was discussed yesterday"
 
-**Depends on:** `wildix-auth`, `wildix-get-conference`
-
----
-
-### `wildix-get-conference`
-
-Fetches conference details (participants, duration, transcription, AI insights) from `wda.wildix.com`.
-
-**Triggers:** "get conference details", "show me the meeting summary", passing a conference ID or URL
-
-**Depends on:** `wildix-auth`
+**Depends on:** `wildix-auth`, `wildix-calls-history`
 
 ---
 
@@ -120,7 +109,7 @@ cp commands/adr.md ~/.claude/commands/adr.md
 
 ## Migrating from 1.x
 
-Version 2.0.0 removed six skills that went through the old x-bees conversations API; `wildix-chats` does the same on the new Stream service, as the logged-in user:
+Version 2.0.0 removed the skills that went through the old x-bees conversations API and the old conference reader; `wildix-chats` does the same on the new Stream service, as the logged-in user:
 
 | Removed | Now |
 |---|---|
@@ -130,6 +119,7 @@ Version 2.0.0 removed six skills that went through the old x-bees conversations 
 | `wildix-get-unread-messages` | `inbox.sh get`, `messages.sh list <channel> --unread` |
 | `wildix-send-message` | `messages.sh send` (`--markdown`, `--reply-to`, `--file`) |
 | `wildix-update-message` | `messages.sh edit`, `messages.sh delete` |
+| `wildix-get-conference` | `wildix-calls-history`: `conferences.sh brief <id>...` (several at once), `conferences.sh transcript` |
 
 Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-react-message` and `wildix-chats-overview` stay for now: the new service does not tell who reacted, and there is no overview by date yet.
 
