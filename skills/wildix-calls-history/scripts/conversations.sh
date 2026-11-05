@@ -8,15 +8,15 @@ usage() { cat >&2 <<'U'
 Usage: conversations.sh <command> [options]
   calls [--direction INTERNAL|INBOUND|OUTBOUND] [--status COMPLETED|MISSED] [--flag FAX|VOICEMAIL]...
         [--from ISO] [--to ISO] [--search TEXT] [--tag TAG]... [--has-attachment]
-        [--user-direction INCOMING|OUTGOING] [--limit N] [--offset N] [--brief]
-                                   the user's own call history, newest first
+        [--user-direction INCOMING|OUTGOING] [--limit 1-100] [--offset N] [--brief]
+                                   the user's own call history, newest first, 50 per page by default
   find   [--entity call|conference|chat]... [--email E]... [--phone P]... [--extension X]... [--everyone]
          [--transcribed] [--recorded] [--direction inbound|outbound|internal]
          [--from ISO --to ISO [--tz ZONE]] [--when TODAY|YESTERDAY|THIS_WEEK|PREVIOUS_WEEK|THIS_MONTH|PREVIOUS_MONTH|THIS_QUARTER|LAST_30_DAYS]
          [--tag T]... [--language L]... [--cursor KEY] [--brief]
                                    the search over conversations with the summary of each (10 per page)
   count  (the same filters as find)
-  tags <prefix> [--limit N]        tags that start with the prefix
+  tags <prefix> [--limit 1-20]     tags that start with the prefix
 find and count look only at conversations the logged-in user took part in, unless --everyone is given
 (the service still decides what the login may see).
 U
@@ -78,6 +78,8 @@ case "$cmd" in
       --from) from="$2"; shift 2 ;; --to) to="$2"; shift 2 ;; --search) search="$2"; shift 2 ;; --tag) tags+=("$2"); shift 2 ;;
       --has-attachment) att=1; shift ;; --user-direction) udir="$2"; shift 2 ;;
       --limit) limit="$2"; shift 2 ;; --offset) offset="$2"; shift 2 ;; --brief) brief=1; shift ;; *) usage ;; esac; done
+    [[ -z "$limit" ]] || check_int --limit "$limit" 1 100
+    [[ -z "$offset" ]] || check_int --offset "$offset" 0 1000000
     f='{}'
     [[ -z "$direction" ]] || jset f direction "$direction"
     [[ -z "$status" ]] || jset f status "$status"
@@ -123,6 +125,7 @@ case "$cmd" in
     [[ $# -ge 1 ]] || usage
     prefix="$1"; shift; limit=""
     while [[ $# -gt 0 ]]; do case "$1" in --limit) limit="$2"; shift 2 ;; *) usage ;; esac; done
+    [[ -z "$limit" ]] || check_int --limit "$limit" 1 20
     wda_call GET "/insights/conversations/tags$(qs tagPrefix "$prefix" limit "$limit")" ;;
   *) usage ;;
 esac

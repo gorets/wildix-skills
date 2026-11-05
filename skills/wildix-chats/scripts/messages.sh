@@ -36,6 +36,8 @@ case "$cmd" in
     from=""; to=""; anchor=""
     while [[ $# -gt 0 ]]; do case "$1" in
       --from) from="$2"; shift 2 ;; --to) to="$2"; shift 2 ;; --unread) anchor="firstUnread"; shift ;; *) usage ;; esac; done
+    [[ -z "$from" ]] || check_int --from "$from" 0 999999999999
+    [[ -z "$to" ]] || check_int --to "$to" 0 999999999999
     stream_call GET "/channels/$ch/messages$(qs from "$from" to "$to" anchor "$anchor")" ;;
   get)
     [[ $# -eq 2 ]] || usage

@@ -1,6 +1,6 @@
 ---
 name: wildix-chats
-description: Use when asked to work with chats on the new Wildix Stream service (stream.wildix.com), the replacement of the x-bees conversations API. It acts as the logged-in user, never as a bot: list or read channels and messages, send, edit or delete a message, react, pin, search messages or channels, check the inbox and unread, mentions, channel members, files and attachments. Also to find a colleague in the directory by name (any script, typos, a name as it sounds), e-mail or phone and get their user id, e-mail or extension, and to write to a person by name. Triggers on requests like "show my chats", "read the messages in this chat", "send a message to the channel", "write to Vladimir", "react with a check mark", "search the chats for X", "what did I miss", "who is in this channel", "find Gorobets", "what is Marina's extension", "download the file from that message".
+description: Use when asked to work with chats on the new Wildix Stream service (stream.wildix.com), the replacement of the x-bees conversations API. It acts as the logged-in user, never as a bot: list or read channels and messages, send, edit or delete a message, react, pin, search messages or channels, check the inbox and unread, mentions, channel members, files and attachments. Also to find a colleague in the corporate directory by name (any script, typos, a name as it sounds), e-mail or phone and get their user id, e-mail or extension, and to write to a person by name. Triggers on requests like "show my chats", "read the messages in this chat", "send a message to the channel", "write to Vladimir", "react with a check mark", "search the chats for X", "what did I miss", "who is in this channel", "find Gorobets", "what is Marina's extension", "download the file from that message".
 license: MIT
 metadata:
   author: Vladimir Gorobets
@@ -99,7 +99,7 @@ messages.sh react <channel> <message> <type> | unreact … | reactions <channel>
 ### Members
 
 ```bash
-members.sh list <channel> [--limit N] [--offset N]
+members.sh list <channel> [--limit 1-100] [--offset 0-1000]
 members.sh get <channel> <userId>                      # not implemented yet
 members.sh add <channel> (--user USERID | --invite EMAIL)... [--hide-history]
 members.sh remove <channel> <userId>
@@ -119,9 +119,9 @@ inbox.sh hide <channel> | show <channel>
 ### Search
 
 ```bash
-search.sh messages <query> [--channel C] [--sender USERID]... [--attachments] [--links] [--size N] [--cursor C] [--sort relevance|recency|recency_asc]
-search.sh channels <query> [--type direct|group] [--member USERID] [--size N] [--cursor C] [--sort …]
-search.sh users <query> [--mode auto|name|email|phone] [--kind human|bot|all] [--with-extension] [--min-confidence 0..1] [--brief] [--size N] [--cursor C]
+search.sh messages <query> [--channel C] [--sender USERID]... [--attachments] [--links] [--size 1-50] [--cursor C] [--sort relevance|recency|recency_asc]
+search.sh channels <query> [--type direct|group] [--member USERID] [--size 1-50] [--cursor C] [--sort …]
+search.sh users <query> [--mode auto|name|email|phone] [--kind human|bot|all] [--with-extension] [--min-confidence 0..1] [--brief] [--size 1-50] [--cursor C]
 ```
 
 **Finding a person.** The user search is the way to turn a name into a user id, and it forgives a lot: a name in any script (a Cyrillic name finds its Latin spelling and the reverse), typos, a first name alone, a name as it sounds (`phonetic`). An e-mail (anything with `@`) or a phone number is looked up exactly and gets `confidence` 1. A phone number needs its country code (`+…`): a number of seven or more digits without one is refused.

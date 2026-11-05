@@ -115,16 +115,16 @@ calls.sh schedule-summary <callId> [flow]
 ```bash
 conversations.sh calls [--direction INTERNAL|INBOUND|OUTBOUND] [--status COMPLETED|MISSED] [--flag FAX|VOICEMAIL]...
                        [--from ISO] [--to ISO] [--search TEXT] [--tag TAG]... [--has-attachment]
-                       [--user-direction INCOMING|OUTGOING] [--limit N] [--offset N] [--brief]
+                       [--user-direction INCOMING|OUTGOING] [--limit 1-100] [--offset N] [--brief]
 conversations.sh find  [--entity call|conference|chat]... [--email E]... [--phone P]... [--extension X]... [--everyone]
                        [--transcribed] [--recorded] [--direction inbound|outbound|internal]
                        [--from ISO --to ISO [--tz ZONE]] [--when TODAY|YESTERDAY|THIS_WEEK|PREVIOUS_WEEK|THIS_MONTH|PREVIOUS_MONTH|THIS_QUARTER|LAST_30_DAYS]
                        [--tag T]... [--language L]... [--cursor KEY] [--brief]
 conversations.sh count (the same filters as find)
-conversations.sh tags <prefix> [--limit N]
+conversations.sh tags <prefix> [--limit 1-20]
 ```
 
-- `calls` is the user's **own call history**, newest first, as the PBX recorded it. It lists calls only, not meetings.
+- `calls` is the user's **own call history**, newest first, as the PBX recorded it. It lists calls only, not meetings. A page is at most 100 calls (50 by default); take the next page with `--offset`.
 - `find` is the search over calls, conferences and chats with the AI summary of each, 10 per page; the answer carries `nextCursor`, pass it as `--cursor` for the next page. `--brief` gives `type`, `id`, `flowIndex`, `start`, `durationSec`, `title`, `direction`, `status`, `participants` (of a conference) and the `summary`.
 - By default `find` and `count` look only at conversations the user took part in. `--email`, `--phone` and `--extension` name other participants (all of them must have taken part); `--everyone` drops the restriction.
 - Dates: `--when` takes a ready period; `--from`/`--to` take ISO times, with `--tz` for the time zone they are meant in.

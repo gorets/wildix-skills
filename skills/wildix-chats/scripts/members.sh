@@ -4,7 +4,7 @@
 
 usage() { cat >&2 <<'U'
 Usage: members.sh <command> [args]
-  list <channel> [--limit N] [--offset N]
+  list <channel> [--limit 1-100] [--offset 0-1000]
   get <channel> <userId>                 (not implemented yet in the service)
   add <channel> (--user USERID | --invite EMAIL)... [--hide-history]
   remove <channel> <userId>
@@ -20,6 +20,8 @@ case "$cmd" in
     [[ $# -ge 1 ]] || usage
     ch=$(norm_channel "$1"); shift; limit=""; offset=""
     while [[ $# -gt 0 ]]; do case "$1" in --limit) limit="$2"; shift 2 ;; --offset) offset="$2"; shift 2 ;; *) usage ;; esac; done
+    [[ -z "$limit" ]] || check_int --limit "$limit" 1 100
+    [[ -z "$offset" ]] || check_int --offset "$offset" 0 1000
     stream_call GET "/channels/$ch/members$(qs limit "$limit" offset "$offset")" ;;
   get)
     [[ $# -eq 2 ]] || usage

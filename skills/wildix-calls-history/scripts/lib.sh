@@ -23,6 +23,10 @@ wildix_require_token || exit 2
 
 die() { echo "Error: $*" >&2; exit 1; }
 
+# check_int NAME VALUE MIN MAX: stops with a clear message unless VALUE is a whole number from MIN to MAX
+# (the service refuses anything else with a 400 that names a path, which tells an agent little).
+check_int() { [[ "$2" =~ ^[0-9]+$ && "$2" -ge "$3" && "$2" -le "$4" ]] || die "$1 must be a whole number from $3 to $4: $2"; }
+
 # A conference id from an id or from a link (the last path segment: .../insights/conferences/<id>).
 norm_conference() {
   local v="$1"

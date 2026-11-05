@@ -24,6 +24,10 @@ wildix_require_token || exit 2
 
 die() { echo "Error: $*" >&2; exit 1; }
 
+# check_int NAME VALUE MIN MAX: stops with a clear message unless VALUE is a whole number from MIN to MAX
+# (the service refuses anything else with a 400 that names a path, which tells an agent little).
+check_int() { [[ "$2" =~ ^[0-9]+$ && "$2" -ge "$3" && "$2" -le "$4" ]] || die "$1 must be a whole number from $3 to $4: $2"; }
+
 # A channel id from an id, a "type:id" form or an inbox link (the message part of a link is dropped).
 norm_channel() {
   local v="$1"
