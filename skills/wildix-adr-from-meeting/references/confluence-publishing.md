@@ -8,7 +8,10 @@ appear as `<cloudId>`, `<spaceId>`, `<indexPageId>`, `<folders.ADR>`.
 
 A `cloudId` of the form `<your-site>.atlassian.net` works directly — no separate
 `getAccessibleAtlassianResources` call is needed. A `spaceId` is accepted as a space key, both a
-regular one (`ENG`) and a personal space (`~<account-id>`).
+regular one (`ENG`) and a personal space (`~<account-id>`) — but not as the space's URL alias
+(`/wiki/spaces/messagingteam` is the alias of the key `MRCT`): an alias gets
+`404 No visible Confluence space found`. In links, use the space segment exactly as `_links.webui`
+of a CQL result shows it (`<urlSpace>` in SKILL.md).
 
 ## The header is a Page Properties macro, not a list
 
@@ -27,7 +30,8 @@ the index with empty columns. If the labels ever change, the macro on the index 
 edited in the same pass.
 
 Selection is **by location, not by title**: `ancestor` on a folder works and is transitive — pages
-inside the series folders are found by a query on the root `ADR` folder. So a new series is picked
+inside the series folders and their month folders (`<SERIES>-<YYYY-MM>`) are found by a query on
+the root `ADR` folder. So a new series is picked
 up on its own, and a record with a non-standard name does not fall out. No labels are needed for
 this.
 ⚠️ Do not confuse this with `getConfluencePageDescendants`: that returns 404 for a folder id, while

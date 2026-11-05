@@ -5,7 +5,7 @@
   "participantsFile": "~/.claude/data/adr-participants.json",
   "confluence": {
     "cloudId": "<your-site>.atlassian.net",
-    "spaceId": "<space key: ENG, or ~<account-id> for a personal space>",
+    "spaceId": "<space key (not the URL alias): ENG, or ~<account-id> for a personal space>",
     "indexPageId": "<id of the ADR index page>",
     "folders": {
       "ADR": "<id of the root ADR folder>",

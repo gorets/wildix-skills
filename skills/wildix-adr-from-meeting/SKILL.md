@@ -46,9 +46,15 @@ Fields:
 | `vaultAdrDir` | local ADR corpus directory in Obsidian; may be absent |
 | `participantsFile` | name → Atlassian AAID directory; may be absent |
 | `confluence.cloudId` | Confluence site; usable as `cloudId` directly |
-| `confluence.spaceId` | space key, accepted as `spaceId` |
+| `confluence.spaceId` | space **key** (the `key` that `getConfluenceSpaces` returns, e.g. `ENG`), accepted as `spaceId`; not the alias from the space URL (see below) |
 | `confluence.indexPageId` | the "ADR index" page holding the Page Properties Report macro |
-| `confluence.folders` | series → Confluence folder id (plus `ADR`, the root folder) |
+| `confluence.folders` | series → Confluence folder id (plus `ADR`, the root folder); month folders inside a series are looked up at publish time, not configured (Step 7) |
+
+⚠️ A space URL `/wiki/spaces/<segment>/…` shows the space's **alias** when it has one, not its key
+(`/wiki/spaces/messagingteam` for the key `MRCT`). `createConfluencePage` rejects an alias with
+`404 No visible Confluence space found`. If that happens, look the space up with
+`getConfluenceSpaces` (by `keys`, or list and match by name), publish with the numeric `id` it
+returns, and tell the user to put its `key` into `confluence.spaceId`.
 
 A value that still starts with `<` (copied from the template and not filled in) means the config is
 unfinished: stop and ask the user for it instead of using it. A leading `~` in `vaultAdrDir` and
@@ -218,14 +224,41 @@ editing an already published page are in `references/confluence-publishing.md`. 
 publishing.
 
 The target location comes from the config: `confluence.cloudId`, `confluence.spaceId`, and
-`confluence.folders[<SERIES>]` as the `parentId`. The structure is: folder `ADR` → folder `<SERIES>`
-→ pages titled "ADR-<SERIES>-<NNNN>. <Name>".
+`confluence.folders[<SERIES>]`. The structure is: folder `ADR` → folder `<SERIES>` → **month folder
+`<SERIES>-<YYYY-MM>`** (the month of the meeting date, the same `YYYY-MM` as the local
+`<vaultAdrDir>/<YYYY-MM>/` directory) → pages titled "ADR-<SERIES>-<NNNN>. <Name>". When a series
+uses month folders, a page never goes straight into the series folder.
+
+**Find the month folder before publishing** — its id is the `parentId`:
+
+```
+cql: ancestor = <confluence.folders[<SERIES>]> AND type = folder AND title = "<SERIES>-<YYYY-MM>"
+```
+
+- **One hit** → its `id` is the `parentId`.
+- **No hit, but the series folder already holds other month folders**
+  (`ancestor = <confluence.folders[<SERIES>]> AND type = folder` returns `<SERIES>-YYYY-MM` titles)
+  → this month's folder has not been created yet. The Atlassian MCP has no tool that creates a
+  folder, so **stop before publishing** and ask the user to create a folder named exactly
+  `<SERIES>-<YYYY-MM>` inside the series folder (give the link
+  `https://<cloudId>/wiki/spaces/<urlSpace>/folder/<confluence.folders[<SERIES>]>`), then run the
+  search again. Never fall back to the series folder silently — that is how a page ends up outside
+  its month.
+- **The series folder holds no folders at all** → this corpus does not use month folders; publish
+  into the series folder itself.
+
+`<urlSpace>` is the space segment of `_links.webui` in any CQL result (`/spaces/<urlSpace>/…`) —
+the alias when the space has one, otherwise the key.
 
 ⚠️ The ids in `confluence.folders` are **folders**, not pages: `getConfluencePageDescendants`
 answers `404 Cannot find [page] entity` for them. To re-check one or find a new folder, use CQL
 only: `space = "<confluence.spaceId>" AND type = folder`.
 If the folder for the series is not in the config, **do not create it silently**: ask the user
 whether to create it or to publish straight into the `ADR` root.
+
+A page that landed in the wrong folder is moved with `updateConfluencePage` and the new `parentId`.
+That call also replaces the body, so the rules for editing a published page in
+`references/confluence-publishing.md` apply: read the page first and send back what you read.
 
 Order of work:
 
@@ -234,13 +267,14 @@ Order of work:
 2. Convert the file body (everything except the first `# ADR-...` line, which becomes the `title`)
    to HTML. Before that, call `getContentFormatGuide` with `toolName: "createConfluencePage"` and
    follow it. Always publish with `contentFormat: "html"` — because of the mentions.
-3. `createConfluencePage`: `parentId` = the series folder id, `title` exactly as the `#` in the file.
+3. `createConfluencePage`: `parentId` = the month folder id found above (the series folder id only
+   when the series has no month folders), `title` exactly as the `#` in the file.
 4. Return the link to the created page and write it into the `confluence:` key of the local
    frontmatter (Step 5).
 5. **Every** reference to another record in the text is a link, not bare text. Not only the
    `Related records` row, but also the header, the prose ("continues ADR-RNA-0006 §D1"), the cells
    of the "Impact on earlier records" table and the "Relation" column in Next steps. The format is
-   `<a href="https://<cloudId>/wiki/spaces/<spaceId>/pages/<id>">ADR-...</a>`, with the id from the
+   `<a href="https://<cloudId>/wiki/spaces/<urlSpace>/pages/<id>">ADR-...</a>`, with the id from the
    Step 4 CQL results; a `§` suffix stays outside the link. Leave the ones you cannot find as text
    and say so. **Do not linkify** in-page `§D1`, `§O3` — a `#` href to a heading that does not
    exist leads nowhere.
@@ -250,9 +284,9 @@ Order of work:
 In one message: the link to the page, the ADR number, what the meeting left unresolved, and which
 next-steps items have no owner.
 
-**Name the target you actually used** — the Confluence space and the series folder the page went
-to, and the local directory the file went to. One line is enough. Step 0 reads the config silently,
-so this is the only place the user can see which values took effect; without it a stale or edited
+**Name the target you actually used** — the Confluence space and the folder the page went to
+(series and month folder, e.g. `RNA` → `RNA-2026-11`), and the local directory the file went to.
+One line is enough. Step 0 reads the config silently, so this is the only place the user can see which values took effect; without it a stale or edited
 config publishes into the wrong space unnoticed, and "did it even read my config?" has no answer.
 
 Separately, if it happened: a mismatch between the local corpus and Confluence over numbers, or the
@@ -266,6 +300,8 @@ plain text (Step 7); cross-links that could not be resolved.
 - Do not publish to Confluence if the series was determined automatically and the user has not
   confirmed it.
 - Do not delete or overwrite existing pages.
+- Do not publish straight into the series folder when it holds month folders — the page goes into
+  `<SERIES>-<YYYY-MM>`; if that folder is missing, ask the user to create it (Step 7).
 - Do not retell the transcription: an ADR is decisions, not minutes. Chronology belongs only where
   it explains why a decision changed.
 - Do not smooth over contradictions between decisions for the sake of a coherent text — a
