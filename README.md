@@ -139,6 +139,12 @@ The scripts look for `wildix-auth` next to their own skill, so it does not matte
 
 ## Maintaining
 
+Before pushing, run the checker: it reads every skill the way a strict consumer would (valid YAML frontmatter, `name` equal to the folder, description length, peers that exist, links that resolve, `bash -n` on the scripts, no hard-coded `~/.claude/skills` path, executable scripts):
+
+```bash
+python3 tools/check-skills.py
+```
+
 The references of `wildix-chats` are generated from the OpenAPI of the service, one file per section:
 
 ```bash

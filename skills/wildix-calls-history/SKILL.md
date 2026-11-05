@@ -1,6 +1,7 @@
 ---
 name: wildix-calls-history
-description: Use when asked for data about calls and meetings (conferences) that already took place on Wildix, after the fact: find a call or a meeting, read its record and participants, its transcript, its AI summary and insights, the link to its recording, the user's call history and missed calls, or search conversations by date, person, tag or language. It acts as the logged-in user. Not for starting, joining or controlling a live call or conference. Triggers on requests like "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls last week", "find the meeting with Anna on Monday", "who spoke the most", "the decisions from that call", "download the recording".
+description: >-
+  Use when asked for data about calls and meetings (conferences) that already took place on Wildix, after the fact: find a call or a meeting, read its record and participants, its transcript, its AI summary and insights, the link to its recording, the user's call history and missed calls, or search conversations by date, person, tag or language. It acts as the logged-in user. Not for starting, joining or controlling a live call or conference. Triggers on requests like "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls last week", "find the meeting with Anna on Monday", "who spoke the most", "the decisions from that call", "download the recording".
 license: MIT
 metadata:
   author: Vladimir Gorobets

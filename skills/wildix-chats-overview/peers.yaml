@@ -7,4 +7,4 @@ peers:
   - name: wildix-calls-history
     install: npx skills add gorets/wildix-skills --s wildix-calls-history
     install_policy: ask
-    purpose: Details of the conferences found in the messages: participants, AI summary and insights.
+    purpose: "Details of the conferences found in the messages: participants, AI summary and insights."
