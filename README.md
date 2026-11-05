@@ -107,6 +107,14 @@ against Confluence.
 cp commands/adr.md ~/.claude/commands/adr.md
 ```
 
+**Optional command to save to Obsidian.** `commands/save.md` saves a conference (summary, decisions, participants, from `wildix-calls-history`) or a chat (summary by days, from `wildix-chats`) as a note in your Obsidian vault:
+
+```bash
+cp commands/save.md ~/.claude/commands/save.md
+```
+
+Run it as `/save <conference or chat link>`. It writes with whatever Obsidian tool you have (an MCP server, the CLI or plain files); the folders `Meetings/` and `Chats/` are only defaults.
+
 ## Migrating from 1.x
 
 Version 2.0.0 removed the skills that went through the old x-bees conversations API and the old conference reader; `wildix-chats` does the same on the new Stream service, as the logged-in user:
