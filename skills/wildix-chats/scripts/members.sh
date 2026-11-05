@@ -25,6 +25,7 @@ case "$cmd" in
     stream_call GET "/channels/$ch/members$(qs limit "$limit" offset "$offset")" ;;
   get)
     [[ $# -eq 2 ]] || usage
+    check_id "the user id" "$2"
     stream_call GET "/channels/$(norm_channel "$1")/members/$2" ;;
   add)
     [[ $# -ge 2 ]] || usage
@@ -34,11 +35,12 @@ case "$cmd" in
     [[ ${#users[@]} -gt 0 || ${#invites[@]} -gt 0 ]] || die "give --user USERID or --invite EMAIL"
     body='{}'
     if [[ ${#users[@]} -gt 0 ]]; then jsetj body members "$(jarr "${users[@]}")"; fi
-    if [[ ${#invites[@]} -gt 0 ]]; then jsetj body membersToInvite "$(jq -nc '[$ARGS.positional[] | {email: .}]' --args "${invites[@]}")"; fi
+    if [[ ${#invites[@]} -gt 0 ]]; then jsetj body membersToInvite "$(jarr "${invites[@]}" | jq -c 'map({email: .})')"; fi
     [[ $hide -eq 0 ]] || jsetj body hideHistory true
     stream_call PUT "/channels/$ch/members" "$body" ;;
   remove)
     [[ $# -eq 2 ]] || usage
+    check_id "the user id" "$2"
     stream_call DELETE "/channels/$(norm_channel "$1")/members/$2" ;;
   read-status)
     [[ $# -eq 1 ]] || usage

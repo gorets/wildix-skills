@@ -23,6 +23,7 @@ U
 cmd="${1:-}"; [[ -n "$cmd" ]] || usage; shift
 [[ $# -ge 1 ]] || usage
 call="$1"; shift
+check_id "the call id" "$call"
 flow=0
 if [[ $# -ge 1 && "$1" != --* ]]; then flow=$(norm_flow "$1"); shift; fi
 base="/$call/flows/$flow"
@@ -34,8 +35,8 @@ case "$cmd" in
     wda_call GET "/history/calls$base" ;;
   brief)
     rec=$(wda_call GET "/history/calls$base")
-    sum=$(WDA_SOFT=1 wda_call GET "/insights/calls$base/summary" 2>/dev/null) || sum='{}'
-    ins=$(WDA_SOFT=1 wda_call GET "/insights/calls$base/insights" 2>/dev/null) || ins='{}'
+    sum=$(WDA_SOFT=1 wda_call GET "/insights/calls$base/summary") || sum='{}'
+    ins=$(WDA_SOFT=1 wda_call GET "/insights/calls$base/insights") || ins='{}'
     jq -c --argjson sum "$sum" --argjson ins "$(jq -c "$compact_insights" <<<"$ins" 2>/dev/null || echo '{}')" --arg id "$call" '.call as $c | {
         id: $id, flowIndex: $c.flowIndex,
         start: (($c.startTime // 0) / 1000 | todate),
@@ -64,7 +65,11 @@ case "$cmd" in
     if [[ $mode == json ]]; then printf '%s\n' "$r"; exit 0; fi
     text=$(jq -r '.text // ""' <<<"$r")
     [[ -n "${text//[[:space:]]/}" ]] || { echo "The transcription is empty." >&2; exit 3; }
-    if [[ -n "$out" ]]; then mkdir -p "$(dirname "$out")"; printf '%s\n' "$text" > "$out"; printf '%s\n' "$out"; else printf '%s\n' "$text"; fi ;;
+    if [[ -n "$out" ]]; then
+      check_out_path "$out"
+      ( umask 077; mkdir -p "$(dirname -- "$out")"; printf '%s\n' "$text" > "$out" )
+      printf '%s\n' "$out"
+    else printf '%s\n' "$text"; fi ;;
   annotations)
     wda_call GET "/history/calls$base/annotations" ;;
   insights)

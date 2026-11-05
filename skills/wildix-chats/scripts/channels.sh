@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Channels of the Wildix stream service. Usage: channels.sh <command> [args]   (see references/channels.md)
+# Channels of the Wildix stream service. Usage: channels.sh <command> [args]   (see references/channels.openapi.json)
 . "$(dirname "$0")/lib.sh"
 
 usage() { cat >&2 <<'U'
@@ -49,7 +49,7 @@ case "$cmd" in
     [[ -z "$access" ]] || jset body access "$access"
     if [[ ${#members[@]} -gt 0 ]]; then jsetj body members "$(jarr "${members[@]}")"; fi
     if [[ ${#invites[@]} -gt 0 ]]; then
-      inv=$(jq -nc '[$ARGS.positional[] | {email: .}]' --args "${invites[@]}"); jsetj body membersToInvite "$inv"; fi
+      inv=$(jarr "${invites[@]}" | jq -c 'map({email: .})'); jsetj body membersToInvite "$inv"; fi
     stream_call POST /channels/group "$body" ;;
   direct|direct-id)
     user=""; email=""

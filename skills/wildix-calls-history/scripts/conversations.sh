@@ -53,7 +53,10 @@ build_filter() {
   for x in ${emails[@]+"${emails[@]}"}; do parts=$(jq -c --arg v "$x" '. + [{email:$v}]' <<<"$parts"); done
   for x in ${phones[@]+"${phones[@]}"}; do parts=$(jq -c --arg v "$x" '. + [{phone:$v}]' <<<"$parts"); done
   for x in ${exts[@]+"${exts[@]}"}; do parts=$(jq -c --arg v "$x" '. + [{extension:$v}]' <<<"$parts"); done
-  if [[ "$parts" == '[]' && $everyone -eq 0 ]]; then parts=$(jq -nc --arg v "$(wildix_token_email)" '[{email:$v}]'); fi
+  if [[ "$parts" == '[]' && $everyone -eq 0 ]]; then
+    local me; me=$(wildix_token_email); [[ -n "$me" ]] || die "the token carries no e-mail"
+    parts=$(jq -nc --arg v "$me" '[{email:$v}]')
+  fi
   [[ "$parts" == '[]' ]] || jsetj FILTER participants "$parts"
 
   [[ $transcribed -eq 0 ]] || jsetj FILTER transcribed true

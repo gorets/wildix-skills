@@ -15,7 +15,8 @@ cmd="${1:-}"; [[ -n "$cmd" ]] || usage; shift
 case "$cmd" in
   me)
     [[ $# -eq 0 ]] || usage
-    stream_call POST /users/query "$(jq -nc --arg e "$(wildix_token_email)" '{query:{emails:[$e]}}')" | jq -c '.users[0]' ;;
+    email=$(wildix_token_email); [[ -n "$email" ]] || die "the token carries no e-mail"
+    stream_call POST /users/query "$(jq -nc --arg e "$email" '{query:{emails:[$e]}}')" | jq -c '.users[0]' ;;
   query)
     ids=(); emails=(); phones=()
     while [[ $# -gt 0 ]]; do case "$1" in

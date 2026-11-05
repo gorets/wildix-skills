@@ -6,7 +6,6 @@ set -e
 source "$(dirname "$0")/config.sh"
 
 EMAIL="${1:?Usage: $0 <email>}"
-ENDPOINT="https://cognito-idp.eu-central-1.amazonaws.com/"
 
 TOKEN_FILE=$(wildix_token_file "$EMAIL")
 
@@ -21,16 +20,9 @@ PAYLOAD=$(jq -n \
   --arg token "$ACCESS_TOKEN" \
   '{"AccessToken":$token}')
 
-RESPONSE=$(curl -sf "$ENDPOINT" \
-  -H "User-Agent: wildix-agent-skills/1.1.0" \
-  -H 'content-type: application/x-amz-json-1.1' \
-  -H 'x-amz-target: AWSCognitoIdentityProviderService.GlobalSignOut' \
-  -d "$PAYLOAD" || true)
-
-if echo "$RESPONSE" | jq -e '.__type' > /dev/null 2>&1; then
-  echo "GlobalSignOut error: $(echo "$RESPONSE" | jq -r '.message // .__type')" >&2
-  exit 1
-fi
+# An error leaves the local file in place: the sessions are still valid. GlobalSignOut needs an AccessToken
+# that has not expired: run get-token.sh first when the local one is older than an hour.
+wildix_cognito GlobalSignOut "$PAYLOAD" >/dev/null || { echo "The sessions were NOT signed out. Nothing was deleted." >&2; exit 1; }
 
 rm -f "$TOKEN_FILE"
 echo "Global sign-out successful. All sessions invalidated for $EMAIL"

@@ -21,16 +21,24 @@ case "$cmd" in
     upload_file "$(norm_channel "$1")" "$2" ;;
   info)
     [[ $# -eq 2 ]] || usage
+    check_id "the file id" "$2"
     stream_call GET "/channels/$(norm_channel "$1")/files/$2" ;;
   download-url)
     [[ $# -eq 3 ]] || usage
+    check_id "the file id" "$3"
     stream_call GET "/channels/$(norm_channel "$1")/messages/$(norm_message "$2")/files/$3/download-url" ;;
   download)
     [[ $# -eq 4 ]] || usage
+    check_id "the file id" "$3"
+    out="$4"
+    [[ ! -e "$out" ]] || die "$out exists already: choose another path (nothing was overwritten or deleted)"
+    [[ -d "$(dirname -- "$out")" ]] || die "the folder of $out does not exist"
     url=$(stream_call GET "/channels/$(norm_channel "$1")/messages/$(norm_message "$2")/files/$3/download-url?download=1" | jq -r '.presignedDownloadUrl // empty')
     [[ -n "$url" ]] || die "no download link in the answer"
-    code=$(curl -sS -L -o "$4" -w '%{http_code}' "$url") || die "download failed"
-    [[ "$code" == 2* ]] || { rm -f "$4"; die "storage answered HTTP $code"; }
-    jq -nc --arg f "$4" --arg s "$(wc -c < "$4" | tr -d ' ')" '{ok:true, file:$f, bytes:($s|tonumber)}' ;;
+    tmp=$(mktemp "$(dirname -- "$out")/.download.XXXXXX") || die "cannot write in the folder of $out"
+    code=$(curl -sS -L --connect-timeout 10 --max-time 600 --proto '=https' --proto-redir '=https' -o "$tmp" -w '%{http_code}' "$url") || { rm -f "$tmp"; die "download failed"; }
+    [[ "$code" == 2* ]] || { rm -f "$tmp"; die "storage answered HTTP $code"; }
+    mv -n "$tmp" "$out" && [[ ! -e "$tmp" ]] || { rm -f "$tmp"; die "$out appeared meanwhile: nothing was overwritten"; }
+    jq -nc --arg f "$out" --arg s "$(wc -c < "$out" | tr -d ' ')" '{ok:true, file:$f, bytes:($s|tonumber)}' ;;
   *) usage ;;
 esac

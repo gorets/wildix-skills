@@ -28,13 +28,14 @@ if [ "$ELAPSED" -ge "$((EXPIRES_IN - 60))" ]; then
   REFRESHED=1
 fi
 
-ID_TOKEN=$(jq -r '.IdToken' "$TOKEN_FILE")
+ID_TOKEN=$(jq -r '.IdToken // empty' "$TOKEN_FILE")
+[ -n "$ID_TOKEN" ] || { echo "The token file has no IdToken. Log in again with the wildix-auth skill." >&2; exit 1; }
 
 if [ "$REFRESHED" = "1" ]; then
-  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-    -H "User-Agent: wildix-agent-skills/1.1.0" \
-    "$WILDIX_API_URL/v2/conversations/inbox/state" \
-    -H "Authorization: Bearer $ID_TOKEN")
+  HTTP_CODE=$(curl -s --connect-timeout 10 --max-time 30 --proto '=https' -o /dev/null -w "%{http_code}" \
+    -H "User-Agent: wildix-agent-skills" \
+    -K <(printf 'header = "Authorization: Bearer %s"\n' "$ID_TOKEN") \
+    "$WILDIX_API_URL/v2/conversations/inbox/state")
   if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
     echo "Refreshed token rejected by API (HTTP $HTTP_CODE). Re-authentication required." >&2
     exit 2

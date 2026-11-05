@@ -30,7 +30,8 @@ case "$ACTION" in
       echo "Error: reactionType required for '$ACTION'. Allowed: $ALLOWED" >&2
       exit 1
     fi
-    if ! [[ " $ALLOWED " == *" $TYPE "* ]]; then
+    ok=0; for _t in $ALLOWED; do [[ "$_t" == "$TYPE" ]] && ok=1; done
+    if [[ $ok -ne 1 ]]; then
       echo "Error: unknown reactionType '$TYPE'. Allowed: $ALLOWED" >&2
       exit 1
     fi
@@ -39,23 +40,32 @@ case "$ACTION" in
   *) echo "Error: unknown action '$ACTION'. $USAGE" >&2; exit 1 ;;
 esac
 
-# Normalise channelId: strip URL prefix and type prefix (group:abc -> abc)
-CHANNEL_ID=$(echo "$CHANNEL_ID" | sed 's|.*/inbox/||' | sed 's/^[^:]*://')
+# Normalise the ids: a channel is an id, a "type:id" form or an inbox link (the message part of a link is
+# dropped); a message is an id or a link to it. Nothing but id characters goes into the URL path, so an id that
+# came from fetched data cannot rewrite the request.
+CHANNEL_ID="${CHANNEL_ID%%[?#]*}"; CHANNEL_ID="${CHANNEL_ID#*/inbox/}"; CHANNEL_ID="${CHANNEL_ID%%/*}"; CHANNEL_ID="${CHANNEL_ID##*:}"
+MESSAGE_ID="${MESSAGE_ID%%[?#]*}"; MESSAGE_ID="${MESSAGE_ID%/}"; MESSAGE_ID="${MESSAGE_ID##*/}"
+for _v in "$CHANNEL_ID" "$MESSAGE_ID"; do
+  [[ "$_v" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]*$ && "$_v" != *..* ]] || { echo "Error: not a channel or message id: $_v" >&2; exit 1; }
+done
 
 BASE="https://api.x-bees.com/v2/conversations/channels/${CHANNEL_ID}/messages/${MESSAGE_ID}/reactions"
 OUT=$(mktemp)
 trap 'rm -f "$OUT"' EXIT
 
-COMMON=(-sS -o "$OUT" -w '%{http_code}' -H "User-Agent: wildix-agent-skills/1.1.0" -H "Authorization: Bearer ${ID_TOKEN}")
+# The Authorization header goes to curl through a config file on a descriptor, never through argv. The
+# descriptor of <( ) lives only for the command it is written in, so every curl call carries its own.
+COMMON=(-sS --connect-timeout 10 --max-time 60 --proto '=https' -o "$OUT" -w '%{http_code}' -H "User-Agent: wildix-agent-skills")
+auth_curl() { curl "${COMMON[@]}" -K <(printf 'header = "Authorization: Bearer %s"\n' "$ID_TOKEN") "$@"; }
 
 case "$ACTION" in
   add)
-    CODE=$(curl "${COMMON[@]}" -X POST -H "Content-Type: application/json" \
+    CODE=$(auth_curl -X POST -H "Content-Type: application/json" \
       -d "{\"reactionType\":\"${TYPE}\"}" "$BASE") ;;
   remove)
-    CODE=$(curl "${COMMON[@]}" -X DELETE "${BASE}/${TYPE}") ;;
+    CODE=$(auth_curl -X DELETE "${BASE}/${TYPE}") ;;
   list)
-    CODE=$(curl "${COMMON[@]}" "${BASE}?limit=300") ;;
+    CODE=$(auth_curl "${BASE}?limit=300") ;;
 esac
 
 if [[ "$CODE" != 2* ]]; then

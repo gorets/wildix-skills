@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Messages of the Wildix stream service. Usage: messages.sh <command> [args]   (see references/messages.md)
+# Messages of the Wildix stream service. Usage: messages.sh <command> [args]   (see references/messages.openapi.json)
 . "$(dirname "$0")/lib.sh"
 
 usage() { cat >&2 <<'U'
@@ -44,6 +44,7 @@ case "$cmd" in
     stream_call GET "/channels/$(norm_channel "$1")/messages/$(norm_message "$2")" ;;
   send)
     [[ $# -ge 2 ]] || usage
+    [[ "$2" != --* ]] || die "'$2' stands where the text belongs: give the text (or - to read it from stdin) before the options"
     ch=$(norm_channel "$1"); text=$(read_text "$2"); shift 2
     markdown=0; reply=""; mentions=(); files=()
     while [[ $# -gt 0 ]]; do case "$1" in
@@ -64,6 +65,7 @@ case "$cmd" in
     stream_call POST "/channels/$ch/messages" "$body" ;;
   edit)
     [[ $# -ge 3 ]] || usage
+    [[ "$3" != --* ]] || die "'$3' stands where the new text belongs: give the text (or - to read it from stdin) before the options"
     ch=$(norm_channel "$1"); msg=$(norm_message "$2"); text=$(read_text "$3"); shift 3
     markdown=0
     while [[ $# -gt 0 ]]; do case "$1" in --markdown) markdown=1; shift ;; *) usage ;; esac; done

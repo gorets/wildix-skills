@@ -28,8 +28,9 @@ U
 brief_one() {
   id="$1"
   conf=$(wda_call GET "/history/conferences/$id") || return 1
-  ins=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/insights" 2>/dev/null) || ins='{}'
-  sum=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/summary" 2>/dev/null) || sum='{}'
+  # a 404 (nothing generated) is silent; any other failure prints its error, and the card says "UNKNOWN"
+  ins=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/insights") || ins='{}'
+  sum=$(WDA_SOFT=1 wda_call GET "/insights/conferences/$id/summary") || sum='{}'
   jq -c --argjson ins "$(jq -c "$compact_insights" <<<"$ins" 2>/dev/null || echo '{}')" --argjson sum "$sum" --arg id "$id" '.conference as $c | {
       id: $id,
       subject: $c.subject,
@@ -37,7 +38,7 @@ brief_one() {
       durationMin: ((($c.duration // 0) / 60000) | round),
       status: $c.status,
       direction: $c.direction,
-      participants: ([($c.participants // [])[] | (.info // {}) as $i | {name: ($i.name // $i.email), email: $i.email, xbsId: $i.xbsId, speakMin: (((.totalSpeakDuration // 0) / 60000) | round)}] | unique_by(.name)),
+      participants: ([($c.participants // [])[] | (.info // {}) as $i | select(($i.name // $i.email) != null) | {name: ($i.name // $i.email), email: $i.email, xbsId: $i.xbsId, speak: (.totalSpeakDuration // 0)}] | group_by(.email // .name) | map(.[0] + {speakMin: ((map(.speak) | add) / 60000 | round)} | del(.speak))),
       transcriptionStatus: $c.transcriptionStatus,
       transcriptionLanguage: $c.transcriptionLanguage,
       hasRecording: (($c.recordings // []) | length > 0),
@@ -90,18 +91,18 @@ case "$cmd" in
     text=$(jq -r '.text // ""' <<<"$r")
     [[ -n "${text//[[:space:]]/}" ]] || { echo "The transcription is empty: nothing was transcribed on this call." >&2; exit 3; }
     conf=$(wda_call GET "/history/conferences/$id")
-    header=$(jq -r --arg id "$id" '.conference as $c | [
-        "# " + ($c.subject // "Conference"),
+    header=$(jq -r --arg id "$id" '.conference as $c | def one: gsub("[\\r\\n]+"; " "); [
+        "# " + (($c.subject // "Conference") | one),
         "# conferenceId: " + $id,
         "# url: https://app.x-bees.com/insights/conferences/" + $id,
         "# start: " + (($c.startTime // 0) / 1000 | todate),
         "# duration: " + ((($c.duration // 0) / 60000) | round | tostring) + " min",
         "# language: " + ($c.transcriptionLanguage // "unknown"),
-        "# participants: " + ([($c.participants // [])[] | (.info // {}) | (.name // .email)] | map(select(. != null)) | unique | join(", ")),
+        "# participants: " + ([($c.participants // [])[] | (.info // {}) | (.name // .email)] | map(select(. != null) | one) | unique | join(", ")),
         ""] | join("\n")' <<<"$conf")
     if [[ -n "$out" ]]; then
-      mkdir -p "$(dirname "$out")"
-      { printf '%s\n' "$header"; printf '%s\n' "$text"; } > "$out"
+      check_out_path "$out" "$id"
+      ( umask 077; mkdir -p "$(dirname -- "$out")"; { printf '%s\n' "$header"; printf '%s\n' "$text"; } > "$out" )
       printf '%s\n' "$out"
     else
       printf '%s\n' "$header"; printf '%s\n' "$text"

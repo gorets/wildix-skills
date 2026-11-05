@@ -5,7 +5,6 @@ set -e
 source "$(dirname "$0")/config.sh"
 
 EMAIL="${1:?Usage: $0 <email>}"
-ENDPOINT="https://cognito-idp.eu-central-1.amazonaws.com/"
 
 TOKEN_FILE=$(wildix_token_file "$EMAIL")
 
@@ -21,16 +20,8 @@ PAYLOAD=$(jq -n \
   --arg clientId "$WILDIX_CLIENT_ID" \
   '{"Token":$token,"ClientId":$clientId}')
 
-RESPONSE=$(curl -sf "$ENDPOINT" \
-  -H "User-Agent: wildix-agent-skills/1.1.0" \
-  -H 'content-type: application/x-amz-json-1.1' \
-  -H 'x-amz-target: AWSCognitoIdentityProviderService.RevokeToken' \
-  -d "$PAYLOAD" || true)
-
-if echo "$RESPONSE" | jq -e '.__type' > /dev/null 2>&1; then
-  echo "Revoke error: $(echo "$RESPONSE" | jq -r '.message // .__type')" >&2
-  exit 1
-fi
+# An error leaves the local file in place: the token is still valid and the call can be repeated.
+wildix_cognito RevokeToken "$PAYLOAD" >/dev/null || { echo "The token was NOT revoked. Nothing was deleted." >&2; exit 1; }
 
 rm -f "$TOKEN_FILE"
 echo "Token revoked and local session deleted for $EMAIL"

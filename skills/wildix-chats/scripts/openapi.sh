@@ -9,7 +9,7 @@ set -euo pipefail
 command -v jq >/dev/null || { echo "Error: jq is required (brew install jq)" >&2; exit 1; }
 REF="$(cd "$(dirname "${BASH_SOURCE[0]}")/../references" && pwd)"
 
-usage() { sed -n '3,8p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1; }
+usage() { sed -n '3,7p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1; }
 file_of() { local f="$REF/$(echo "$1" | tr 'A-Z' 'a-z').openapi.json"; [[ -f "$f" ]] || { echo "Error: no section '$1'. Sections: $(ls "$REF" | sed 's/.openapi.json//' | tr '\n' ' ')" >&2; exit 1; }; echo "$f"; }
 
 cmd="${1:-}"; [[ -n "$cmd" ]] || usage; shift
