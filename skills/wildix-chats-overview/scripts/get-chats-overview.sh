@@ -15,7 +15,7 @@ TO_DATE="${2:-$FROM_DATE}"
 
 XBEES_URL="https://api.x-bees.com"
 STREAM_API_KEY="9p6289m44jum"
-STREAM_DOMAIN="https://chat.wildix-chat.com"
+STREAM_DOMAIN="https://chat.wildix-chats.com"
 
 WORK=$(mktemp -d)
 trap "rm -rf $WORK" EXIT

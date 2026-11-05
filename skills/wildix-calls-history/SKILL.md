@@ -1,5 +1,5 @@
 ---
-name: wildix-conversation-history
+name: wildix-calls-history
 description: Use when asked for data about calls and meetings (conferences) that already took place on Wildix, after the fact: find a call or a meeting, read its record and participants, its transcript, its AI summary and insights, the link to its recording, the user's call history and missed calls, or search conversations by date, person, tag or language. It acts as the logged-in user. Not for starting, joining or controlling a live call or conference. Triggers on requests like "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls last week", "find the meeting with Anna on Monday", "who spoke the most", "the decisions from that call", "download the recording".
 license: MIT
 metadata:
@@ -8,7 +8,7 @@ allowed-tools: >-
   Bash, Skill
 ---
 
-# Wildix Conversation History
+# Wildix Calls History
 
 What is on record about calls and meetings (conferences) that are over: the record itself, who took part, the transcript, the AI summary and insights, the recording, and the search over all of it. The data comes from two Wildix services, WDA History (the records and transcripts) and WDA Insights (the AI summaries, the insights, the recordings and the search), both at `https://wda.wildix.com/v2`.
 

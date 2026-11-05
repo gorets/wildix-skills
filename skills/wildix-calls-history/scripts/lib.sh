@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers of the wildix-conversation-history skill. Source it from a section script:
+# Shared helpers of the wildix-calls-history skill. Source it from a section script:
 #   . "$(dirname "$0")/lib.sh"
 # Needs: bash 3.2+, curl, jq.
 #

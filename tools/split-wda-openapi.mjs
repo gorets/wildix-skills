@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds the references of the wildix-conversation-history skill from the OpenAPI documents of the two services
+// Builds the references of the wildix-calls-history skill from the OpenAPI documents of the two services
 // behind it: WDA History (the records) and WDA Insights (summaries, insights, recordings, search).
 // One file per section, each with only its paths and the schemas those paths reach:
 //   conferences   /history/conferences/*   /insights/conferences/*
@@ -10,11 +10,11 @@
 //
 // Usage: node tools/split-wda-openapi.mjs <wda-history-client.openapi.json> <wda-insights-client.openapi.json> [outDir]
 //   sources: wildix-sdk/sdk-docs/static/codegen/api/
-//   outDir:  skills/wildix-conversation-history/references (default)
+//   outDir:  skills/wildix-calls-history/references (default)
 import fs from 'node:fs';
 import path from 'node:path';
 
-const [historySrc, insightsSrc, outDir = 'skills/wildix-conversation-history/references'] = process.argv.slice(2);
+const [historySrc, insightsSrc, outDir = 'skills/wildix-calls-history/references'] = process.argv.slice(2);
 if (!historySrc || !insightsSrc) { console.error('usage: split-wda-openapi.mjs <history.openapi.json> <insights.openapi.json> [outDir]'); process.exit(1); }
 
 const docs = [historySrc, insightsSrc].map((f) => JSON.parse(fs.readFileSync(f, 'utf8')));

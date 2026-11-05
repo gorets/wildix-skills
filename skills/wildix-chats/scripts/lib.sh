@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers of the wildix-chat skill. Source it from a section script:
+# Shared helpers of the wildix-chats skill. Source it from a section script:
 #   . "$(dirname "$0")/lib.sh"
 # Needs: bash 3.2+, curl, jq.
 #
