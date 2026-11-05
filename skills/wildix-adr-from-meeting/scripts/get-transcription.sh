@@ -29,13 +29,13 @@ command -v wildix_require_token >/dev/null || { echo "Error: the wildix-auth ski
 wildix_require_token || exit 2
 
 ID_TOKEN="$ID_TOKEN" python3 - "$CONF_ID" "$OUT_FILE" <<'PYEOF'
-import json, sys, os, urllib.request, urllib.error, concurrent.futures
+import json, re, sys, os, urllib.request, urllib.error, concurrent.futures
 from datetime import datetime, timezone, timedelta
 
 id_token = os.environ["ID_TOKEN"]
 conf_id, out_file = sys.argv[1], sys.argv[2]
 BASE = "https://wda.wildix.com/v2"
-TZ = timezone(timedelta(hours=3))  # UTC+3, the timezone the KB records meetings in
+TZ = timezone.utc  # the header says UTC; whoever reads the file converts to their own zone
 
 
 def get(url):
@@ -50,6 +50,18 @@ def get(url):
 def fail(msg, code=1):
     print(f"error: {msg}", file=sys.stderr)
     sys.exit(code)
+
+
+def one_line(text):
+    """A value of the header must stay on one line: a subject with a newline must not add lines to the file."""
+    return " ".join(str(text).split())
+
+
+# a link or an id: drop ?query and #fragment and a trailing slash, take the last segment, accept id characters only
+_raw_id = conf_id
+conf_id = re.split(r"[?#]", _raw_id)[0].rstrip("/").rsplit("/", 1)[-1]
+if not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]*", conf_id) or ".." in conf_id or conf_id == "conferences":
+    fail(f"not a conference id: {_raw_id}")
 
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
@@ -77,26 +89,28 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
         fail(f"cannot fetch transcription: {e}")
 
 status = conf.get("transcriptionStatus", "")
-if status and status not in ("AVAILABLE", "SUCCEEDED", "COMPLETED"):
-    fail(f"transcription is not available for this conference (transcriptionStatus={status!r}). "
+if status == "UNAVAILABLE":
+    fail("transcription is not available for this conference (transcriptionStatus='UNAVAILABLE'). "
          "It was most likely never enabled on the call.", 3)
 
 dialogue = (body.get("text") or "").strip()
 if not dialogue:
+    if status == "POST_TRANSCRIPTION":
+        fail("the transcription is still being processed (transcriptionStatus='POST_TRANSCRIPTION'): try again later.", 3)
     fail("transcription is empty — nothing was transcribed on this call.", 3)
 
 names = sorted({
-    (p.get("info") or {}).get("name") or (p.get("info") or {}).get("email")
+    one_line((p.get("info") or {}).get("name") or (p.get("info") or {}).get("email") or "")
     for p in conf.get("participants", [])
-} - {None, ""})
+} - {""})
 
 start_dt = datetime.fromtimestamp((conf.get("startTime") or 0) / 1000, TZ)
 
 header = "\n".join([
-    f"# {(conf.get('subject') or 'Conference').strip()}",
+    f"# {one_line(conf.get('subject') or 'Conference')}",
     f"# conferenceId: {conf_id}",
     f"# url: https://app.x-bees.com/insights/conferences/{conf_id}",
-    f"# start: {start_dt.strftime('%Y-%m-%dT%H:%M')} (UTC+3)",
+    f"# start: {start_dt.strftime('%Y-%m-%dT%H:%M')} (UTC)",
     f"# duration: {round((conf.get('duration') or 0) / 60000)} min",
     f"# language: {conf.get('transcriptionLanguage') or 'unknown'}",
     f"# participants: {', '.join(names) or 'unknown'}",
@@ -107,6 +121,17 @@ header = "\n".join([
 out = header + dialogue + "\n"
 
 if out_file:
+    # an existing file is replaced only when it is the transcript of this very conference, written earlier by
+    # this script (its second line says so): the path may have come from fetched text, so nothing else is touched
+    if os.path.exists(out_file):
+        try:
+            with open(out_file, encoding="utf-8", errors="replace") as fh:
+                second = fh.read(8192).split("\n")[1:2]
+        except OSError:
+            second = []
+        if second != [f"# conferenceId: {conf_id}"]:
+            fail(f"{out_file} exists: choose another path (nothing was overwritten)")
+    os.umask(0o077)  # a transcript is confidential: private file, private folder
     os.makedirs(os.path.dirname(os.path.abspath(out_file)), exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as fh:
         fh.write(out)
