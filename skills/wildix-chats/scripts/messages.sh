@@ -11,7 +11,7 @@ Usage: messages.sh <command> [args]
   delete <channel> <message>                              your own messages only
   pin <channel> <message> | unpin <channel> <message>
   react <channel> <message> <type> | unreact <channel> <message> <type>
-  reactions <channel> <message>
+  reactions <channel> <message> [--type TYPE] [--users]   who reacted: one entry per user and type
 A channel is an id or an inbox link; a message is an id or an inbox link to it; "-" as text reads stdin.
 U
   exit 1; }
@@ -97,11 +97,23 @@ case "$cmd" in
     ch=$(norm_channel "$1"); msg=$(norm_message "$2"); check_reaction "$3"
     if [[ "$cmd" == react ]]; then stream_call PUT "/channels/$ch/messages/$msg/reactions/$3"; else stream_call DELETE "/channels/$ch/messages/$msg/reactions/$3"; fi ;;
   reactions)
-    [[ $# -eq 2 ]] || usage
-    r=$(stream_call GET "/channels/$(norm_channel "$1")/messages/$(norm_message "$2")" | jq -c '.message | {messageId, reactionCounts, latestReactions}')
-    printf '%s\n' "$r"
-    if [[ "$(jq -r '(.reactionCounts // {} | length > 0) and (.latestReactions == null)' <<<"$r")" == true ]]; then
-      echo "Note: the service returns only the counts for now; who reacted (latestReactions) is not returned yet." >&2
-    fi ;;
+    [[ $# -ge 2 ]] || usage
+    ch=$(norm_channel "$1"); msg=$(norm_message "$2"); shift 2
+    rtype=""; withusers=0
+    while [[ $# -gt 0 ]]; do case "$1" in
+      --type) [[ $# -ge 2 ]] || usage; rtype="$2"; check_reaction "$rtype"; shift 2 ;;
+      --users) withusers=1; shift ;; *) usage ;; esac; done
+    body=$(jq -nc --arg m "$msg" '{messageIds:[$m]}')
+    [[ -z "$rtype" ]] || body=$(jq -c --arg t "$rtype" '. + {type:$t}' <<<"$body")
+    r=$(stream_call POST "/channels/$ch/reactions/query" "$body")
+    if [[ $withusers -eq 1 ]]; then
+      ids=$(jq -c '[.reactions[].userId] | unique' <<<"$r")
+      if [[ "$ids" != '[]' ]]; then
+        u=$(stream_call POST /users/query "$(jq -nc --argjson i "$ids" '{query:{ids:$i}}')")
+        r=$(jq -c --argjson u "$u" '.reactions |= map(. as $x | ($u.users // [] | map(select(.id == $x.userId)) | .[0]) as $p
+          | $x + {user: ($p | if . == null then null else {name: (.displayName // .name), email, bot} end)})' <<<"$r")
+      fi
+    fi
+    printf '%s\n' "$r" ;;
   *) usage ;;
 esac

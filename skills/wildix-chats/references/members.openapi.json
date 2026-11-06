@@ -342,7 +342,17 @@
             }
           },
           "404": {
-            "description": "MemberAlreadyExistException 404 response",
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "MemberAlreadyExistException 409 response",
             "content": {
               "application/json": {
                 "schema": {
@@ -513,7 +523,17 @@
             }
           },
           "404": {
-            "description": "MemberAlreadyExistException 404 response",
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "MemberAlreadyExistException 409 response",
             "content": {
               "application/json": {
                 "schema": {
@@ -1218,6 +1238,7 @@
       "ChannelMemberRole": {
         "type": "string",
         "enum": [
+          "owner",
           "member",
           "supervisor"
         ]

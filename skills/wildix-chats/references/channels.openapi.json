@@ -620,6 +620,16 @@
               }
             }
           },
+          "409": {
+            "description": "ChannelAlreadyExistException 409 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelAlreadyExistExceptionResponseContent"
+                }
+              }
+            }
+          },
           "429": {
             "description": "RateLimitExceededException 429 response",
             "headers": {
@@ -777,6 +787,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TargetNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "ChannelAlreadyExistException 409 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelAlreadyExistExceptionResponseContent"
                 }
               }
             }
@@ -3576,6 +3596,10 @@
             "type": "boolean",
             "description": "Indicates if the channel supports auto start recording."
           },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
+          },
           "transcriptionLanguage": {
             "type": "string",
             "description": "Transcription language."
@@ -3589,7 +3613,7 @@
           },
           "messagingSenderId": {
             "type": "string",
-            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram. Written by kite from the inbound event, because the channel id hashes the sender's linked service and not the sender, and a reply has to name the sender it is sent from."
+            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram, the brand id on RCS. A reply has to name the sender it is sent from. On Messenger and Instagram kite writes it from the inbound event, because the channel id hashes the sender's linked service and not the sender; on RCS the channel id includes the brand, and it is written when the channel is created."
           },
           "messagingReplyUntil": {
             "type": "number",
@@ -3611,6 +3635,17 @@
         "enum": [
           "private",
           "public"
+        ]
+      },
+      "ChannelAlreadyExistExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "ChannelContext": {
@@ -3758,6 +3793,15 @@
           }
         }
       },
+      "ChatVerbosity": {
+        "type": "string",
+        "description": "How much of a chat turn x-bees shows while the agent works. SMS and WhatsApp always send one final text.",
+        "enum": [
+          "none",
+          "simple",
+          "full"
+        ]
+      },
       "CreateGroupChannelRequestContent": {
         "type": "object",
         "properties": {
@@ -3825,6 +3869,10 @@
             "type": "boolean",
             "description": "Indicates if the channel supports auto start recording."
           },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
+          },
           "transcriptionLanguage": {
             "type": "string",
             "description": "Transcription language."
@@ -3838,7 +3886,7 @@
           },
           "messagingSenderId": {
             "type": "string",
-            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram. Written by kite from the inbound event, because the channel id hashes the sender's linked service and not the sender, and a reply has to name the sender it is sent from."
+            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram, the brand id on RCS. A reply has to name the sender it is sent from. On Messenger and Instagram kite writes it from the inbound event, because the channel id hashes the sender's linked service and not the sender; on RCS the channel id includes the brand, and it is written when the channel is created."
           },
           "messagingReplyUntil": {
             "type": "number",
@@ -3952,6 +4000,18 @@
             },
             "required": [
               "actions"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "wilma",
+            "properties": {
+              "wilma": {
+                "$ref": "#/components/schemas/WilmaChatElement"
+              }
+            },
+            "required": [
+              "wilma"
             ]
           }
         ]
@@ -4437,6 +4497,10 @@
             "type": "boolean",
             "description": "Indicates if the channel supports auto start recording."
           },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
+          },
           "transcriptionLanguage": {
             "type": "string",
             "description": "Transcription language."
@@ -4450,7 +4514,7 @@
           },
           "messagingSenderId": {
             "type": "string",
-            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram. Written by kite from the inbound event, because the channel id hashes the sender's linked service and not the sender, and a reply has to name the sender it is sent from."
+            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram, the brand id on RCS. A reply has to name the sender it is sent from. On Messenger and Instagram kite writes it from the inbound event, because the channel id hashes the sender's linked service and not the sender; on RCS the channel id includes the brand, and it is written when the channel is created."
           },
           "messagingReplyUntil": {
             "type": "number",
@@ -4783,7 +4847,7 @@
       },
       "MessageMessagingStatus": {
         "type": "string",
-        "description": "The delivery state of a message an agent sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS today). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
+        "description": "The delivery state of a message an x-bees user sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS, RCS.STATUS). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
         "enum": [
           "trying",
           "sent",
@@ -4850,7 +4914,7 @@
       },
       "MessagingChannel": {
         "type": "string",
-        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. RCS is listed but not accepted yet: whether an RCS conversation is a telephony channel is still open, so conversations refuses it until its ticket decides.",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. An RCS conversation is not a telephony channel, and its customer id is the person's phone number.",
         "enum": [
           "messenger",
           "instagram",
@@ -4952,6 +5016,10 @@
             "type": "boolean",
             "description": "Indicates if the channel supports auto start recording."
           },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
+          },
           "transcriptionLanguage": {
             "type": "string",
             "description": "Transcription language."
@@ -4965,7 +5033,7 @@
           },
           "messagingSenderId": {
             "type": "string",
-            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram. Written by kite from the inbound event, because the channel id hashes the sender's linked service and not the sender, and a reply has to name the sender it is sent from."
+            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram, the brand id on RCS. A reply has to name the sender it is sent from. On Messenger and Instagram kite writes it from the inbound event, because the channel id hashes the sender's linked service and not the sender; on RCS the channel id includes the brand, and it is written when the channel is created."
           },
           "messagingReplyUntil": {
             "type": "number",
@@ -5142,6 +5210,10 @@
             "type": "boolean",
             "description": "Indicates if the channel supports auto start recording."
           },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
+          },
           "transcriptionLanguage": {
             "type": "string",
             "description": "Transcription language."
@@ -5155,7 +5227,7 @@
           },
           "messagingSenderId": {
             "type": "string",
-            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram. Written by kite from the inbound event, because the channel id hashes the sender's linked service and not the sender, and a reply has to name the sender it is sent from."
+            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram, the brand id on RCS. A reply has to name the sender it is sent from. On Messenger and Instagram kite writes it from the inbound event, because the channel id hashes the sender's linked service and not the sender; on RCS the channel id includes the brand, and it is written when the channel is created."
           },
           "messagingReplyUntil": {
             "type": "number",
@@ -5294,6 +5366,122 @@
         "required": [
           "messageId",
           "userId"
+        ]
+      },
+      "WilmaChatArtifact": {
+        "type": "object",
+        "description": "An artifact the turn shared. The files stay in the artifacts store; `artifactId` opens it.",
+        "properties": {
+          "artifactId": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "artifactId",
+          "kind",
+          "size",
+          "title"
+        ]
+      },
+      "WilmaChatElement": {
+        "type": "object",
+        "description": "On every agent reply of a Wilma chat on the stream transport: the session and turn that produced it, how the turn went and what it shared. `verbosity` is the agent's setting when the session started; clients decide from it what to show. The turn's events are `startIndex`..`endIndex` of the session log: read them with GetSessionEvents(sessionId, startIndex).",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "verbosity": {
+            "$ref": "#/components/schemas/ChatVerbosity"
+          },
+          "turn": {
+            "type": "number",
+            "minimum": 1,
+            "description": "The turn of the session that produced this message. A steer that joins a running turn shares it."
+          },
+          "startIndex": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Index of the turn's first event (`turnStarted`) in the session log."
+          },
+          "endIndex": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Index of the turn's last event (completed, failed or stopped). Absent when the message was written before the turn ended."
+          },
+          "summary": {
+            "$ref": "#/components/schemas/WilmaChatTurnSummary"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WilmaChatArtifact"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "startIndex",
+          "summary",
+          "turn",
+          "verbosity"
+        ]
+      },
+      "WilmaChatTurnOutcome": {
+        "type": "string",
+        "description": "How the turn ended.",
+        "enum": [
+          "done",
+          "stopped",
+          "failed"
+        ]
+      },
+      "WilmaChatTurnSummary": {
+        "type": "object",
+        "description": "How the turn went. The calls themselves (input, output) are not stored here: they are the turn's events in the session log.",
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/WilmaChatTurnOutcome"
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "From the turn's start to its end. Absent when the turn had not ended."
+          },
+          "toolCount": {
+            "type": "number",
+            "description": "Steps the turn took, counted as the Wilma assistant counts its work steps: each tool call and each sandbox step (`SandboxStartedEvent`, `SandboxFailedEvent`)."
+          },
+          "failedCount": {
+            "type": "number",
+            "description": "Steps that failed: calls that failed, including those the stop or failure cut off, and sandbox steps that failed."
+          }
+        },
+        "required": [
+          "failedCount",
+          "outcome",
+          "toolCount"
         ]
       }
     },

@@ -348,6 +348,15 @@
           "group"
         ]
       },
+      "ChatVerbosity": {
+        "type": "string",
+        "description": "How much of a chat turn x-bees shows while the agent works. SMS and WhatsApp always send one final text.",
+        "enum": [
+          "none",
+          "simple",
+          "full"
+        ]
+      },
       "Element": {
         "oneOf": [
           {
@@ -375,6 +384,18 @@
             },
             "required": [
               "actions"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "wilma",
+            "properties": {
+              "wilma": {
+                "$ref": "#/components/schemas/WilmaChatElement"
+              }
+            },
+            "required": [
+              "wilma"
             ]
           }
         ]
@@ -575,13 +596,6 @@
           },
           "reactionCounts": {
             "$ref": "#/components/schemas/ReactionCounts"
-          },
-          "latestReactions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Reaction"
-            },
-            "description": "Most recent reactions per type. Fetch the full list on demand."
           },
           "pinned": {
             "type": "boolean",
@@ -817,7 +831,7 @@
       },
       "MessageMessagingStatus": {
         "type": "string",
-        "description": "The delivery state of a message an agent sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS today). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
+        "description": "The delivery state of a message an x-bees user sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS, RCS.STATUS). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
         "enum": [
           "trying",
           "sent",
@@ -903,7 +917,7 @@
       },
       "MessagingChannel": {
         "type": "string",
-        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. RCS is listed but not accepted yet: whether an RCS conversation is a telephony channel is still open, so conversations refuses it until its ticket decides.",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. An RCS conversation is not a telephony channel, and its customer id is the person's phone number.",
         "enum": [
           "messenger",
           "instagram",
@@ -920,34 +934,6 @@
         },
         "required": [
           "message"
-        ]
-      },
-      "Reaction": {
-        "type": "object",
-        "description": "One reaction on a message.",
-        "properties": {
-          "type": {
-            "type": "string",
-            "maxLength": 64,
-            "minLength": 1,
-            "pattern": "^[a-z0-9_+-]+$",
-            "description": "Reaction key. Free-form lowercase identifier (e.g. `thumbsup`, `heart`)."
-          },
-          "userId": {
-            "type": "string",
-            "maxLength": 12,
-            "minLength": 12
-          },
-          "messageId": {
-            "type": "string",
-            "maxLength": 32,
-            "minLength": 32
-          }
-        },
-        "required": [
-          "messageId",
-          "type",
-          "userId"
         ]
       },
       "ReactionCounts": {
@@ -1023,6 +1009,122 @@
         },
         "required": [
           "message"
+        ]
+      },
+      "WilmaChatArtifact": {
+        "type": "object",
+        "description": "An artifact the turn shared. The files stay in the artifacts store; `artifactId` opens it.",
+        "properties": {
+          "artifactId": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "artifactId",
+          "kind",
+          "size",
+          "title"
+        ]
+      },
+      "WilmaChatElement": {
+        "type": "object",
+        "description": "On every agent reply of a Wilma chat on the stream transport: the session and turn that produced it, how the turn went and what it shared. `verbosity` is the agent's setting when the session started; clients decide from it what to show. The turn's events are `startIndex`..`endIndex` of the session log: read them with GetSessionEvents(sessionId, startIndex).",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "verbosity": {
+            "$ref": "#/components/schemas/ChatVerbosity"
+          },
+          "turn": {
+            "type": "number",
+            "minimum": 1,
+            "description": "The turn of the session that produced this message. A steer that joins a running turn shares it."
+          },
+          "startIndex": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Index of the turn's first event (`turnStarted`) in the session log."
+          },
+          "endIndex": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Index of the turn's last event (completed, failed or stopped). Absent when the message was written before the turn ended."
+          },
+          "summary": {
+            "$ref": "#/components/schemas/WilmaChatTurnSummary"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WilmaChatArtifact"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "startIndex",
+          "summary",
+          "turn",
+          "verbosity"
+        ]
+      },
+      "WilmaChatTurnOutcome": {
+        "type": "string",
+        "description": "How the turn ended.",
+        "enum": [
+          "done",
+          "stopped",
+          "failed"
+        ]
+      },
+      "WilmaChatTurnSummary": {
+        "type": "object",
+        "description": "How the turn went. The calls themselves (input, output) are not stored here: they are the turn's events in the session log.",
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/WilmaChatTurnOutcome"
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "From the turn's start to its end. Absent when the turn had not ended."
+          },
+          "toolCount": {
+            "type": "number",
+            "description": "Steps the turn took, counted as the Wilma assistant counts its work steps: each tool call and each sandbox step (`SandboxStartedEvent`, `SandboxFailedEvent`)."
+          },
+          "failedCount": {
+            "type": "number",
+            "description": "Steps that failed: calls that failed, including those the stop or failure cut off, and sandbox steps that failed."
+          }
+        },
+        "required": [
+          "failedCount",
+          "outcome",
+          "toolCount"
         ]
       }
     },

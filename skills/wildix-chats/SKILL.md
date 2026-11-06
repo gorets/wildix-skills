@@ -76,7 +76,7 @@ Each section has one script, `bash <BASE_DIR>/scripts/<section>.sh <command> …
 channels.sh list [--section ID] [--filter unread|archived] [--cursor C]
 channels.sh get <channel>
 channels.sh query <channelId>...                           # not implemented yet
-channels.sh create-group --subject S [--description D] [--access private|public] [--member USERID]... [--invite EMAIL]... [--id 8-4-4-4-8]
+channels.sh create-group --subject S [--description D] [--access private|public] [--member USERID]... [--invite EMAIL]... [--id 8-4-4-4-8] [--auto-transcribe | --no-auto-transcribe]
 channels.sh direct (--user USERID | --email EMAIL)        # get or create the 1:1 channel
 channels.sh direct-id (--user USERID | --email EMAIL)     # only its id
 channels.sh update <channel> [--subject S] [--description D] [--access A] [--unset FIELD]...   # not implemented yet
@@ -94,7 +94,8 @@ messages.sh send <channel> <text|-> [--markdown] [--reply-to MESSAGE] [--mention
 messages.sh edit <channel> <message> <text|-> [--markdown]   # your own messages only
 messages.sh delete <channel> <message>                        # your own messages only; confirm first
 messages.sh pin <channel> <message> | unpin <channel> <message>
-messages.sh react <channel> <message> <type> | unreact … | reactions <channel> <message>
+messages.sh react <channel> <message> <type> | unreact …
+messages.sh reactions <channel> <message> [--type TYPE] [--users]   # who reacted; --users adds name, e-mail and bot of each
 ```
 
 `-` as the text reads stdin (multi-line text). A reaction type is a name of `[a-z0-9_+-]` (up to 64): `eyes`, `white_check_mark`, `thumbsup`, `thumbsdown`, `heart`, `clap`, `smiley` and the like. A user has one reaction of each type per message; adding or removing twice is harmless.
@@ -196,9 +197,9 @@ Not checked, because a call needs a valid body or a service token: the Kite, SMS
 Other things to know:
 - `messages.sh edit` uses the full update (`PUT`), because the partial one is not ready: it sends the new text together with what the message already has (attachments, quote, mentions), so nothing is lost. `--markdown` on an edit is accepted but the service does not store the flag yet; on `send` it does.
 - `channels.sh create-group` always sends an id of 8-4-4-4-8 characters. Without one the service makes a 36-character id that none of its own calls accepts afterwards.
-- **Who reacted is not returned yet.** The `Message` schema has `latestReactions` (with the `userId` of each reaction) and a message answers with it in the specification, but the service returns only `reactionCounts` for now, and the API has no operation that lists reactions. `messages.sh reactions` shows the counts and says so. You can tell that a reaction of a type exists, not whose it is; do not guess.
+- `autoTranscribe` (`--auto-transcribe`) makes a conference in the channel start transcription by itself. Without the flag the field is not sent, and clients follow `autoRecord`, which used to start both recording and transcription. It can be set only when the channel is created: `update` is not implemented yet.
+- **Who reacted** comes from `messages.sh reactions` (the `ListMessageReactions` operation, `POST /channels/{id}/reactions/query`), one entry per user and type, with the `userId` only; `--users` looks the people up. A message carries only `reactionCounts`: the `latestReactions` field is gone from the API, so read who reacted through `reactions`, not through `messages.sh get`.
 - `pin` and `unpin` set `editedAt` on the message, so a client shows it as edited though nobody edited it (reactions do not).
-- Members can have the role `owner`, which the OpenAPI enum (`member`, `supervisor`) does not list.
 - A deleted channel can still be read: the deletion is soft.
 
 ## Security

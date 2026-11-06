@@ -1835,6 +1835,10 @@
             "type": "boolean",
             "description": "Indicates if the channel supports auto start recording."
           },
+          "autoTranscribe": {
+            "type": "boolean",
+            "description": "Indicates if a conference in the channel starts transcription automatically. When absent, clients follow autoRecord, which used to start both recording and transcription."
+          },
           "transcriptionLanguage": {
             "type": "string",
             "description": "Transcription language."
@@ -1848,7 +1852,7 @@
           },
           "messagingSenderId": {
             "type": "string",
-            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram. Written by kite from the inbound event, because the channel id hashes the sender's linked service and not the sender, and a reply has to name the sender it is sent from."
+            "description": "The business side of the conversation: the Facebook Page ID on Messenger, the Instagram account ID on Instagram, the brand id on RCS. A reply has to name the sender it is sent from. On Messenger and Instagram kite writes it from the inbound event, because the channel id hashes the sender's linked service and not the sender; on RCS the channel id includes the brand, and it is written when the channel is created."
           },
           "messagingReplyUntil": {
             "type": "number",
@@ -2054,7 +2058,7 @@
       },
       "MessagingChannel": {
         "type": "string",
-        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. RCS is listed but not accepted yet: whether an RCS conversation is a telephony channel is still open, so conversations refuses it until its ticket decides.",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. An RCS conversation is not a telephony channel, and its customer id is the person's phone number.",
         "enum": [
           "messenger",
           "instagram",

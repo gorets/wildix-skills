@@ -2011,6 +2011,180 @@
         ]
       }
     },
+    "/api/v1/channels/{channelId}/reactions/query": {
+      "post": {
+        "description": "Lists who reacted to a batch of messages of one channel: one entry per message, user and reaction type, grouped by message in the order of `messageIds` and ordered by user id within a message. `type` keeps only the reactions of that type. A message that does not exist in the channel, or lies below the member's hidden history, has no entries. The caller must be a member of the channel.\n\n### Allowed Auth Scopes\n\n- messaging:ListMessageReactions\n- messaging:read",
+        "operationId": "ListMessageReactions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListMessageReactionsRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "channelId",
+            "in": "path",
+            "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it.",
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "^[0-9a-z_]{8}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{4}\\b-[0-9a-z_]{8}$",
+              "description": "Direct-channel ids are the 8-4-4-4-8 slices of the two member ids. An `a_` member id puts `_` in a slice, so the pattern allows it."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the tenant when a service token is used."
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "The unique identifier of the user when a service or PBX token is used.",
+            "schema": {
+              "type": "string",
+              "maxLength": 12,
+              "minLength": 12,
+              "description": "The unique identifier of the user when a service or PBX token is used."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListMessageReactions 200 response",
+            "headers": {
+              "X-Request-Duration": {
+                "description": "The duration of the request in milliseconds.",
+                "schema": {
+                  "type": "number",
+                  "description": "The duration of the request in milliseconds."
+                }
+              },
+              "X-Request-Id": {
+                "description": "The request ID of the request.",
+                "schema": {
+                  "type": "string",
+                  "description": "The request ID of the request."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListMessageReactionsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedException 401 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ChannelNotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelNotFoundExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "RateLimitExceededException 429 response",
+            "headers": {
+              "Retry-After": {
+                "description": "Displays how many seconds the user agent should wait before making a follow-up request.",
+                "schema": {
+                  "type": "number",
+                  "description": "Displays how many seconds the user agent should wait before making a follow-up request."
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Displays the applicable rate limits for the current request.",
+                "schema": {
+                  "type": "string",
+                  "description": "Displays the applicable rate limits for the current request."
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Indicates how many requests a user can still make within the current time window.",
+                "schema": {
+                  "type": "number",
+                  "description": "Indicates how many requests a user can still make within the current time window."
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Shows the time in seconds until the rate limit resets.",
+                "schema": {
+                  "type": "number",
+                  "description": "Shows the time in seconds until the rate limit resets."
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitExceededExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "StreamServiceException 500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamServiceExceptionResponseContent"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Messages"
+        ]
+      }
+    },
     "/api/v1/channels/{channelId}/system-messages": {
       "post": {
         "description": "Persists a backend-generated system message to a channel. Available with S2S authorization only. Each `message` variant maps to a server-side template; optional `event` carries a client rendering hint.\n\n### Allowed Auth Scopes\n\n- messaging:SendSystemMessage",
@@ -2636,6 +2810,15 @@
           "message"
         ]
       },
+      "ChatVerbosity": {
+        "type": "string",
+        "description": "How much of a chat turn x-bees shows while the agent works. SMS and WhatsApp always send one final text.",
+        "enum": [
+          "none",
+          "simple",
+          "full"
+        ]
+      },
       "DeleteMessageReactionResponseContent": {
         "type": "object",
         "properties": {
@@ -2675,6 +2858,18 @@
             "required": [
               "actions"
             ]
+          },
+          {
+            "type": "object",
+            "title": "wilma",
+            "properties": {
+              "wilma": {
+                "$ref": "#/components/schemas/WilmaChatElement"
+              }
+            },
+            "required": [
+              "wilma"
+            ]
           }
         ]
       },
@@ -2698,6 +2893,46 @@
         },
         "required": [
           "message"
+        ]
+      },
+      "ListMessageReactionsRequestContent": {
+        "type": "object",
+        "properties": {
+          "messageIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 32
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "description": "The messages to list the reactions of. A repeated id counts once."
+          },
+          "type": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[a-z0-9_+-]+$",
+            "description": "Only the reactions of this type."
+          }
+        },
+        "required": [
+          "messageIds"
+        ]
+      },
+      "ListMessageReactionsResponseContent": {
+        "type": "object",
+        "properties": {
+          "reactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reaction"
+            }
+          }
+        },
+        "required": [
+          "reactions"
         ]
       },
       "ListMessagesResponseContent": {
@@ -2768,13 +3003,6 @@
           },
           "reactionCounts": {
             "$ref": "#/components/schemas/ReactionCounts"
-          },
-          "latestReactions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Reaction"
-            },
-            "description": "Most recent reactions per type. Fetch the full list on demand."
           },
           "pinned": {
             "type": "boolean",
@@ -3081,7 +3309,7 @@
       },
       "MessageMessagingStatus": {
         "type": "string",
-        "description": "The delivery state of a message an agent sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS today). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
+        "description": "The delivery state of a message an x-bees user sent over a customer messaging channel (see MessagingChannel), the same four states as WhatsApp. TRYING, SENT and ERROR are written by kite around the send; DELIVERED and a late ERROR arrive through the channel's status stream event (MESSENGER.STATUS, RCS.STATUS). A READ report is recorded as DELIVERED, as the WhatsApp producer does one hop earlier.",
         "enum": [
           "trying",
           "sent",
@@ -3216,7 +3444,7 @@
       },
       "MessagingChannel": {
         "type": "string",
-        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. RCS is listed but not accepted yet: whether an RCS conversation is a telephony channel is still open, so conversations refuses it until its ticket decides.",
+        "description": "A customer messaging channel that reaches x-bees through classound and is not SMS or WhatsApp. One discriminator instead of a boolean per channel, so a new channel adds a member here and not a set of channel fields. An RCS conversation is not a telephony channel, and its customer id is the person's phone number.",
         "enum": [
           "messenger",
           "instagram",
@@ -3762,6 +3990,122 @@
       "WhatsAppClosedSystemMessage": {
         "type": "object",
         "description": "Empty payload for the WhatsApp 24-hour window closed system message."
+      },
+      "WilmaChatArtifact": {
+        "type": "object",
+        "description": "An artifact the turn shared. The files stay in the artifacts store; `artifactId` opens it.",
+        "properties": {
+          "artifactId": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1
+          },
+          "size": {
+            "type": "number",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "artifactId",
+          "kind",
+          "size",
+          "title"
+        ]
+      },
+      "WilmaChatElement": {
+        "type": "object",
+        "description": "On every agent reply of a Wilma chat on the stream transport: the session and turn that produced it, how the turn went and what it shared. `verbosity` is the agent's setting when the session started; clients decide from it what to show. The turn's events are `startIndex`..`endIndex` of the session log: read them with GetSessionEvents(sessionId, startIndex).",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "verbosity": {
+            "$ref": "#/components/schemas/ChatVerbosity"
+          },
+          "turn": {
+            "type": "number",
+            "minimum": 1,
+            "description": "The turn of the session that produced this message. A steer that joins a running turn shares it."
+          },
+          "startIndex": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Index of the turn's first event (`turnStarted`) in the session log."
+          },
+          "endIndex": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Index of the turn's last event (completed, failed or stopped). Absent when the message was written before the turn ended."
+          },
+          "summary": {
+            "$ref": "#/components/schemas/WilmaChatTurnSummary"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WilmaChatArtifact"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "startIndex",
+          "summary",
+          "turn",
+          "verbosity"
+        ]
+      },
+      "WilmaChatTurnOutcome": {
+        "type": "string",
+        "description": "How the turn ended.",
+        "enum": [
+          "done",
+          "stopped",
+          "failed"
+        ]
+      },
+      "WilmaChatTurnSummary": {
+        "type": "object",
+        "description": "How the turn went. The calls themselves (input, output) are not stored here: they are the turn's events in the session log.",
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/WilmaChatTurnOutcome"
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "From the turn's start to its end. Absent when the turn had not ended."
+          },
+          "toolCount": {
+            "type": "number",
+            "description": "Steps the turn took, counted as the Wilma assistant counts its work steps: each tool call and each sandbox step (`SandboxStartedEvent`, `SandboxFailedEvent`)."
+          },
+          "failedCount": {
+            "type": "number",
+            "description": "Steps that failed: calls that failed, including those the stop or failure cut off, and sandbox steps that failed."
+          }
+        },
+        "required": [
+          "failedCount",
+          "outcome",
+          "toolCount"
+        ]
       }
     },
     "securitySchemes": {

@@ -135,7 +135,7 @@ Version 2.0.0 removed the skills that went through the old x-bees conversations 
 | `wildix-update-message` | `messages.sh edit`, `messages.sh delete` |
 | `wildix-get-conference` | `wildix-calls-history`: `conferences.sh brief <id>...` (several at once), `conferences.sh transcript` |
 
-Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-react-message` and `wildix-chats-overview` stay for now: the new service does not tell who reacted, and there is no overview by date yet.
+Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-react-message` and `wildix-chats-overview` stay for now: `wildix-react-message` still works on the old conversations API, and there is no overview by date yet. Who reacted is available in `wildix-chats` (`messages.sh reactions`).
 
 ## Authentication
 

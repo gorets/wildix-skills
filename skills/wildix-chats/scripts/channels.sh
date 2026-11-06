@@ -8,6 +8,7 @@ Usage: channels.sh <command> [args]
   get <channel>
   query <channelId> [<channelId> ...]            (not implemented yet in the service)
   create-group --subject S [--description D] [--access private|public] [--member USERID]... [--invite EMAIL]... [--id 8-4-4-4-8]
+               [--auto-transcribe | --no-auto-transcribe]   conferences in it start transcription by themselves, or not
   direct (--user USERID | --email EMAIL)          get or create the 1:1 channel
   direct-id (--user USERID | --email EMAIL)       only resolve its id
   update <channel> [--subject S] [--description D] [--access A] [--unset FIELD]...   (not implemented yet in the service)
@@ -34,10 +35,11 @@ case "$cmd" in
     ids=(); for c in "$@"; do ids+=("$(norm_channel "$c")"); done
     stream_call POST /channels/query "$(jq -nc --argjson ids "$(jarr "${ids[@]}")" '{query:{ids:$ids}}')" ;;
   create-group)
-    subject=""; description=""; access=""; members=(); invites=(); cid=""
+    subject=""; description=""; access=""; members=(); invites=(); cid=""; transcribe=""
     while [[ $# -gt 0 ]]; do case "$1" in
       --subject) subject="$2"; shift 2 ;; --description) description="$2"; shift 2 ;; --access) access="$2"; shift 2 ;;
       --id) cid="$2"; shift 2 ;;
+      --auto-transcribe) transcribe=true; shift ;; --no-auto-transcribe) transcribe=false; shift ;;
       --member) members+=("$2"); shift 2 ;; --invite) invites+=("$2"); shift 2 ;; *) usage ;; esac; done
     [[ -n "$subject" ]] || die "--subject is required"
     # The service takes only ids of the form 8-4-4-4-8 characters in paths, but when none is given it makes
@@ -47,6 +49,7 @@ case "$cmd" in
     body='{}'; jset body channelId "$cid"; jset body subject "$subject"
     [[ -z "$description" ]] || jset body description "$description"
     [[ -z "$access" ]] || jset body access "$access"
+    [[ -z "$transcribe" ]] || jsetj body autoTranscribe "$transcribe"
     if [[ ${#members[@]} -gt 0 ]]; then jsetj body members "$(jarr "${members[@]}")"; fi
     if [[ ${#invites[@]} -gt 0 ]]; then
       inv=$(jarr "${invites[@]}" | jq -c 'map({email: .})'); jsetj body membersToInvite "$inv"; fi
