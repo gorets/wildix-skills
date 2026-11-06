@@ -4,6 +4,11 @@
 // service wants it.
 import {readFileSync, writeFileSync} from 'node:fs';
 
+// On macOS a piped stdout or stderr is asynchronous, and process.exit() right after a write cuts the output at
+// the pipe buffer (64 KB): an agent reading through a pipe would get broken JSON. Blocking writes keep every byte
+// written before an exit.
+for (const s of [process.stdout, process.stderr]) s._handle?.setBlocking?.(true);
+
 const out = (event, data) => process.stdout.write(`${event} ${JSON.stringify(data ?? {})}\n`);
 const fail = (message, code = 1) => {
   process.stderr.write(`Error: ${message}\n`);

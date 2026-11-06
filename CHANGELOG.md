@@ -2,6 +2,11 @@
 
 All notable changes to the Wildix agent skills. The version is the number of the whole pack, shown at the top of the [`README.md`](README.md); the skills standard has no place for it, and `npx skills` notices updates by the content of each skill folder, not by a number. It follows [Semantic Versioning](https://semver.org): a skill removed or renamed is a major version, a skill or a command added is a minor one, a fix is a patch.
 
+## 3.2.2 — 2026-11-07
+
+### Changed
+- `wildix-live-monitor`, `wildix-chats` (`watch.sh`) and `wildix-call-control` (`sip.sh`): the Node helpers write to stdout and stderr in blocking mode. On macOS a piped stdout is asynchronous, and the exit right after a write cut the output at 64 KB: `live.sh queues` or `live.sh conversations` read through a pipe (as an agent reads them) gave broken JSON in a large company. Output written to a file or a terminal was not affected.
+
 ## 3.2.1 — 2026-11-07
 
 ### Added

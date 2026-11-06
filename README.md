@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-**Version 3.2.1** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
+**Version 3.2.2** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
 
 AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
