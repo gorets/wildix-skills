@@ -18,11 +18,6 @@ peers:
     purpose: Fetch and summarize x-bees chats for today, yesterday, a specific date, or a date range.
 
 
-  - name: wildix-react-message
-    install: npx skills add gorets/wildix-skills --s wildix-react-message
-    install_policy: ask
-    purpose: Add, remove or list a reaction on an x-bees message as the authenticated user.
-
   - name: wildix-chats
     install: npx skills add gorets/wildix-skills --s wildix-chats
     install_policy: ask

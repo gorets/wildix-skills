@@ -1,6 +1,6 @@
 {
   "name": "wildix",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Unofficial AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, messaging, the new Wildix Stream service, the history of calls and meetings with transcripts and AI summaries, reactions, editing your own messages, and turning meeting transcriptions into published ADRs. Not an official Wildix product.",
   "author": {
     "name": "Vladimir Gorobets",

@@ -20,7 +20,6 @@ Or install individual skills:
 ```bash
 npx skills add gorets/wildix-skills --s wildix-auth -y
 npx skills add gorets/wildix-skills --s wildix-chats-overview -y
-npx skills add gorets/wildix-skills --s wildix-react-message -y
 npx skills add gorets/wildix-skills --s wildix-chats -y
 npx skills add gorets/wildix-skills --s wildix-calls-history -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
@@ -52,21 +51,11 @@ Fetches and summarizes x-bees messages for a given period: today, yesterday, a s
 
 ---
 
-### `wildix-react-message`
-
-Adds, removes or lists a reaction (`eyes`, `thumbsup`, `white_check_mark`, …) on an x-bees message as the authenticated user, so the reaction shows under their own name.
-
-**Triggers:** "put eyes on that message", "react with a check mark", "mark the message as taken", "remove my reaction", "who reacted to this message"
-
-**Depends on:** `wildix-auth`
-
----
-
 ### `wildix-chats`
 
-Chats on the new Wildix Stream service (`stream.wildix.com`), the replacement of the x-bees conversations API, **as the logged-in user**, never as a bot: channels, messages (send, edit, delete, pin, reactions), members, inbox and unread, search over messages, channels and users (the user search is fuzzy: names in any script, typos, names as they sound, exact by e-mail or phone), files, mentions, users. One script per section, and the OpenAPI of each section as its reference, read piece by piece with `openapi.sh`.
+Chats on the new Wildix Stream service (`stream.wildix.com`), the replacement of the x-bees conversations API, **as the logged-in user**, never as a bot: channels, messages (send, edit, delete, pin, reactions and who reacted), members, inbox and unread, search over messages, channels and users (the user search is fuzzy: names in any script, typos, names as they sound, exact by e-mail or phone), files, mentions, users. One script per section, and the OpenAPI of each section as its reference, read piece by piece with `openapi.sh`.
 
-**Triggers:** "show my chats", "read the messages in this chat", "react with a check mark", "search the chats for X", "what did I miss", "who is in this channel"
+**Triggers:** "show my chats", "read the messages in this chat", "react with a check mark", "who reacted to this message", "search the chats for X", "what did I miss", "who is in this channel"
 
 **Depends on:** `wildix-auth`
 
@@ -135,7 +124,7 @@ Version 2.0.0 removed the skills that went through the old x-bees conversations 
 | `wildix-update-message` | `messages.sh edit`, `messages.sh delete` |
 | `wildix-get-conference` | `wildix-calls-history`: `conferences.sh brief <id>...` (several at once), `conferences.sh transcript` |
 
-Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-react-message` and `wildix-chats-overview` stay for now: `wildix-react-message` still works on the old conversations API, and there is no overview by date yet. Who reacted is available in `wildix-chats` (`messages.sh reactions`).
+Posting as a bot (a `BOT_TOKEN`) is no longer covered by these skills. `wildix-chats-overview` stays for now: there is no overview by date yet. Reactions, including who reacted, are in `wildix-chats` (`messages.sh react`, `unreact`, `reactions`); `wildix-react-message` is removed.
 
 ## Authentication
 

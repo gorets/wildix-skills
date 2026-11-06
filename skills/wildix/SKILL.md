@@ -24,7 +24,7 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 | "show today's chats", "summarize messages", "what was discussed" | `wildix-chats-overview` |
 | a call or meeting that is over: transcript, AI summary, decisions, recording, call history, missed calls, find a meeting, as the user | `wildix-calls-history` |
 | "write an ADR from this call", an ADR from a meeting link | `wildix-adr-from-meeting` |
-| "react with…", "put eyes on that message", "who reacted" | `wildix-react-message` |
+| "react with…", "put eyes on that message", "who reacted" | `wildix-chats` |
 | chats, messages, inbox and unread, search, members, files, mentions, find a colleague, send, edit or delete a message, as the user | `wildix-chats` |
 
 ## Peer skill procedure
