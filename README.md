@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
+AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
 > **Unofficial project.** These skills are a personal project, not an official Wildix product. They
 > are not released, endorsed or supported by Wildix, and Wildix gives no warranty for them. They
@@ -22,6 +22,7 @@ npx skills add gorets/wildix-skills --s wildix-auth -y
 npx skills add gorets/wildix-skills --s wildix-chats-overview -y
 npx skills add gorets/wildix-skills --s wildix-chats -y
 npx skills add gorets/wildix-skills --s wildix-calls-history -y
+npx skills add gorets/wildix-skills --s wildix-call-control -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -29,7 +30,7 @@ npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 
 ### `wildix` *(router)*
 
-Names the skill that does a thing: chats, calls and meetings after the fact, ADRs. It reads nothing and changes nothing itself; it only points at the right sub-skill, and says what to install when one is missing.
+Names the skill that does a thing: chats, calls and meetings after the fact, live calls, ADRs. It reads nothing and changes nothing itself; it only points at the right sub-skill, and says what to install when one is missing.
 
 ---
 
@@ -70,6 +71,20 @@ What is on record about calls and meetings (conferences) that are over, as the l
 **Triggers:** "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls", "find the meeting with Anna on Monday"
 
 **Depends on:** `wildix-auth`
+
+---
+
+### `wildix-call-control`
+
+Live phone calls on your Wildix PBX, **as the logged-in user**, from your own extension: place a call (click-to-call: the PBX rings your phone or x-bees first, then dials), answer, hold and resume, hang up, blind and attended transfer, DTMF, the name shown for a call, the calls going on now, your registered devices and which one rings (a device, the mobile, all). It uses the PBX's Call Control REST API (`/api/v2/call-control/`, [documented by Wildix](https://docs.wildix.com/api-reference/rest/wms/pbx)). The PBX is taken from your x-bees login, which the PBX accepts as it is: nothing else to configure.
+
+`sip.sh` adds a live view over SIP: one line per call, device, presence and ringing-mode event, to be watched by the agent, plus recording and the transfer through a conference. It needs Node.js 24+, and on its first run installs two pinned npm packages ([`@gorets/wildix-callcontrol`](https://www.npmjs.com/package/@gorets/wildix-callcontrol) and `sip.js`) into `~/.cache/wildix-call-control`.
+
+**Triggers:** "call 201", "hang up", "transfer this call to 305", "press 1", "record this call", "which phones are online", "ring only my desk phone", "tell me when someone calls"
+
+**Depends on:** `wildix-auth`
+
+The PBX needs a recent WMS (7.11 has the API); an older one answers 404 to the REST part.
 
 ---
 
@@ -152,7 +167,13 @@ The references of `wildix-calls-history` are built the same way from the OpenAPI
 node tools/split-wda-openapi.mjs <path to>/wda-history-client.openapi.json <path to>/wda-insights-client.openapi.json
 ```
 
-Both sources are produced by the SDK generator (the same documents are also published, a little older, under `sdk-docs/static/codegen/api/`) (`yarn install`, then `node scripts/build-clients -s wda-history-client`, and the same for `wda-insights-client`, in `sdk-ts`): they land in `packages/<client>/etc/<client>.openapi.json`. Note that the generator also rewrites the tracked client sources of those packages.
+The reference of `wildix-call-control` is cut from the PBX API document that docs.wildix.com publishes (`https://docs.wildix.com/pbx-openapi.yaml`); the script keeps the Call Control operations and points the server at `/api/v2`, where they live:
+
+```bash
+python3 tools/extract-pbx-call-control.py <path to>/pbx-openapi.yaml
+```
+
+The two WDA sources are produced by the SDK generator (the same documents are also published, a little older, under `sdk-docs/static/codegen/api/`) (`yarn install`, then `node scripts/build-clients -s wda-history-client`, and the same for `wda-insights-client`, in `sdk-ts`): they land in `packages/<client>/etc/<client>.openapi.json`. Note that the generator also rewrites the tracked client sources of those packages.
 
 Operations the service does not implement yet are listed in `tools/stream-not-implemented.json`; the generator marks them (`x-not-implemented`) and `openapi.sh ops` shows `[NOT IMPLEMENTED YET]`. When the service gets one ready, remove it from that file, regenerate, and update the tables in `skills/wildix-chats/SKILL.md` (Sections and Known gaps).
 
@@ -161,6 +182,7 @@ Operations the service does not implement yet are listed in `tools/stream-not-im
 - `jq` — `brew install jq` (macOS) or `apt install jq` (Linux)
 - `python3` — included on macOS/Linux
 - `curl` — included on macOS/Linux
+- Node.js 24+ and npm — only for the live view of `wildix-call-control` (`sip.sh`)
 - an Atlassian MCP server in Claude Code — only for `wildix-adr-from-meeting`, to publish to Confluence
 
 ## License

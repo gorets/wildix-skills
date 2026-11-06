@@ -1,0 +1,11 @@
+{
+  "name": "wildix-call-control-sip",
+  "private": true,
+  "description": "Runtime dependencies of sip.sh (the live call watcher of the wildix-call-control skill).",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "dependencies": {
+    "@gorets/wildix-callcontrol": "0.4.0",
+    "sip.js": "0.21.2"
+  }
+}

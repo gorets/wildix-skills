@@ -1,6 +1,6 @@
 ---
 name: wildix
-description: Router for the Wildix skills. Use when the user wants to work with x-bees chats, channels and messages, to find a colleague, or to read what is on record about calls and meetings that are over (record, transcript, summary), or to write an ADR from a meeting; it names the sub-skill that does it.
+description: Router for the Wildix skills. Use when the user wants to work with x-bees chats, channels and messages, to find a colleague, or to read what is on record about calls and meetings that are over (record, transcript, summary), to place or control a live phone call or watch calls as they happen, or to write an ADR from a meeting; it names the sub-skill that does it.
 license: MIT
 metadata:
   author: Vladimir Gorobets
@@ -23,6 +23,7 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 | "log in", "authenticate", token missing/expired | `wildix-auth` |
 | "show today's chats", "summarize messages", "what was discussed" | `wildix-chats-overview` |
 | a call or meeting that is over: transcript, AI summary, decisions, recording, call history, missed calls, find a meeting, as the user | `wildix-calls-history` |
+| a live phone call: call a number, answer, hold, transfer, hang up, DTMF, record, which phone rings, watch calls as they happen, as the user | `wildix-call-control` |
 | "write an ADR from this call", an ADR from a meeting link | `wildix-adr-from-meeting` |
 | "react with…", "put eyes on that message", "who reacted" | `wildix-chats` |
 | chats, messages, inbox and unread, search, members, files, mentions, find a colleague, send, edit or delete a message, as the user | `wildix-chats` |

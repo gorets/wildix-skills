@@ -1,0 +1,1405 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Wildix PBX Call Control",
+    "version": "1.0",
+    "description": "The Call Control operations of the Wildix PBX API (WMS), taken from https://docs.wildix.com/pbx-openapi.yaml. They live under /api/v2/call-control/ of the user's PBX. The wildix-call-control skill calls them with the user's x-bees login token (Authorization: Bearer <ID token>); the PBX also takes the other schemes listed here."
+  },
+  "servers": [
+    {
+      "url": "https://{pbx}/api/v2",
+      "variables": {
+        "pbx": {
+          "default": "demo.wildixin.com",
+          "description": "The user's PBX host (with :port when it is not 443)"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Call Control",
+      "description": "Call control operations for managing active calls. Available at /api/v2/call-control/"
+    }
+  ],
+  "paths": {
+    "/call-control/make-call/": {
+      "post": {
+        "operationId": "makeCall",
+        "summary": "Initiate a new call",
+        "description": "Initiate a new outbound call from the specified user to the destination.\n\n**Access Control:**\n- Root admin can specify any user extension via query parameter\n- Regular users can only make calls from their own extension\n\n**Device Selection:**\n- If no deviceContact is provided, the user's active device will be used automatically\n- If no callType is specified, defaults to 'device' type\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user",
+            "schema": {
+              "type": "string"
+            },
+            "description": "User extension (only for root admins)",
+            "example": "101"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "destination"
+                ],
+                "properties": {
+                  "destination": {
+                    "type": "string",
+                    "description": "Destination number or extension",
+                    "example": "102"
+                  },
+                  "callType": {
+                    "type": "string",
+                    "description": "Type of call",
+                    "enum": [
+                      "any",
+                      "mobility",
+                      "device"
+                    ],
+                    "default": "device"
+                  },
+                  "deviceContact": {
+                    "type": "string",
+                    "description": "Device contact URI (if not provided, uses user's active device)",
+                    "example": "sip:101@192.168.1.100"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call initiated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Call initiated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/answer/": {
+      "post": {
+        "operationId": "answerCall",
+        "summary": "Answer an incoming call",
+        "description": "Answer an incoming call using the specified call ID\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  },
+                  "deviceContact": {
+                    "type": "string",
+                    "description": "Device contact URI",
+                    "example": "sip:101@192.168.1.100"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call answered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Call answered successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/hold/": {
+      "post": {
+        "operationId": "holdCall",
+        "summary": "Put a call on hold",
+        "description": "Put the specified call on hold\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call put on hold successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Call put on hold successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/unhold/": {
+      "post": {
+        "operationId": "unholdCall",
+        "summary": "Resume a call from hold",
+        "description": "Resume the specified call from hold\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call resumed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Call resumed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/blind-transfer/": {
+      "post": {
+        "operationId": "blindTransferCall",
+        "summary": "Perform a blind transfer",
+        "description": "Transfer a call directly to another destination without consultation.\nThe destination can be an extension number, phone number.\n\n**Access Control:**\n- Root admin can specify any user extension via query parameter\n- Regular users can only transfer their own calls\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user",
+            "schema": {
+              "type": "string"
+            },
+            "description": "User extension (only for root admins)",
+            "example": "101"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId",
+                  "destination"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier of the call to transfer",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  },
+                  "destination": {
+                    "type": "string",
+                    "description": "Transfer destination (extension, phone number)",
+                    "example": "102"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Blind transfer completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Blind transfer completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/attendant-transfer/": {
+      "post": {
+        "operationId": "attendantTransferCall",
+        "summary": "Perform an attendant transfer",
+        "description": "Transfer a call to another active call (consultation transfer).\nThe destination should be the SIP call ID of another active call\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId",
+                  "destination"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier of the call to transfer",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  },
+                  "destination": {
+                    "type": "string",
+                    "description": "SIP call identifier of the target call",
+                    "example": "enl0j7aen2c8i6ulg39v"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attendant transfer completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Attendant transfer completed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/dtmf/": {
+      "post": {
+        "operationId": "sendDtmf",
+        "summary": "Send DTMF to a call",
+        "description": "Send DTMF to the specified call\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId",
+                  "digits"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  },
+                  "digits": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 10,
+                    "description": "Digits to send",
+                    "example": "*111#"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DTMF sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "DTMF sent successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "404": {
+            "description": "Call not found for this user"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/hangup/": {
+      "post": {
+        "operationId": "hangupCall",
+        "summary": "End a call",
+        "description": "Terminate the specified active call\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "SIP call identifier",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call ended successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Call ended successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/list-devices/": {
+      "get": {
+        "operationId": "listDevices",
+        "summary": "List registered devices",
+        "description": "Get a list of registered devices for an extension.\n\n**Access Control:**\n- Root admin can query any extension by providing the 'user' parameter\n- Regular users can only query their own devices\n\n### Allowed Auth Scopes\n\n- `callcontrol:read`\n- `pbx:read`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Extension to query (only for root admin)",
+            "example": "101"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "devices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "userAgent": {
+                            "type": "string",
+                            "example": "Wildix Collaboration 3.0.1"
+                          },
+                          "contact": {
+                            "type": "string",
+                            "example": "sip:101@192.168.1.100:5060"
+                          },
+                          "active": {
+                            "type": "boolean",
+                            "description": "Whether this device is currently selected as active device",
+                            "example": false
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "500": {
+            "description": "Failed to retrieve device information"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:read",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:read",
+          "pbx:read"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/set-active-device/": {
+      "put": {
+        "operationId": "setActiveDevice",
+        "summary": "Set active device for calling",
+        "description": "Set which device should be used for outgoing calls.\n\n**Device Types:**\n- device: Specific physical device (requires contact and userAgent)\n- mobility: Mobile/forwarding mode\n- any: Ring all devices\n\n**Access Control:**\n- Authenticated users can set their own active device\n- Root admin can set active device for other users (with 'user' parameter)\n\n**Note:** The device user agent must match the pattern supported by Kamailio\n(e.g., Wildix WP, Zero Distance, Android, iOS, Vision, SuperVision, Web, etc.)\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Extension (only for root admin)",
+            "example": "101"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "Physical Device",
+                    "description": "Schema for setting a specific physical device",
+                    "properties": {
+                      "deviceType": {
+                        "type": "string",
+                        "enum": [
+                          "device"
+                        ],
+                        "description": "Physical device type",
+                        "example": "device"
+                      },
+                      "contact": {
+                        "type": "string",
+                        "pattern": "^sip:",
+                        "description": "SIP contact URI",
+                        "example": "sip:101@192.168.1.100:5060"
+                      },
+                      "userAgent": {
+                        "type": "string",
+                        "description": "Device user agent (must be a Wildix device)",
+                        "example": "Wildix Zero Distance 4.0.1"
+                      },
+                      "user": {
+                        "type": "string",
+                        "description": "Extension (only for root admin)",
+                        "example": "101"
+                      }
+                    },
+                    "required": [
+                      "deviceType",
+                      "contact",
+                      "userAgent"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "title": "Mobility Mode",
+                    "description": "Schema for setting mobility/forwarding mode",
+                    "properties": {
+                      "deviceType": {
+                        "type": "string",
+                        "enum": [
+                          "mobility"
+                        ],
+                        "description": "Mobile/forwarding mode",
+                        "example": "mobility"
+                      },
+                      "user": {
+                        "type": "string",
+                        "description": "Extension (only for root admin)",
+                        "example": "101"
+                      }
+                    },
+                    "required": [
+                      "deviceType"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "title": "Ring All Devices",
+                    "description": "Schema for ringing all registered devices",
+                    "properties": {
+                      "deviceType": {
+                        "type": "string",
+                        "enum": [
+                          "any"
+                        ],
+                        "description": "Ring all registered devices",
+                        "example": "any"
+                      },
+                      "user": {
+                        "type": "string",
+                        "description": "Extension (only for root admin)",
+                        "example": "101"
+                      }
+                    },
+                    "required": [
+                      "deviceType"
+                    ]
+                  }
+                ]
+              },
+              "examples": {
+                "physicalDevice": {
+                  "summary": "Set specific physical device",
+                  "value": {
+                    "deviceType": "device",
+                    "contact": "sip:101@192.168.1.100:5060",
+                    "userAgent": "Wildix Zero Distance 4.0.1"
+                  }
+                },
+                "mobility": {
+                  "summary": "Set mobility mode",
+                  "value": {
+                    "deviceType": "mobility"
+                  }
+                },
+                "anyDevice": {
+                  "summary": "Ring all devices",
+                  "value": {
+                    "deviceType": "any"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Active device set successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Active device set successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "description": "Device not supported or permission denied"
+          },
+          "404": {
+            "description": "Device contact not found in registered devices"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/list-calls/": {
+      "get": {
+        "operationId": "listCalls",
+        "summary": "List active calls",
+        "description": "Get a list of active calls for an extension.\n\n**Access Control:**\n- Root admin can query any extension by providing the 'user' parameter\n- Regular users can only query their own calls\n\n### Allowed Auth Scopes\n\n- `callcontrol:read`\n- `pbx:read`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Extension to query (only for root admin)",
+            "example": "101"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Call list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "calls": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "sipCallId": {
+                            "type": "string",
+                            "example": "fbkngmn97hi6gcmor87l"
+                          },
+                          "callerNumber": {
+                            "type": "string",
+                            "example": "101"
+                          },
+                          "callerName": {
+                            "type": "string",
+                            "example": "John Doe"
+                          },
+                          "calleeNumber": {
+                            "type": "string",
+                            "example": "102"
+                          },
+                          "calleeName": {
+                            "type": "string",
+                            "example": "Jane Smith"
+                          },
+                          "state": {
+                            "type": "string",
+                            "example": "Up"
+                          },
+                          "duration": {
+                            "type": "integer",
+                            "description": "Call duration in seconds",
+                            "example": 120
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of active calls",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "$ref": "#/components/responses/CompanyApiKeyForbidden"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:read",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:read",
+          "pbx:read"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    },
+    "/call-control/update-contact-info/": {
+      "post": {
+        "operationId": "updateContactInfo",
+        "summary": "Update contact information for an active call",
+        "description": "Updates the name and/or number displayed for a specific call.\n\n**Access Control:**\n- Root admin can update any call\n- Regular users can only update their own calls\n\n### Allowed Auth Scopes\n\n- `callcontrol:*`\n- `pbx:*`",
+        "tags": [
+          "Call Control"
+        ],
+        "servers": [
+          {
+            "url": "https://{subdomain}.wildixin.com:{port}/api/v2",
+            "variables": {
+              "subdomain": {
+                "default": "demo",
+                "description": "Wildix PBX subdomain"
+              },
+              "port": {
+                "default": 443
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sipCallId"
+                ],
+                "properties": {
+                  "sipCallId": {
+                    "type": "string",
+                    "description": "Unique ID of the call to update",
+                    "example": "fbkngmn97hi6gcmor87l"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "New name to display (optional if number is provided)",
+                    "example": "John Smith"
+                  },
+                  "number": {
+                    "type": "string",
+                    "description": "New number to display (optional if name is provided)",
+                    "example": "+1234567890"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact information updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact information updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "403": {
+            "description": "Forbidden - user doesn't have permission"
+          },
+          "404": {
+            "description": "Call not found for this user"
+          },
+          "503": {
+            "description": "Unable to connect to PBX engine"
+          }
+        },
+        "x-wildix-companyApiKeyScope": "callcontrol:*",
+        "x-wildix-companyApiKeyAllowedScopes": [
+          "callcontrol:*",
+          "pbx:*"
+        ],
+        "security": [
+          {
+            "OAuth2": []
+          },
+          {
+            "session": []
+          },
+          {
+            "Token": []
+          },
+          {
+            "Bearer": []
+          },
+          {
+            "CompanyApiKey": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "CompanyApiKeyForbidden": {
+        "description": "Company API Key is valid but the route is unsupported or the key lacks the required scope."
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "in": "header",
+        "description": "OAuth2 Authorization Code or Implicit grant. See Authentication section for grant types and RFC links.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://{PBX}/authorization/oauth2",
+            "tokenUrl": "https://{PBX}/authorization/oauth2Token",
+            "scopes": {
+              "all": "Grants full access by user ACL permissions"
+            }
+          }
+        }
+      },
+      "Token": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Simple Token integration. Use `Authorization: Bearer access_...` or the `token` query parameter. See Authentication section."
+      },
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Host, Authorization, X-APP-ID",
+        "in": "header",
+        "description": "S2S JWT (Bearer). See **S2S JWT signing** in the Authentication section."
+      },
+      "CompanyApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Company API Key (`wsk-v1-...`, 100 characters). Send as `Authorization: Bearer wsk-v1-...`. Requires a route-specific scope — see `x-wildix-companyApiKeyScope` on each operation."
+      }
+    }
+  }
+}

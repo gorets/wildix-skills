@@ -1,7 +1,7 @@
 {
   "name": "wildix",
-  "version": "3.0.0",
-  "description": "Unofficial AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, messaging, the new Wildix Stream service, the history of calls and meetings with transcripts and AI summaries, reactions, editing your own messages, and turning meeting transcriptions into published ADRs. Not an official Wildix product.",
+  "version": "3.1.0",
+  "description": "Unofficial AI agent skills for Wildix x-bees: authentication, chats, channels, conferences, messaging, the new Wildix Stream service, the history of calls and meetings with transcripts and AI summaries, live call control on the PBX (place, answer, transfer, record, watch calls), reactions, editing your own messages, and turning meeting transcriptions into published ADRs. Not an official Wildix product.",
   "author": {
     "name": "Vladimir Gorobets",
     "url": "https://github.com/gorets"
@@ -23,7 +23,9 @@
     "stream",
     "calls",
     "conferences",
-    "transcription"
+    "transcription",
+    "call-control",
+    "pbx"
   ],
   "skills": "./skills/"
 }
