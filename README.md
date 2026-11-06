@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
+AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
 > **Unofficial project.** These skills are a personal project, not an official Wildix product. They
 > are not released, endorsed or supported by Wildix, and Wildix gives no warranty for them. They
@@ -23,6 +23,7 @@ npx skills add gorets/wildix-skills --s wildix-chats-overview -y
 npx skills add gorets/wildix-skills --s wildix-chats -y
 npx skills add gorets/wildix-skills --s wildix-calls-history -y
 npx skills add gorets/wildix-skills --s wildix-call-control -y
+npx skills add gorets/wildix-skills --s wildix-live-monitor -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -30,7 +31,7 @@ npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 
 ### `wildix` *(router)*
 
-Names the skill that does a thing: chats, calls and meetings after the fact, live calls, ADRs. It reads nothing and changes nothing itself; it only points at the right sub-skill, and says what to install when one is missing.
+Names the skill that does a thing: chats, calls and meetings after the fact, live calls, what is going on now, ADRs. It reads nothing and changes nothing itself; it only points at the right sub-skill, and says what to install when one is missing.
 
 ---
 
@@ -56,7 +57,9 @@ Fetches and summarizes x-bees messages for a given period: today, yesterday, a s
 
 Chats on the new Wildix Stream service (`stream.wildix.com`), the replacement of the x-bees conversations API, **as the logged-in user**, never as a bot: channels, messages (send, edit, delete, pin, reactions and who reacted), members, inbox and unread, search over messages, channels and users (the user search is fuzzy: names in any script, typos, names as they sound, exact by e-mail or phone), files, mentions, users. One script per section, and the OpenAPI of each section as its reference, read piece by piece with `openapi.sh`.
 
-**Triggers:** "show my chats", "read the messages in this chat", "react with a check mark", "who reacted to this message", "search the chats for X", "what did I miss", "who is in this channel"
+`watch.sh` follows the chats live through the websocket of the service: one line per new, edited or deleted message, reaction, read receipt, member or channel change, filtered by channel, person or event, until stopped, for a while or for a number of events ("tell me when Anna answers"). It needs Node.js 22+ and no npm packages.
+
+**Triggers:** "show my chats", "read the messages in this chat", "react with a check mark", "who reacted to this message", "search the chats for X", "what did I miss", "who is in this channel", "tell me when Anna writes"
 
 **Depends on:** `wildix-auth`
 
@@ -85,6 +88,18 @@ Live phone calls on your Wildix PBX, **as the logged-in user**, from your own ex
 **Depends on:** `wildix-auth`
 
 The PBX needs a recent WMS (7.11 has the API); an older one answers 404 to the REST part.
+
+---
+
+### `wildix-live-monitor`
+
+What is going on **now** in your company, as the logged-in user, read only, from the live stream of Wildix Data Analytics (WDA) that the x-bees supervisor views use: every call queue with the calls in it and its agents (available, paused, in DND and why), the calls, customer chats and conferences in progress with their live AI insights (sentiment, CSAT, topics), presence of colleagues, the live transcript of a call in progress, and all of it as a feed, one line per change, to be watched by the agent. Queues and the conversations of the company need a Premium PBX license; the conversations a user sees follow their PBX right to view calls of other groups. Short views by default: e-mail, IP addresses and locations of people only on request.
+
+**Triggers:** "what's going on in the support queue", "who is paused in the sales queue", "which customer chats wait for a reply", "is Anna available", "what is the customer saying on my call", "tell me when a call comes into the queue"
+
+**Depends on:** `wildix-auth`
+
+Needs Node.js 22+ (no npm packages).
 
 ---
 
@@ -183,6 +198,7 @@ Operations the service does not implement yet are listed in `tools/stream-not-im
 - `python3` — included on macOS/Linux
 - `curl` — included on macOS/Linux
 - Node.js 24+ and npm — only for the live view of `wildix-call-control` (`sip.sh`)
+- Node.js 22+ — only for `wildix-live-monitor` and the live events of `wildix-chats` (`watch.sh`)
 - an Atlassian MCP server in Claude Code — only for `wildix-adr-from-meeting`, to publish to Confluence
 
 ## License

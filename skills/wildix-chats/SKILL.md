@@ -1,7 +1,7 @@
 ---
 name: wildix-chats
 description: >-
-  Use when asked to work with chats on the new Wildix Stream service (stream.wildix.com), the replacement of the x-bees conversations API. It acts as the logged-in user, never as a bot: list or read channels and messages, send, edit or delete a message, react, pin, search messages or channels, check the inbox and unread, mentions, channel members, files and attachments. Also to find a colleague in the corporate directory by name (any script, typos, a name as it sounds), e-mail or phone and get their user id, e-mail or extension, and to write to a person by name. Triggers on requests like "show my chats", "read the messages in this chat", "send a message to the channel", "write to Vladimir", "react with a check mark", "who reacted to this message", "search the chats for X", "what did I miss", "who is in this channel", "find Gorobets", "what is Marina's extension", "download the file from that message".
+  Use when asked to work with chats on the new Wildix Stream service (stream.wildix.com), the replacement of the x-bees conversations API. It acts as the logged-in user, never as a bot: list or read channels and messages, send, edit or delete a message, react, pin, search messages or channels, check the inbox and unread, mentions, channel members, files and attachments, and follow the chats live as they happen. Also to find a colleague in the corporate directory by name (any script, typos, a name as it sounds), e-mail or phone and get their user id, e-mail or extension, and to write to a person by name. Triggers on requests like "show my chats", "read the messages in this chat", "send a message to the channel", "write to Vladimir", "react with a check mark", "who reacted to this message", "search the chats for X", "what did I miss", "who is in this channel", "find Gorobets", "what is Marina's extension", "download the file from that message", "tell me when Anna writes", "wait for a reply".
 license: MIT
 metadata:
   author: Vladimir Gorobets
@@ -68,6 +68,7 @@ Each section has one script, `bash <BASE_DIR>/scripts/<section>.sh <command> …
 | Mentions | `mentions.sh` | messages that mention the user | works | `mentions.openapi.json` |
 | Sections | `sections.sh` | the user's custom inbox sections | **not implemented yet: the whole section** | `sections.openapi.json` |
 | Users | `users.sh` | the logged-in user, lookup by id, e-mail or phone | works | `users.openapi.json` |
+| Live events | `watch.sh` | new, edited and deleted messages, reactions, reads, members, channel changes as they happen | works (Node.js 22+) | none: a websocket |
 
 **Not implemented yet** means the service answers HTTP 400 `Operation <Name> is not implemented.` to that call. Do not try it or retry it: tell the user it is not ready. The list is in Known gaps and is checked against the service, so it will shrink.
 ### Channels
@@ -164,6 +165,32 @@ users.sh me
 users.sh query [--id USERID]... [--email EMAIL]... [--phone PHONE]...
 ```
 
+### Live events (`watch.sh`)
+
+```bash
+watch.sh [--channel C]... [--from USERID]... [--type TYPE]... [--mine] [--count N] [--for SECONDS] [--raw]
+```
+
+Follows the user's chats live through the websocket of the service (`wss://eu-1-ws.stream.wildix.com`): one line per event, `<event> <json>`, for every channel the user is a member of, until stopped, for `--for` seconds or for `--count` events. It only listens: nothing is sent to any chat and nothing is marked read.
+
+| Line | Data |
+|---|---|
+| `READY` | `user` (the user's id) and the filters; `RECONNECTED` after a renewal, `RECONNECTING` while it renews, `END` at the end |
+| `message.new`, `message.updated`, `message.deleted` | `channelId`, `channel` (subject), `channelType`, `messageId`, `seq` (`timelineSeq`), `from {id, name}`, `text`, `attachments`, `mentions`, `unread` (the user's unread messages, all channels) |
+| `reaction.new`, `reaction.updated`, `reaction.deleted` | the message, `messageAuthor {id, name}` (who wrote it, **not** who reacted: the event does not say) and its `reactions` (the counts by type) |
+| `read.receipt.updated` | `reader {id, name}` read the channel up to `readUpTo` (a `visibleSeq`) |
+| `read.cursor.updated` | the user's own reading (only with `--mine`) |
+| `member.added`, `member.updated`, `member.removed` | `member {userId, name, role}` |
+| `channel.*` | the channel was created, changed, emptied, added to or removed from the user's inbox, hidden, muted, pinned… |
+| `typing.start`, `typing.stop` | `typing {id, name}` |
+
+- `--type` takes a group (`messages`, `reactions`, `reads`, `members`, `channels`, `typing`) or one event; repeat it. `--from` keeps what those people did (their messages, reading and typing); it leaves reactions out, since a reaction event does not name who reacted. `--channel` takes an id or an inbox link.
+- By default the user's own messages and reading are left out (they know what they did); `--mine` keeps them. Reactions are always shown, also those on the user's own messages.
+- `--raw` prints each event as the service sends it: the full message, the user's inbox view of the channel (`inboxChannel`) and the unread counters by section.
+- **Waiting for one answer**: `watch.sh --channel <C> --from <USERID> --type message.new --count 1 --for 3600` returns with the first message of that person in that channel, or after an hour.
+- **To be woken by messages**, run it as a background watcher (for Claude Code: the Monitor tool with `bash <BASE_DIR>/scripts/watch.sh --type messages`) and act on its lines; stop it when the user no longer needs it. It renews its connection by itself (the service closes one after two hours), also when the login token is renewed.
+- Delivery is best effort: what happens while the connection is being renewed is not sent again. When nothing may be missed, read the channel with `messages.sh list` after a `RECONNECTED`.
+
 ## Reading the references
 
 A reference is a whole OpenAPI file of a section (tens of kilobytes): never read one in full. Ask for the part you need:
@@ -201,6 +228,7 @@ Other things to know:
 - **Who reacted** comes from `messages.sh reactions` (the `ListMessageReactions` operation, `POST /channels/{id}/reactions/query`), one entry per user and type, with the `userId` only; `--users` looks the people up. A message carries only `reactionCounts`: the `latestReactions` field is gone from the API, so read who reacted through `reactions`, not through `messages.sh get`.
 - `pin` and `unpin` set `editedAt` on the message, so a client shows it as edited though nobody edited it (reactions do not).
 - A deleted channel can still be read: the deletion is soft.
+- `watch.sh` was checked live on 2026-11-06 and 2026-11-07: messages (also with an image), reactions, the user's reading and the reading of others arrived within one or two seconds, with names. **A reaction event does not say who reacted**: it carries the message with its new counts; ask `messages.sh reactions` for the people. Typing was not seen in that test (`typing.*` came from no client), so do not promise it.
 
 ## Security
 
