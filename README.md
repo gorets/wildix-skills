@@ -1,5 +1,7 @@
 # Wildix Agent Skills
 
+**Version 3.2.1** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
+
 AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
 > **Unofficial project.** These skills are a personal project, not an official Wildix product. They
@@ -163,6 +165,8 @@ Log in once with `wildix-auth`. After that every script of the other skills gets
 The scripts look for `wildix-auth` next to their own skill, so it does not matter whether the skills were installed into `~/.agents/skills` or `~/.claude/skills` (often a symlink to the former) or elsewhere; `WILDIX_SKILLS_DIR` names the folder when the skills are apart. Whether a skill is installed is judged by the agent seeing it, not by a file path.
 
 ## Maintaining
+
+The rules for changing the skills (and what every change needs: a version, a [`CHANGELOG.md`](CHANGELOG.md) entry, the router and this README) are in [`AGENTS.md`](AGENTS.md).
 
 Before pushing, run the checker: it reads every skill the way a strict consumer would (valid YAML frontmatter, `name` equal to the folder, description length, peers that exist, links that resolve, `bash -n` on the scripts, no hard-coded `~/.claude/skills` path, executable scripts):
 
