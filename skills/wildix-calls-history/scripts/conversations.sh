@@ -16,6 +16,17 @@ Usage: conversations.sh <command> [options]
          [--tag T]... [--language L]... [--cursor KEY] [--brief]
                                    the search over conversations with the summary of each (10 per page)
   count  (the same filters as find)
+  aggregate --by DIM[,DIM...] [find filters] [--tz ZONE] [--top N] [--raw]
+  aggregate --by DIM --then DIM [--then DIM] [find filters] [--tz ZONE] [--top N] [--raw]
+  aggregate --projections [find filters]
+                                   how many conversations fall into each value of a dimension (a chart's data):
+                                   several dimensions side by side, or one broken down by others (--then).
+                                   DIM: direction entity channel recorded language country location pbx trunk
+                                   queue service extension group department tag chatbot voicebot duration
+                                   connectTime talkTime waitTime queueTime holdTime date dayOfWeek hourOfDay
+                                   projection:<id>:<field> (an AI insight field; --projections lists them).
+                                   --tz: the zone of date, dayOfWeek and hourOfDay (the local one by default);
+                                   --top: keep the N biggest values of each level
   tags <prefix> [--limit 1-20]     tags that start with the prefix
 find and count look only at conversations the logged-in user took part in, unless --everyone is given
 (the service still decides what the login may see).
@@ -23,6 +34,32 @@ U
   exit 1; }
 
 cmd="${1:-}"; [[ -n "$cmd" ]] || usage; shift
+
+AGG_DIMS=" direction entity channel recorded language country location pbx trunk queue service extension group department tag chatbot voicebot duration connectTime talkTime waitTime queueTime holdTime date dayOfWeek hourOfDay "
+
+# The local IANA time zone, for the dimensions cut in a zone.
+local_tz() {
+  local z="${TZ:-}"
+  [[ -n "$z" ]] || z=$(readlink /etc/localtime 2>/dev/null | sed -n 's#.*zoneinfo/##p')
+  [[ -n "$z" ]] || z=$(cat /etc/timezone 2>/dev/null || true)
+  printf '%s' "${z:-UTC}"
+}
+
+# agg_def DIM TZ -> the AggregationDefinition of one dimension.
+agg_def() {
+  local d="$1" tz="$2"
+  if [[ "$d" == projection:* ]]; then
+    local rest="${d#projection:}" id field
+    id="${rest%%:*}"; field="${rest#*:}"
+    [[ "$rest" == *:* && "$id" =~ ^[A-Za-z0-9_-]{1,100}$ && "$field" =~ ^[A-Za-z0-9_-]{1,100}$ ]] || die "a projection is projection:<id>:<field>: $d"
+    jq -nc --arg i "$id" --arg f "$field" '{projection:{id:$i, fieldId:$f}}'
+  elif [[ "$AGG_DIMS" == *" $d "* ]]; then
+    case "$d" in
+      date|dayOfWeek|hourOfDay) jq -nc --arg d "$d" --arg z "$tz" '{($d):{timeZone:$z}}' ;;
+      *) jq -nc --arg d "$d" '{($d):{}}' ;;
+    esac
+  else die "not a dimension: $d (run the script without arguments for the list)"; fi
+}
 
 # The ListConversations filter from the common options; sets FILTER and CURSOR, BRIEF.
 build_filter() {
@@ -124,6 +161,56 @@ case "$cmd" in
   count)
     build_filter "$@"
     wda_call POST /insights/conversations/count "$(jq -nc --argjson f "$FILTER" '{filter:$f}')" ;;
+  aggregate)
+    by=""; thens=(); tz=""; top=""; raw=0; projections=0; rest=()
+    while [[ $# -gt 0 ]]; do case "$1" in
+      --by) [[ $# -ge 2 ]] || usage; by="$2"; shift 2 ;;
+      --then) [[ $# -ge 2 ]] || usage; thens+=("$2"); shift 2 ;;
+      --tz) [[ $# -ge 2 ]] || usage; [[ "$2" =~ ^[A-Za-z][A-Za-z0-9_+/-]{0,63}$ ]] || die "not a time zone: $2"; tz="$2"; rest+=(--tz "$2"); shift 2 ;;
+      --top) [[ $# -ge 2 ]] || usage; check_int --top "$2" 1 1000; top=$((10#$2)); shift 2 ;;
+      --raw) raw=1; shift ;;
+      --projections) projections=1; shift ;;
+      *) rest+=("$1"); shift ;; esac; done
+    build_filter ${rest[@]+"${rest[@]}"}
+    [[ -n "$tz" ]] || tz=$(local_tz)
+    # Buckets without their drill-down filters (each bucket repeats the whole filter), weekdays named, the hours
+    # and weekdays in order, nested levels named by their dimension.
+    shape='
+      def dim: (keys[0]) as $k | if $k == "projection" then "projection:\(.projection.id):\(.projection.fieldId)" else $k end;
+      def wd: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      def level($r):
+        ($r.aggregation | dim) as $d
+        | {by: $d, buckets: (
+            ($r.buckets // [])
+            | (if $d == "hourOfDay" or $d == "dayOfWeek" then sort_by(.key | tonumber) else . end)
+            | (if $top != null and $d != "hourOfDay" and $d != "dayOfWeek" and $d != "date" then sort_by(-.count) | .[:$top] else . end)
+            | map({key, count}
+                + (if $d == "dayOfWeek" then {day: wd[(.key | tonumber)]} else {} end)
+                + (if .interval then {interval} else {} end)
+                + (if .aggregation then {then: level(.aggregation)} else {} end)))};'
+    if [[ $projections -eq 1 ]]; then
+      r=$(wda_call POST /insights/conversations/aggregations "$(jq -nc --argjson f "$FILTER" '{filter:$f}')")
+      jq -c '{count, projections: [.result[] | select(.aggregation.projection) | select((.buckets | length) > 0)
+          | {by: "projection:\(.aggregation.projection.id):\(.aggregation.projection.fieldId)", values: (.buckets | map(.count) | add), top: (.buckets | sort_by(-.count) | .[:5] | map({key, count}))}]}' <<<"$r"
+      exit 0
+    fi
+    [[ -n "$by" ]] || die "aggregate needs --by (or --projections)"
+    defs='[]'
+    IFS=',' read -r -a bys <<<"$by"
+    if [[ ${#thens[@]} -gt 0 ]]; then
+      [[ ${#bys[@]} -eq 1 ]] || die "with --then, --by names one dimension"
+      [[ ${#thens[@]} -le 2 ]] || die "at most two --then"
+      for d in "${bys[0]}" "${thens[@]}"; do x=$(agg_def "$d" "$tz") || exit 1; defs=$(jq -c --argjson x "$x" '. + [$x]' <<<"$defs"); done
+      r=$(wda_call POST /insights/conversations/aggregations/nested "$(jq -nc --argjson f "$FILTER" --argjson a "$defs" '{filter:$f, aggregations:$a}')")
+      if [[ $raw -eq 1 ]]; then printf '%s\n' "$r"; exit 0; fi
+      jq -c --argjson top "${top:-null}" "$shape"' {count, timeZone: $tz} + level(.result)' --arg tz "$tz" <<<"$r"
+    else
+      [[ ${#bys[@]} -le 10 ]] || die "at most 10 dimensions side by side"
+      for d in "${bys[@]}"; do x=$(agg_def "$d" "$tz") || exit 1; defs=$(jq -c --argjson x "$x" '. + [$x]' <<<"$defs"); done
+      r=$(wda_call POST /insights/conversations/aggregations "$(jq -nc --argjson f "$FILTER" --argjson a "$defs" '{filter:$f, insights:$a}')")
+      if [[ $raw -eq 1 ]]; then printf '%s\n' "$r"; exit 0; fi
+      jq -c --argjson top "${top:-null}" "$shape"' {count, timeZone: $tz, results: [.result[] | level(.)]}' --arg tz "$tz" <<<"$r"
+    fi ;;
   tags)
     [[ $# -ge 1 ]] || usage
     prefix="$1"; shift; limit=""

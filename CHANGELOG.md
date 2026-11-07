@@ -2,6 +2,11 @@
 
 All notable changes to the Wildix agent skills. The version is the number of the whole pack, shown at the top of the [`README.md`](README.md); the skills standard has no place for it, and `npx skills` notices updates by the content of each skill folder, not by a number. It follows [Semantic Versioning](https://semver.org): a skill removed or renamed is a major version, a skill or a command added is a minor one, a fix is a patch.
 
+## 3.4.0 — 2026-11-07
+
+### Added
+- `wildix-calls-history`: **`conversations.sh aggregate`**, statistics of calls, conferences and chats, as the charts of the Revenue Intelligence dashboards show them: how many conversations fall into each value of a dimension (direction, type, channel, language, country, PBX, trunk, queue, service, extension, group, department, tag, bots, duration bands, date, weekday, hour of the day, the fields of the AI insights), several side by side (`--by a,b`) or one broken down by others (`--then`, up to three levels), with the filters of `find` (the user's own conversations, or `--everyone`). `--projections` lists the AI insight fields that have values; `--top` keeps the biggest values.
+
 ## 3.3.0 — 2026-11-07
 
 ### Added

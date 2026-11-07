@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-**Version 3.3.0** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
+**Version 3.4.0** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
 
 AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
@@ -71,9 +71,9 @@ The service is still being built: a call to an operation that is not ready answe
 
 ### `wildix-calls-history`
 
-What is on record about calls and meetings (conferences) that are over, as the logged-in user: the record and its participants, the transcript, the AI summary and insights, the recording link, the user's call history and missed calls, a search over calls, conferences and chats by date, person, tag or language, and the reports of the call queues over days from x-caracal (offered, answered, abandoned and lost calls, service level, waits, per queue, agent, hour or day, and the queue calls one by one). It reads the past: it does not start, join or control a live call. One script per section (conferences, calls, conversations, queues), and the OpenAPI of each section as its reference.
+What is on record about calls and meetings (conferences) that are over, as the logged-in user: the record and its participants, the transcript, the AI summary and insights, the recording link, the user's call history and missed calls, a search over calls, conferences and chats by date, person, tag or language, statistics of them (counts by department, direction, hour, weekday, duration or AI sentiment, one dimension broken down by another, the data of a chart), and the reports of the call queues over days from x-caracal (offered, answered, abandoned and lost calls, service level, waits, per queue, agent, hour or day, and the queue calls one by one). It reads the past: it does not start, join or control a live call. One script per section (conferences, calls, conversations, queues), and the OpenAPI of each section as its reference.
 
-**Triggers:** "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls", "find the meeting with Anna on Monday", "service level of the support queue last week", "which callers did we lose yesterday"
+**Triggers:** "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls", "find the meeting with Anna on Monday", "how many calls per department last month", "service level of the support queue last week", "which callers did we lose yesterday"
 
 **Depends on:** `wildix-auth`
 

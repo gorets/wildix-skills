@@ -1,7 +1,7 @@
 ---
 name: wildix-calls-history
 description: >-
-  Use when asked for data about calls and meetings (conferences) that already took place on Wildix, after the fact: find a call or a meeting, read its record and participants, its transcript, its AI summary and insights, the link to its recording, the user's call history and missed calls, search conversations by date, person, tag or language, and the reports of the call queues over days (offered, answered, abandoned, lost calls, service level, waits, per agent, per hour or day, the lost calls one by one). It acts as the logged-in user. Not for starting, joining or controlling a live call or conference. Triggers on requests like "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls last week", "find the meeting with Anna on Monday", "the decisions from that call", "download the recording", "service level of the support queue last week", "which callers did we lose yesterday", "who answered the most queue calls this month".
+  Use when asked for data about calls and meetings (conferences) that already took place on Wildix, after the fact: find a call or a meeting, read its record and participants, its transcript, its AI summary and insights, the recording link, the user's call history and missed calls, search conversations by date, person, tag or language, statistics of conversations (counts by department, direction, hour, weekday, duration, AI sentiment), and the reports of the call queues over days (service level, abandoned and lost calls, waits, per agent, hour or day). It acts as the logged-in user. Not for starting, joining or controlling a live call or conference. Triggers on requests like "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls last week", "find the meeting with Anna on Monday", "how many calls per department last month", "service level of the support queue last week", "which callers did we lose yesterday".
 license: MIT
 metadata:
   author: Vladimir Gorobets
@@ -63,6 +63,8 @@ Times (`startTime`, `endTime`) are milliseconds since the epoch, durations are i
 | one call: who called whom, how long, was it answered | `calls.sh brief <callId>` |
 | the transcript or summary of a call | `calls.sh transcript <callId>`, `calls.sh summary <callId>` |
 | how many meetings or calls there were | `conversations.sh count --entity conference --when THIS_MONTH` |
+| statistics, the data of a chart: by department, direction, hour, weekday, duration, AI sentiment | `conversations.sh aggregate --by department,direction --when LAST_30_DAYS --everyone` |
+| one dimension broken down by another (department → calls, meetings, chats) | `conversations.sh aggregate --by department --then entity --everyone --top 10` |
 | how a call queue did over days: service level, abandoned, lost | `queues.sh list --name support`, then `queues.sh summary --days 7 --queue <id>` |
 | the callers a queue lost (to call them back) | `queues.sh calls --outcome lost --queue <id>` |
 | who answered the most queue calls | `queues.sh answered --by user --days 30 --pbx <serial>` |
@@ -129,6 +131,9 @@ conversations.sh find  [--entity call|conference|chat]... [--email E]... [--phon
                        [--from ISO --to ISO [--tz ZONE]] [--when TODAY|YESTERDAY|THIS_WEEK|PREVIOUS_WEEK|THIS_MONTH|PREVIOUS_MONTH|THIS_QUARTER|LAST_30_DAYS]
                        [--tag T]... [--language L]... [--cursor KEY] [--brief]
 conversations.sh count (the same filters as find; it has no paging and no --brief)
+conversations.sh aggregate --by DIM[,DIM...] (the filters of find) [--tz ZONE] [--top N] [--raw]
+conversations.sh aggregate --by DIM --then DIM [--then DIM] (the filters of find) [--tz ZONE] [--top N] [--raw]
+conversations.sh aggregate --projections (the filters of find)
 conversations.sh tags <prefix> [--limit 1-20]
 ```
 
@@ -136,6 +141,9 @@ conversations.sh tags <prefix> [--limit 1-20]
 - `find` is the search over calls, conferences and chats with the AI summary of each, 10 per page; the answer carries `nextCursor`, pass it as `--cursor` for the next page. `--brief` gives `type`, `id`, `flowIndex`, `start`, `durationSec`, `title`, `direction`, `status`, `participants` (of a conference) and the `summary`.
 - By default `find` and `count` look only at conversations the user took part in. `--email`, `--phone` and `--extension` name other participants (all of them must have taken part); `--everyone` drops the restriction.
 - Dates: `--when` takes a ready period; `--from`/`--to` take ISO times, with `--tz` for the time zone they are meant in.
+- `aggregate` counts the conversations of the filter by the values of a dimension: what the charts of the Revenue Intelligence dashboards show. `--by a,b,c` gives each dimension on its own: `{count, timeZone, results: [{by, buckets: [{key, count}]}]}`; `--by a --then b [--then c]` breaks each value of `a` down by `b` (and `c`): `{count, by, buckets: [{key, count, then: {by, buckets}}]}`. `--top N` keeps the N biggest values of each level (the time dimensions stay whole and in order); `--raw` gives the answer of the service as it is (each bucket with the filter that selects it).
+- Dimensions: `direction` (`INBOUND`, `OUTBOUND`, `INTERNAL`), `entity` (`call`, `conference`, `chat`), `channel`, `recorded`, `language`, `country`, `location`, `pbx`, `trunk`, `queue`, `service`, `extension`, `group`, `department`, `tag`, `chatbot`, `voicebot`; durations in ready bands (`duration`, `connectTime`, `talkTime`, `waitTime`, `queueTime`, `holdTime`: `0–1 min`, `1–5 min` … `> 60 min`); time (`date`: a bucket a day or another interval the service chooses, `dayOfWeek` with the weekday named, `hourOfDay`, cut in `--tz` or the local zone); and the fields of the AI insights as `projection:<id>:<field>` (for example `projection:sentiment:overallSentiment`, `projection:csat:score`): `aggregate --projections` lists the fields that have values in the filter, with their biggest values.
+- Like `find`, it counts only the user's own conversations unless `--everyone` is given; with `--everyone` it counts what the login may see of the company. Say which of the two a number is.
 
 ### Queues
 
@@ -180,7 +188,7 @@ bash <BASE_DIR>/scripts/openapi.sh schema conversations ListConversationsFilter 
 bash <BASE_DIR>/scripts/openapi.sh schemas conversations          # the names of all the schemas of a section
 ```
 
-Not covered by the scripts, available in the references: the filter of `QueryConversations`, the aggregations and insights of `ListConversations*` (counts and drill-downs by dimension), `UpdateCall` (changes the metadata of a call record: only when the user asks). Left out on purpose: chats, the setup of the analytics screens (dashboards, filters, playlists, projections, analysis settings, watch history) and the internal post-transcription pipeline.
+Not covered by the scripts, available in the references: the filter of `QueryConversations`, the custom duration bands of an aggregation, `ListConversationsInsights*`, `UpdateCall` (changes the metadata of a call record: only when the user asks). Left out on purpose: chats, the setup of the analytics screens (dashboards, filters, playlists, projections, analysis settings, watch history) and the internal post-transcription pipeline.
 
 ## Things to know
 
@@ -191,6 +199,7 @@ Not covered by the scripts, available in the references: the filter of `QueryCon
 - `ListConversations` is documented as in active development: its interface may change.
 - `conferences.sh recording-url` was not exercised against a recorded conference; the `--file-id` is the identifier of the recording file as the record gives it.
 - A conference's `participants` repeats a person who joined more than once; `brief` merges them by name.
+- **`aggregate` checked live** on 2026-11-07: the user's own conversations (83 in 30 days) and `--everyone` (2775 in 30 days in a large company), side by side and nested to three levels, `dayOfWeek` (0 is Sunday), `hourOfDay`, `date` (daily buckets for a month), `duration`, AI fields, `--projections` (64 fields with values). The service marks these operations as in active development: their shape may change.
 - **Queue reports checked live** on 2026-11-07 (a company with 235 queues on 6 PBXs): `list`, `summary`, `by-queue`, `by-period` (hour, day, weekday), `answered --by user`, `unanswered`, `service-level answered`, `calls` (with pages and `--outcome`), `events`, the slow `--hours` filter. Not seen: `--by agent|reason|talk-time`, `unanswered --by`, `--queue-sla`.
 
 ## Security
