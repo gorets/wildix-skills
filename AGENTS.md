@@ -65,5 +65,6 @@ Generated, never edited by hand (see Maintaining in the README):
 | `wildix-chats` | Stream service OpenAPI | `tools/split-stream-openapi.mjs` (+ `tools/stream-not-implemented.json`) |
 | `wildix-calls-history` | WDA History and WDA Insights OpenAPI (SDK generator) | `tools/split-wda-openapi.mjs` |
 | `wildix-call-control` | `https://docs.wildix.com/pbx-openapi.yaml` | `tools/extract-pbx-call-control.py` |
+| `wildix-calls-history` (`queues`) | WDA x-caracal smithy model (OpenAPI built with the smithy plugin) and the WDA stream OpenAPI | `tools/split-xcaracal-openapi.mjs` |
 
 `wildix-live-monitor` and the `watch.sh` of `wildix-chats` use websockets that have no OpenAPI: their protocol is described in the `SKILL.md` and in the comments of the `.mjs` scripts.

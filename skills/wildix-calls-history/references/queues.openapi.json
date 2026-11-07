@@ -1,0 +1,2395 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WDA x-caracal: reports on the calls of queues",
+    "version": "v2",
+    "description": "Historical reports on the calls of services (call groups, queues) for x-caracal v2. The unit of every report is the service call: one phone call's stay in one service; a phone call that went through two services is two service calls. Every aggregate reads one row per service call; GetServiceCallEvents reads the raw lifecycle. The entity is named service in ids and filters (serviceId, serviceIds), as the stream API names it; the word queue is kept only for the waiting line itself (queue wait, queue position). Durations are milliseconds; responses carry counts, never percentages; reports are per PBX, whose zone cuts the days. Each report reads the whole chosen period, so a client should request a report when the user opens it, not several reports together. A user token needs a premium licence: without it every operation is refused with 403; PBX, API-key and service tokens are not limited by licence."
+  },
+  "servers": [
+    {
+      "url": "https://wda.wildix.com"
+    }
+  ],
+  "security": [
+    {
+      "smithy.api.httpBearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v2/stream/services": {
+      "post": {
+        "description": "Retrieves a list of active services of the company.\n\n### Allowed Auth Scopes\n\n- stream:ListServices\n- stream:read",
+        "operationId": "ListServices",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListServicesRequestContent"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the company.",
+            "schema": {
+              "type": "string",
+              "maxLength": 30,
+              "minLength": 3,
+              "description": "The unique identifier of the company."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ListServices 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListServicesResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/answered/breakdown/query": {
+      "post": {
+        "description": "Reads every call of the window on each request: nothing is pre-computed per user, agent, disconnect reason or talk time. Recommended to request it when the user asks for it, not on page open. Answered service calls grouped by service, by agent (the user as a member of one service), by user (across every service of the filter), by disconnect reason (outcome plus raw END reason) or by talk-time band. Every group carries its completed and transferred counts, wait and talk sums and the answering agent's two ring sums; percent of talk time is totalTalkMs over GetAnsweredSummary's totalTalkMs of the same filter. BY_TALK_TIME returns every band, zero-filled, using the talk ladder. Whole, not paginated; more than 1000 groups is rejected with 400.",
+        "operationId": "GetAnsweredBreakdown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAnsweredBreakdownRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetAnsweredBreakdown 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnsweredBreakdownResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/answered/service-level/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band. Suitable for a page's first request. Cumulative service-level ladder over wait time for answered and transferred service calls: waitBandSteps bands of waitBandSeconds seconds, the last open-ended. Percentages are count / total, computed by the client.",
+        "operationId": "GetAnsweredServiceLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAnsweredServiceLevelRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetAnsweredServiceLevel 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnsweredServiceLevelResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/answered/summary/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band. Suitable for a page's first request. Answered-calls KPIs over complete service calls that were answered or transferred. Talk includes on-call hold.",
+        "operationId": "GetAnsweredSummary",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetAnsweredSummaryRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetAnsweredSummary 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnsweredSummaryResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/distribution/by-period/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band, or the hour granularity. Suitable for a page's first request. The metric block as a dense series of buckets cut in the request timezone; empty buckets carry zero counts. HOUR is the hour of the day (24 buckets) over the whole window.",
+        "operationId": "GetDistributionByPeriod",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDistributionByPeriodRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetDistributionByPeriod 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDistributionByPeriodResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/distribution/by-service/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band. Suitable for a page's first request. The metric block per service. Whole, not paginated; more than 1000 groups is rejected with 400.",
+        "operationId": "GetDistributionByService",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDistributionByServiceRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetDistributionByService 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDistributionByServiceResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/distribution/summary/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band. Suitable for a page's first request. One metric block over every service call in the filter.",
+        "operationId": "GetDistributionSummary",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetDistributionSummaryRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetDistributionSummary 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDistributionSummaryResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/services/calls/{callId}/flows/{flowIndex}/events": {
+      "get": {
+        "description": "Cheap: one call, looked up by key. One service call in full: its call-list row and its raw lifecycle events (INIT, RING, CANCEL, ANSWER, END) in time order, whole, never paged (a service call reaches the database as one record, so its events always fit one response). An event here is one entry of the stream API's actions list per agent it concerns: an action without an agent is one event, an action naming several agents is one event per agent, and the events of one action share its time; the stream's own 'service call event' is the whole record. 404 when the service call does not exist for the company. callId is the phone call's id, shared by all its service calls; flowIndex picks the stay; serviceId disambiguates the rare case of one flow index entering two services.",
+        "operationId": "GetServiceCallEvents",
+        "parameters": [
+          {
+            "name": "callId",
+            "in": "path",
+            "description": "The phone call's id, as in ServiceCallRow.callId.",
+            "schema": {
+              "type": "string",
+              "description": "The phone call's id, as in ServiceCallRow.callId."
+            },
+            "required": true
+          },
+          {
+            "name": "flowIndex",
+            "in": "path",
+            "description": "The service call's flowIndex, as in ServiceCallRow.flowIndex.",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "description": "The service call's flowIndex, as in ServiceCallRow.flowIndex."
+            },
+            "required": true
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          },
+          {
+            "name": "serviceId",
+            "in": "query",
+            "description": "The service of the service call, needed only when one flowIndex entered two services. Absent: the service call that entered first.",
+            "schema": {
+              "type": "string",
+              "description": "The service of the service call, needed only when one flowIndex entered two services. Absent: the service call that entered first."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetServiceCallEvents 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetServiceCallEventsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/services/calls/query": {
+      "post": {
+        "description": "Cheap: one page of calls, read through an index, however long the window. Pages are requested one at a time. The call list: one row per service call (one phone call's stay in one service), newest first, keyset-paginated; callId lists every service call of one phone call. The calls whose outcome could not be determined are listed with outcome unknown, as they are counted in offered; narrow with the outcomes filter. A value that matches few calls can read the whole window before a page fills.",
+        "operationId": "QueryServiceCalls",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryServiceCallsRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QueryServiceCalls 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryServiceCallsResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/unanswered/breakdown/query": {
+      "post": {
+        "description": "Reads every call of the window on each request: nothing is pre-computed per service or disconnect reason. Recommended to request it when the user asks for it, not on page open. Unanswered service calls grouped by service or by disconnect reason (outcome plus raw END reason). Whole, not paginated; more than 1000 groups is rejected with 400.",
+        "operationId": "GetUnansweredBreakdown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUnansweredBreakdownRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetUnansweredBreakdown 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUnansweredBreakdownResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/unanswered/service-level/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band. Suitable for a page's first request. Cumulative ladder over wait time for the service calls nobody answered - abandoned and unanswered together - how long callers waited before they hung up or the wait ended; each band splits into lost and overflow.",
+        "operationId": "GetUnansweredServiceLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUnansweredServiceLevelRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetUnansweredServiceLevel 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUnansweredServiceLevelResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/xcaracal/unanswered/summary/query": {
+      "post": {
+        "description": "Cheap: closed days come from pre-computed daily rows. It reads the individual calls only for today and for yesterday until its daily rows exist (05:20 in the PBX's zone), and whenever the filter names extensions, outcomes, disconnect reasons, an hour range, days of week or a wait or talk band. Suitable for a page's first request. Unanswered-calls KPIs over complete service calls that were not answered: abandoned (the caller hung up or was removed by a rule) and unanswered (the wait ended without an answer: a timeout, an empty queue, the caller leaving by a keypad option, a hand-off before anyone answered, or a reason the classification does not name). Waits are how long callers held before the call ended.",
+        "operationId": "GetUnansweredSummary",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUnansweredSummaryRequestContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123.",
+            "schema": {
+              "type": "string",
+              "description": "The unique identifier of the tenant when a service token is used, e.g. it_w123123."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GetUnansweredSummary 200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUnansweredSummaryResponseContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ValidationException 400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ForbiddenException 403 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenExceptionResponseContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundException 404 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnsweredBreakdownDimension": {
+        "type": "string",
+        "description": "The grain of the answered breakdown. A user is the person (extension); an agent is that user as a member of one service (agentId names the service), so BY_AGENT is one row per user and service, BY_USER one row per user over every service of the filter.",
+        "enum": [
+          "byService",
+          "byAgent",
+          "byUser",
+          "byDisconnectReason",
+          "byTalkTime"
+        ]
+      },
+      "BreakdownGroup": {
+        "type": "object",
+        "description": "One breakdown group. Only the key fields of the requested dimension are set. Percent of base is calls / total, computed by the client.",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "Set for BY_SERVICE and BY_AGENT: the service of this group."
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "Set with serviceId: the service's stored name. Absent when the PBX sent none."
+          },
+          "agentId": {
+            "type": "string",
+            "description": "Set for BY_AGENT only: the answering agent's id - the user as a member of this service, <company>_<pbx>_<service>_<extension>. Absent on BY_USER, where one user spans several services."
+          },
+          "userName": {
+            "type": "string",
+            "description": "Set for BY_AGENT and BY_USER: a non-empty name the calls of the window carry for this user - deterministic, not necessarily the newest. Clients resolve the display name from the PBX user list by userExtension and use this as the fallback. A client without the PBX user list should know the name may belong to an earlier holder of the extension. Each call keeps the name it was stored with (ServiceCallRow.answeredByName). Absent when no call of the window carries a name."
+          },
+          "userExtension": {
+            "type": "string",
+            "description": "Set for BY_AGENT and BY_USER: the user's extension - the key of a BY_USER group."
+          },
+          "outcome": {
+            "type": "string",
+            "description": "Set for BY_DISCONNECT_REASON: the outcome value."
+          },
+          "disconnectReason": {
+            "type": "string",
+            "description": "Set for BY_DISCONNECT_REASON: the raw END reason beside the outcome (ServiceCallRow.disconnectReason); the calls of this group are filter.outcomes [outcome] with filter.disconnectReasons [disconnectReason]."
+          },
+          "band": {
+            "$ref": "#/components/schemas/TalkTimeBand"
+          },
+          "abandoned": {
+            "type": "number",
+            "description": "Set for BY_SERVICE on the unanswered breakdown: service calls in this group whose outcome is abandoned. abandoned + unanswered equals calls."
+          },
+          "unanswered": {
+            "type": "number",
+            "description": "Set for BY_SERVICE on the unanswered breakdown: service calls in this group whose outcome is unanswered."
+          },
+          "lost": {
+            "type": "number",
+            "description": "Set on the unanswered breakdowns (BY_SERVICE and BY_DISCONNECT_REASON): of this group's service calls, those that were the last of their phone call (no later service took the caller)."
+          },
+          "lostAbandoned": {
+            "type": "number",
+            "description": "Set with lost: of this group's lost calls, those that were abandoned."
+          },
+          "lostUnanswered": {
+            "type": "number",
+            "description": "Set with lost: of this group's lost calls, those that ended unanswered."
+          },
+          "overflow": {
+            "type": "number",
+            "description": "Set with lost: of this group's service calls, those after which a later service call took the caller. lost + overflow = calls."
+          },
+          "calls": {
+            "type": "number",
+            "description": "Service calls in this group; summed over the groups it is total."
+          },
+          "completed": {
+            "type": "number",
+            "description": "Set on the answered breakdowns: service calls in this group whose outcome is completed. completed + transferred equals calls."
+          },
+          "transferred": {
+            "type": "number",
+            "description": "Set on the answered breakdowns: service calls in this group whose outcome is transferred."
+          },
+          "avgWaitMs": {
+            "type": "number",
+            "description": "Average wait, ring included, milliseconds, over this group's service calls - this service's own wait, not the caller's across earlier services. Absent on an empty band.",
+            "format": "double"
+          },
+          "maxWaitMs": {
+            "type": "number",
+            "description": "The longest wait, ring included, milliseconds. Absent on an empty band."
+          },
+          "totalWaitMs": {
+            "type": "number",
+            "description": "Sum of the group's waits in milliseconds; avgWaitMs times calls."
+          },
+          "avgTalkMs": {
+            "type": "number",
+            "description": "Average talk time, hold included, milliseconds. 0 on the unanswered breakdowns; absent on an empty band.",
+            "format": "double"
+          },
+          "totalTalkMs": {
+            "type": "number",
+            "description": "Total talk time, hold included, milliseconds. 0 on the unanswered breakdowns."
+          },
+          "totalAnsweringAgentRingToAnswerMs": {
+            "type": "number",
+            "description": "Set on the answered breakdowns: sum of ServiceCallRow.answeringAgentRingToAnswerMs (from the first ring of the agent who answered to the answer, re-rings included), milliseconds, over the group's service calls that carry one."
+          },
+          "totalAnsweringAgentRingMs": {
+            "type": "number",
+            "description": "Set on the answered breakdowns: sum of ServiceCallRow.answeringAgentRingMs (how long the answering agent's phone actually rang), milliseconds, over the group's service calls that carry one."
+          },
+          "avgFinalPosition": {
+            "type": "number",
+            "description": "Set for BY_SERVICE: average queue position at answer on the answered breakdown; at exit over abandoned service calls only on the unanswered breakdown, the same basis as the unanswered summary's avgFinalPosition.",
+            "format": "double"
+          }
+        },
+        "required": [
+          "calls"
+        ]
+      },
+      "DistributionMetrics": {
+        "type": "object",
+        "description": "The distribution metric block. Every figure here is per service call: a call that went through several services counts in each service with that service's own wait and ringing; the caller's totals across services are on the call list (ServiceCallRow.totalQueueWaitMs and totalQueueRingMs). Waits are over complete service calls; talk is over answered and transferred service calls and includes on-call hold. The service's ring time is avgRingMs: how long agents were being rung for the caller, from the first ring to an answer or the end of the wait; the wait minus it is the time before the first agent was rung. avgAnsweringAgentRingToAnswerMs and avgAnsweringAgentRingMs describe the agent who answered. Averages are null when the base is empty.",
+        "properties": {
+          "counts": {
+            "$ref": "#/components/schemas/ServiceCallCounts"
+          },
+          "avgWaitMs": {
+            "type": "number",
+            "description": "Average wait, ring included, milliseconds, over the service calls whose outcome could be determined (every outcome; unknown left out) - this service's own wait, not the caller's wait across earlier services (the caller's whole wait across services is ServiceCallRow.totalQueueWaitMs). Absent when there is none.",
+            "format": "double"
+          },
+          "maxWaitMs": {
+            "type": "number",
+            "description": "The longest wait, ring included, milliseconds, over the same service calls as avgWaitMs. Absent when there is none."
+          },
+          "avgTalkMs": {
+            "type": "number",
+            "description": "Average talk time, hold included, milliseconds, over completed and transferred service calls. Absent when there is none.",
+            "format": "double"
+          },
+          "totalTalkMs": {
+            "type": "number",
+            "description": "Total talk time, hold included, milliseconds, over completed and transferred service calls. Absent when there is none."
+          },
+          "avgRingMs": {
+            "type": "number",
+            "description": "The service's ring time. Average time from the first ring to any agent to the answer, or to the end of the service call when nobody answered, milliseconds, over the service calls whose outcome could be determined (answered, abandoned and unanswered together; unknown left out) that rang at least one agent; stretches with no agent ringing are included (ServiceCallRow.ringMs). Absent when there is none.",
+            "format": "double"
+          },
+          "avgAnsweringAgentRingToAnswerMs": {
+            "type": "number",
+            "description": "Average time from the first ring of the agent who answered to the answer, milliseconds, over completed and transferred service calls that carry one; re-rings, and any stretches in between when that agent's phone was not ringing, are included (ServiceCallRow.answeringAgentRingToAnswerMs). Absent when there is none.",
+            "format": "double"
+          },
+          "avgAnsweringAgentRingMs": {
+            "type": "number",
+            "description": "Average of how long the answering agent's phone actually rang, its rings added up, milliseconds, over completed and transferred service calls that carry one (ServiceCallRow.answeringAgentRingMs). Absent when there is none.",
+            "format": "double"
+          },
+          "maxStartPosition": {
+            "type": "number",
+            "description": "The highest place in line any caller had on joining, over every service call, unknown included. The highest place could be treated as the maximum number of callers waiting in the queue. With several services in the filter, the busiest service's figure."
+          },
+          "maxStartPositionAnswered": {
+            "type": "number",
+            "description": "The deepest place in line on joining, over answered and transferred service calls."
+          },
+          "maxStartPositionAbandonedOrUnanswered": {
+            "type": "number",
+            "description": "The deepest place in line on joining, over abandoned and unanswered service calls."
+          },
+          "maxFinalPositionAbandoned": {
+            "type": "number",
+            "description": "The deepest place in line when the caller hung up while waiting (abandoned)."
+          },
+          "maxFinalPositionUnanswered": {
+            "type": "number",
+            "description": "The deepest place in line when the wait ended unanswered (see ServiceCallCounts.unanswered)."
+          },
+          "sla": {
+            "$ref": "#/components/schemas/SlaCounts"
+          }
+        },
+        "required": [
+          "counts",
+          "maxFinalPositionAbandoned",
+          "maxFinalPositionUnanswered",
+          "maxStartPosition",
+          "maxStartPositionAbandonedOrUnanswered",
+          "maxStartPositionAnswered",
+          "sla"
+        ]
+      },
+      "DistributionServiceGroup": {
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "The service of this group."
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "The service's name as stored with its calls. Absent when the PBX sent none."
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/DistributionMetrics"
+          }
+        },
+        "required": [
+          "metrics",
+          "serviceId"
+        ]
+      },
+      "ForbiddenExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "GetAnsweredBreakdownRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "talkBandSeconds": {
+            "type": "number",
+            "default": 20,
+            "maximum": 3600,
+            "minimum": 1,
+            "description": "Width of each talk band, seconds; 20 when omitted."
+          },
+          "talkBandSteps": {
+            "type": "number",
+            "default": 7,
+            "maximum": 60,
+            "minimum": 1,
+            "description": "Number of talk bands, the last one open-ended; 7 when omitted."
+          },
+          "dimension": {
+            "$ref": "#/components/schemas/AnsweredBreakdownDimension"
+          }
+        },
+        "required": [
+          "dimension",
+          "filter"
+        ]
+      },
+      "GetAnsweredBreakdownResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "dimension": {
+            "$ref": "#/components/schemas/AnsweredBreakdownDimension"
+          },
+          "total": {
+            "type": "number",
+            "description": "The service calls the groups count together; a group's share is its calls divided by total. byAgent and byUser count only calls with an answering agent; a call whose answering agent was not recorded is in no group, so there total can be lower than completed + transferred."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BreakdownGroup"
+            }
+          },
+          "talkBandSeconds": {
+            "type": "number",
+            "description": "Echoed for BY_TALK_TIME: the talk band width applied, seconds."
+          },
+          "talkBandSteps": {
+            "type": "number",
+            "description": "Echoed for BY_TALK_TIME: the number of talk bands applied."
+          }
+        },
+        "required": [
+          "dimension",
+          "groups",
+          "pbx",
+          "timeZone",
+          "total"
+        ]
+      },
+      "GetAnsweredServiceLevelRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "waitBandSeconds": {
+            "type": "number",
+            "default": 20,
+            "maximum": 120,
+            "minimum": 5,
+            "description": "Width of each wait band, seconds; 20 when omitted."
+          },
+          "waitBandSteps": {
+            "type": "number",
+            "default": 7,
+            "maximum": 60,
+            "minimum": 1,
+            "description": "Number of wait bands, the last one open-ended; 7 when omitted."
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "GetAnsweredServiceLevelResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "waitBandSeconds": {
+            "type": "number",
+            "description": "The wait band width applied, seconds: the request's value, or 20."
+          },
+          "waitBandSteps": {
+            "type": "number",
+            "description": "The number of wait bands applied: the request's value, or 7."
+          },
+          "total": {
+            "type": "number",
+            "description": "Service calls in the base; the last band's cumulative count equals it."
+          },
+          "bands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceLevelBand"
+            }
+          }
+        },
+        "required": [
+          "bands",
+          "pbx",
+          "timeZone",
+          "total",
+          "waitBandSeconds",
+          "waitBandSteps"
+        ]
+      },
+      "GetAnsweredSummaryRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "GetAnsweredSummaryResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "completed": {
+            "type": "number",
+            "description": "Service calls an agent answered and kept."
+          },
+          "transferred": {
+            "type": "number",
+            "description": "As counts.transferred. answered = completed + transferred."
+          },
+          "avgWaitMs": {
+            "type": "number",
+            "description": "Average wait, ring included, milliseconds, over completed and transferred service calls - this service's own wait, not the caller's wait across earlier services (the caller's whole wait across services is ServiceCallRow.totalQueueWaitMs). Absent when there is none.",
+            "format": "double"
+          },
+          "maxWaitMs": {
+            "type": "number",
+            "description": "The longest wait, ring included, milliseconds, over completed and transferred service calls. Absent when there is none."
+          },
+          "avgTalkMs": {
+            "type": "number",
+            "description": "Average talk time, hold included, milliseconds, over completed and transferred service calls. Absent when there is none.",
+            "format": "double"
+          },
+          "totalTalkMs": {
+            "type": "number",
+            "description": "Total talk time, hold included, milliseconds, over completed and transferred service calls. Absent when there is none."
+          },
+          "sla": {
+            "$ref": "#/components/schemas/SlaCounts"
+          },
+          "unknown": {
+            "type": "number",
+            "description": "As counts.unknown: service calls whose outcome could not be determined, left out of every figure above."
+          }
+        },
+        "required": [
+          "completed",
+          "pbx",
+          "sla",
+          "timeZone",
+          "transferred",
+          "unknown"
+        ]
+      },
+      "GetDistributionByPeriodRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "granularity": {
+            "$ref": "#/components/schemas/Granularity"
+          }
+        },
+        "required": [
+          "filter",
+          "granularity"
+        ]
+      },
+      "GetDistributionByPeriodResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "granularity": {
+            "$ref": "#/components/schemas/Granularity"
+          },
+          "buckets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeriodBucket"
+            }
+          }
+        },
+        "required": [
+          "buckets",
+          "granularity",
+          "pbx",
+          "timeZone"
+        ]
+      },
+      "GetDistributionByServiceRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "GetDistributionByServiceResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DistributionServiceGroup"
+            }
+          }
+        },
+        "required": [
+          "groups",
+          "pbx",
+          "timeZone"
+        ]
+      },
+      "GetDistributionSummaryRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "GetDistributionSummaryResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/DistributionMetrics"
+          }
+        },
+        "required": [
+          "metrics",
+          "pbx",
+          "timeZone"
+        ]
+      },
+      "GetServiceCallEventsResponseContent": {
+        "type": "object",
+        "properties": {
+          "call": {
+            "$ref": "#/components/schemas/ServiceCallRow"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceCallEvent"
+            },
+            "description": "Its lifecycle events in time order, whole. The time to the next event is measured to the next action, not to a sibling event of the same action (one action naming several agents gives several events with one time); for a RING, to that agent's next event or to the next event without an agent."
+          }
+        },
+        "required": [
+          "call",
+          "events"
+        ]
+      },
+      "GetUnansweredBreakdownRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "dimension": {
+            "$ref": "#/components/schemas/UnansweredBreakdownDimension"
+          }
+        },
+        "required": [
+          "dimension",
+          "filter"
+        ]
+      },
+      "GetUnansweredBreakdownResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "dimension": {
+            "$ref": "#/components/schemas/UnansweredBreakdownDimension"
+          },
+          "total": {
+            "type": "number",
+            "description": "The service calls the groups count together; a group's share is its calls divided by total."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BreakdownGroup"
+            }
+          }
+        },
+        "required": [
+          "dimension",
+          "groups",
+          "pbx",
+          "timeZone",
+          "total"
+        ]
+      },
+      "GetUnansweredServiceLevelRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "waitBandSeconds": {
+            "type": "number",
+            "default": 20,
+            "maximum": 120,
+            "minimum": 5,
+            "description": "Width of each wait band, seconds; 20 when omitted."
+          },
+          "waitBandSteps": {
+            "type": "number",
+            "default": 7,
+            "maximum": 60,
+            "minimum": 1,
+            "description": "Number of wait bands, the last one open-ended; 7 when omitted."
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "GetUnansweredServiceLevelResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "waitBandSeconds": {
+            "type": "number",
+            "description": "The wait band width applied, seconds: the request's value, or 20."
+          },
+          "waitBandSteps": {
+            "type": "number",
+            "description": "The number of wait bands applied: the request's value, or 7."
+          },
+          "base": {
+            "type": "string",
+            "description": "Always \"abandonedOrUnanswered\": the base this ladder is computed over - abandoned and unanswered service calls together. Each band splits into lost and overflow."
+          },
+          "total": {
+            "type": "number",
+            "description": "Service calls in the base; the last band's cumulative count equals it."
+          },
+          "lost": {
+            "type": "number",
+            "description": "Of total, the lost service calls (no later service took the caller); the last band's cumulative lost equals it."
+          },
+          "overflow": {
+            "type": "number",
+            "description": "Of total, the overflow service calls (a later service call then took the caller). lost + overflow = total."
+          },
+          "bands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceLevelBand"
+            }
+          }
+        },
+        "required": [
+          "bands",
+          "base",
+          "lost",
+          "overflow",
+          "pbx",
+          "timeZone",
+          "total",
+          "waitBandSeconds",
+          "waitBandSteps"
+        ]
+      },
+      "GetUnansweredSummaryRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "GetUnansweredSummaryResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "abandoned": {
+            "type": "number",
+            "description": "As counts.abandoned: nobody answered and the disconnect reason is a hang-up."
+          },
+          "shortAbandoned": {
+            "type": "number",
+            "description": "As counts.shortAbandoned: of abandoned, the calls that waited at most 5 seconds, ring included."
+          },
+          "unanswered": {
+            "type": "number",
+            "description": "As counts.unanswered: nobody answered and the wait ended for any other reason - a timeout, an empty queue, the caller leaving by a keypad option, a reason the classification does not name, or a hand-off before anyone answered (disconnect reason TRANSFER, FORWARD or PICKUP)."
+          },
+          "lost": {
+            "type": "number",
+            "description": "Of the abandoned and unanswered service calls, those that were the last service call of their phone call: no later service took the caller. Summed over services it is the number of lost phone calls."
+          },
+          "lostAbandoned": {
+            "type": "number",
+            "description": "Of lost, those whose last service call was abandoned: its disconnect reason is a hang-up (see abandoned)."
+          },
+          "lostUnanswered": {
+            "type": "number",
+            "description": "Of lost, those whose last service call ended unanswered (see unanswered). lostAbandoned + lostUnanswered = lost."
+          },
+          "overflow": {
+            "type": "number",
+            "description": "abandoned + unanswered - lost: service calls nobody answered here after which the phone call had a later service call (in another service, or the same one entered again). The caller may have been served there."
+          },
+          "avgWaitMs": {
+            "type": "number",
+            "description": "Average wait, ring included, milliseconds, over abandoned and unanswered service calls together - this service's own wait, not the caller's wait across earlier services (the caller's whole wait across services is ServiceCallRow.totalQueueWaitMs). Absent when there is none.",
+            "format": "double"
+          },
+          "maxWaitMs": {
+            "type": "number",
+            "description": "The longest wait, milliseconds, over abandoned and unanswered service calls. Absent when there is none."
+          },
+          "abandonedAvgWaitMs": {
+            "type": "number",
+            "description": "Average wait in milliseconds over abandoned service calls only - how long callers held before giving up. avgWaitMs is over abandoned and unanswered service calls together.",
+            "format": "double"
+          },
+          "avgStartPosition": {
+            "type": "number",
+            "description": "Average queue position on entry, over abandoned service calls.",
+            "format": "double"
+          },
+          "avgFinalPosition": {
+            "type": "number",
+            "description": "Average queue position when the call ended, over abandoned service calls.",
+            "format": "double"
+          },
+          "sla": {
+            "$ref": "#/components/schemas/UnansweredSlaCounts"
+          },
+          "unknown": {
+            "type": "number",
+            "description": "As counts.unknown: service calls whose outcome could not be determined, left out of every figure above."
+          }
+        },
+        "required": [
+          "abandoned",
+          "lost",
+          "lostAbandoned",
+          "lostUnanswered",
+          "overflow",
+          "pbx",
+          "shortAbandoned",
+          "sla",
+          "timeZone",
+          "unanswered",
+          "unknown"
+        ]
+      },
+      "Granularity": {
+        "type": "string",
+        "description": "Time-bucketing axis. WEEK is ISO-8601, Monday-start. HOUR and DAY_OF_WEEK are recurring buckets (hour of day, ISO day 1-7) over the whole window.",
+        "enum": [
+          "hour",
+          "day",
+          "week",
+          "month",
+          "dayOfWeek"
+        ]
+      },
+      "HourRange": {
+        "type": "object",
+        "description": "A time-of-day window on the time the call entered the service's queue, in the report's timezone. from is inclusive, to exclusive, both HH:MM (24-hour); to may be 24:00; from must be before to.",
+        "properties": {
+          "from": {
+            "type": "string",
+            "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "ListServicesFilter": {
+        "type": "object",
+        "properties": {
+          "pbx": {
+            "type": "string"
+          }
+        }
+      },
+      "ListServicesRequestContent": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListServicesFilter"
+            }
+          }
+        }
+      },
+      "ListServicesResponseContent": {
+        "type": "object",
+        "properties": {
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceInfo"
+            },
+            "description": "List of active services with basic information."
+          }
+        },
+        "required": [
+          "services"
+        ]
+      },
+      "NotFoundExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "default": "Not found"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "OutcomeFilterValue": {
+        "type": "string",
+        "description": "The count names filter.outcomes accepts, each selecting the service calls of the ServiceCallCounts member of the same name (answered: completed + transferred).",
+        "enum": [
+          "offered",
+          "received",
+          "answered",
+          "completed",
+          "transferred",
+          "abandoned",
+          "unanswered",
+          "unknown",
+          "lost",
+          "lostAbandoned",
+          "lostUnanswered",
+          "overflow"
+        ]
+      },
+      "PeriodBucket": {
+        "type": "object",
+        "description": "One bucket. bucketKey is HH:00 for HOUR, 1-7 for DAY_OF_WEEK (ISO, Monday = 1), YYYY-MM-DD, YYYY-Www or YYYY-MM otherwise; sortKey orders the series; bucketStart is the bucket's local start and is set for DAY, WEEK and MONTH only.",
+        "properties": {
+          "bucketKey": {
+            "type": "string",
+            "description": "HH:00 for HOUR, 1-7 for DAY_OF_WEEK (ISO, Monday = 1), YYYY-MM-DD for DAY, YYYY-Www for WEEK, YYYY-MM for MONTH."
+          },
+          "sortKey": {
+            "type": "number",
+            "description": "Orders the series."
+          },
+          "bucketStart": {
+            "type": "string",
+            "description": "The bucket's local start. Set for DAY, WEEK and MONTH only.",
+            "format": "date-time"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/DistributionMetrics"
+          }
+        },
+        "required": [
+          "bucketKey",
+          "metrics",
+          "sortKey"
+        ]
+      },
+      "QueryServiceCallsRequestContent": {
+        "type": "object",
+        "description": "Company resolution. `company` is accepted only with a service (S2S) token; PBX, API-key and XBS tokens carry the company in their claims and a `company` parameter is rejected.",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ReportFilter"
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 2048,
+            "description": "The previous page's nextCursor, passed back unchanged; omit it, or send it empty, for the first page."
+          },
+          "limit": {
+            "type": "number",
+            "default": 50,
+            "maximum": 200,
+            "minimum": 1,
+            "description": "Rows per page, 1 to 200; 50 when omitted."
+          },
+          "callId": {
+            "type": "string",
+            "description": "Only the service calls of this phone call (its callId, the session id shared by every service call of the phone call), so a drill-down can show every service call of a call that overflowed from one service to another. The window and the other filter members still apply; a key lookup, however long the window."
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "QueryServiceCallsResponseContent": {
+        "type": "object",
+        "description": "Fields every windowed report response carries besides its figures. No freshness field: figures lag the live system by up to about a minute (file batching), and a page shows its own request time.",
+        "properties": {
+          "timeZone": {
+            "type": "string",
+            "description": "The IANA timezone the dates and buckets of this response are in - the PBX's own zone unless the request named one of the zones that PBX has stamped."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX serial this response covers - from `filter.pbx` or from the caller's token."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceCallRow"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "description": "Cursor for the next page; absent on the last page."
+          }
+        },
+        "required": [
+          "items",
+          "pbx",
+          "timeZone"
+        ]
+      },
+      "ReportDate": {
+        "type": "object",
+        "description": "The report window. Both dates are inclusive calendar days in `timeZone`; from == to is one day. Windows longer than 90 days are rejected with 400. The data is planned to be kept for 3 months: do not rely on older calls being available.",
+        "properties": {
+          "from": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First day of the window, YYYY-MM-DD, inclusive."
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last day of the window, YYYY-MM-DD, inclusive."
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "IANA timezone the dates and buckets are interpreted in. Defaults to the PBX's own zone. Must be a zone the PBX has stamped on its calls and one the database knows; any other zone is rejected with 400 naming the accepted ones. Echoed in every response as timeZone."
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "ReportFilter": {
+        "type": "object",
+        "description": "What a report is computed over - the window, the scope and the SLA thresholds - as one object. An omitted or empty list means no restriction.",
+        "properties": {
+          "date": {
+            "$ref": "#/components/schemas/ReportDate"
+          },
+          "pbx": {
+            "type": "string",
+            "description": "Serial of the PBX the report is about. A report covers one PBX. With a user or PBX token, any PBX of the token's company, and the token's own PBX when omitted; a PBX of another company gives an empty report. Required with a service or API-key token."
+          },
+          "serviceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "description": "Services (call groups, queues) to include, by id."
+          },
+          "extensions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "maxItems": 1000,
+            "description": "Users to include, by extension, e.g. [\"101\", \"102\"], across every service: the calls one of them answered, and the calls nobody answered (abandoned, unanswered or unknown, a hand-off before anyone answered included) that rang one of them, alone or among several users. A call that rang several of the named users counts once. Only all-digit extensions are accepted; any other entry is rejected with 400."
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutcomeFilterValue"
+            },
+            "maxItems": 1000,
+            "description": "Keep the calls of the counts named, combined with OR: a call matching several values is listed once. The filter takes 12 count names; ServiceCallRow.outcome has only 5 stored values, so do not map one onto the other. Each value selects exactly the calls of the ServiceCallCounts member of the same name (answered: completed + transferred, which has no member of its own), under the same other filters: offered (every call: completed + transferred + abandoned + unanswered + unknown; the same as no outcomes), received (offered - overflow), answered (completed + transferred), completed, transferred, abandoned, unanswered, lost (lostAbandoned + lostUnanswered), lostAbandoned, lostUnanswered, overflow (abandoned + unanswered - lost), unknown (calls whose outcome could not be determined). Repeated or overlapping values are allowed: the result is their union, and a selection that keeps every call (e.g. received + overflow) is answered as offered. Filters on different members combine with AND; a combination no call can match returns an empty result, not an error. lost, overflow and received are judged over the whole phone call, whatever services the request names. A closed list: any other value is rejected with 400. ServiceCallRow.outcome keeps its own five values: a lost or overflow row shows abandoned or unanswered. SLOW PATH like hourRange on every aggregate, except a selection that keeps every call, answered as offered from the daily rows; the call list reads off the index, but a value that matches few calls can read the whole window before a page fills."
+          },
+          "hourRange": {
+            "$ref": "#/components/schemas/HourRange"
+          },
+          "daysOfWeek": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "ISO weekdays to include, 1 = Monday to 7 = Sunday, judged on the queue entry time in the report's timezone - the drill-down of a day-of-week row. SLOW PATH like hourRange: computed from the individual calls of the whole window on every operation."
+          },
+          "waitSecondsRange": {
+            "$ref": "#/components/schemas/SecondsRange"
+          },
+          "talkSecondsRange": {
+            "$ref": "#/components/schemas/SecondsRange"
+          },
+          "disconnectReasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "description": "Keep only the calls of the BreakdownGroup.disconnectReason values listed, matched exactly as either breakdown by disconnect reason (answered or unanswered) returns them; with outcomes [the row's outcome] it selects one disconnect-reason row; send an empty string for the group without a reason - the drill-down of a disconnect-reason row. SLOW PATH like hourRange on every aggregate."
+          },
+          "slaSeconds": {
+            "type": "number",
+            "default": 20,
+            "maximum": 120,
+            "minimum": 5,
+            "description": "SLA threshold in seconds. A service call is within SLA when it was answered and its wait, ring included, is at most this many seconds. The default for every service not named in serviceSlaSeconds. A multiple of 5 from 5 to 120 (the stored wait histogram has 5-second slots to 120 s); any other value is rejected with 400. 20 when omitted."
+          },
+          "serviceSlaSeconds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceSlaSeconds"
+            },
+            "maxItems": 1000,
+            "description": "Per-service SLA thresholds overriding slaSeconds for the services named. Each service call is judged at its own service's threshold; the unanswered summary's abandonedWithin uses the same targets. A serviceId with no service call in the window is ignored; a duplicate serviceId is rejected with 400. Each threshold is a multiple of 5 from 5 to 120; any other value is rejected with 400."
+          }
+        },
+        "required": [
+          "date"
+        ]
+      },
+      "SecondsRange": {
+        "type": "object",
+        "description": "A right-closed band of seconds, the ladders' own: more than from and at most to, except that a band from 0 includes a zero value (the ladders put zero in their first band); to omitted means no upper bound. from is 0 or more and below to. Waits are judged in milliseconds against the band's seconds; talk times on whole seconds (floor), as the talk-time bands are cut.",
+        "properties": {
+          "from": {
+            "type": "number",
+            "maximum": 86400,
+            "minimum": 0
+          },
+          "to": {
+            "type": "number",
+            "maximum": 86400,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "from"
+        ]
+      },
+      "ServiceCallCounts": {
+        "type": "object",
+        "description": "Service call counts by outcome. Each service call (one phone call's stay in one service) counts on its own; a phone call that went through two services is two service calls. completed + transferred + abandoned + unanswered + unknown = offered: the calls whose outcome could not be determined stay in the total, as a count of their own, and are left out of every average and SLA figure. Averages are computed by the service; percentages are left to the client, because every count they need is returned.",
+        "properties": {
+          "offered": {
+            "type": "number",
+            "description": "Every service call in the window, all outcomes, unknown included."
+          },
+          "received": {
+            "type": "number",
+            "description": "The service calls that ended in this service, offered - overflow = completed + transferred + lost + unknown. An unknown service call counts as received even when a later service took the caller. Not unique phone calls: a call answered in one service and transferred into another counts in both."
+          },
+          "completed": {
+            "type": "number",
+            "description": "Service calls an agent answered and kept: the disconnect reason is neither TRANSFER nor FORWARD. Outcome value completed."
+          },
+          "transferred": {
+            "type": "number",
+            "description": "Service calls an agent answered and then handed on (disconnect reason TRANSFER or FORWARD). answered = completed + transferred."
+          },
+          "abandoned": {
+            "type": "number",
+            "description": "Service calls nobody answered whose disconnect reason is a hang-up: the caller hung up, or a rule took the call out of the queue."
+          },
+          "shortAbandoned": {
+            "type": "number",
+            "description": "Of abandoned, the service calls whose wait, ring included, was at most 5 seconds. Included in abandoned, not an extra outcome."
+          },
+          "unanswered": {
+            "type": "number",
+            "description": "Service calls nobody answered that ended for any other reason - a timeout, an empty queue, the caller leaving by a keypad option, a reason the classification does not name, or a hand-off before anyone answered (disconnect reason TRANSFER, FORWARD or PICKUP)."
+          },
+          "unknown": {
+            "type": "number",
+            "description": "Service calls whose outcome could not be determined from their events. Outcome value unknown; their events can be read with GetServiceCallEvents. Counted in offered and received; left out of every average and SLA figure, because their wait and outcome are not known."
+          },
+          "lost": {
+            "type": "number",
+            "description": "Of the abandoned and unanswered service calls, those that were the last service call of their phone call: no later service took the caller. Summed over services it is the number of lost phone calls."
+          },
+          "lostAbandoned": {
+            "type": "number",
+            "description": "Of lost, those whose last service call was abandoned: its disconnect reason is a hang-up (see abandoned)."
+          },
+          "lostUnanswered": {
+            "type": "number",
+            "description": "Of lost, those whose last service call ended unanswered (see unanswered). lostAbandoned + lostUnanswered = lost."
+          },
+          "overflow": {
+            "type": "number",
+            "description": "abandoned + unanswered - lost: service calls nobody answered here after which the phone call had a later service call (in another service, or the same one entered again). The caller may have been served there."
+          }
+        },
+        "required": [
+          "abandoned",
+          "completed",
+          "lost",
+          "lostAbandoned",
+          "lostUnanswered",
+          "offered",
+          "overflow",
+          "received",
+          "shortAbandoned",
+          "transferred",
+          "unanswered",
+          "unknown"
+        ]
+      },
+      "ServiceCallEvent": {
+        "type": "object",
+        "description": "One raw lifecycle event of a service call: one entry of the stream API's actions list, one event per agent the entry names. time can be in whole seconds on some calls.",
+        "properties": {
+          "time": {
+            "type": "string",
+            "description": "When the PBX recorded this event.",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "description": "INIT | RING | CANCEL | ANSWER | END, upper-cased."
+          },
+          "reason": {
+            "type": "string",
+            "description": "The raw reason the PBX gave for this event, upper-cased (END and CANCEL carry one); on END it is the row's disconnectReason. Absent when there is none."
+          },
+          "agentId": {
+            "type": "string",
+            "description": "The agent this event concerns - rung, or answering: the user as a member of this service, <company>_<pbx>_<service>_<extension>. Absent on events without an agent."
+          },
+          "userName": {
+            "type": "string",
+            "description": "That user's name as stored with the event. Absent on events without an agent."
+          },
+          "userExtension": {
+            "type": "string",
+            "description": "That user's extension. Absent on events without an agent."
+          },
+          "queuePosition": {
+            "type": "number",
+            "description": "The caller's place in line at this event, as the PBX sends it. Absent when the PBX did not send it."
+          }
+        },
+        "required": [
+          "action",
+          "time"
+        ]
+      },
+      "ServiceCallRow": {
+        "type": "object",
+        "description": "One service call: one phone call's stay in one service (one flow of the call in that service). Ring is nested inside wait; talk includes hold. callerPhone and callerName can be absent; absent does not mean the call had no caller. A call that went from one service to another is several service calls sharing callId (one per service); every report counts each of them on its own.",
+        "properties": {
+          "callId": {
+            "type": "string",
+            "description": "The phone call's id (its session id), shared by every service call of the call. Not this row's own id: with flowIndex and serviceId it identifies the row."
+          },
+          "flowIndex": {
+            "type": "number",
+            "description": "The PBX's step number of this service call within the phone call. Not a count of service calls and not guaranteed to be consecutive (see serviceCallsCount). With callId and serviceId it identifies the row."
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "The service of this service call."
+          },
+          "serviceName": {
+            "type": "string",
+            "description": "The service's name as stored with the call. Absent when the PBX sent none."
+          },
+          "enteredAt": {
+            "type": "string",
+            "description": "When the caller joined the service's queue.",
+            "format": "date-time"
+          },
+          "answeredAt": {
+            "type": "string",
+            "description": "When an agent answered. Absent when nobody did.",
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": "string",
+            "description": "When this service call ended: the caller left the service's queue, or the answered call ended.",
+            "format": "date-time"
+          },
+          "waitMs": {
+            "type": "number",
+            "description": "Wait from entering the queue to the answer or the exit, milliseconds; the ring is inside it."
+          },
+          "ringMs": {
+            "type": "number",
+            "description": "The ringing in this service call, milliseconds: from the first ring to any agent to the answer, or to the end of the service call when nobody answered; stretches with no phone ringing are included. It is inside waitMs; waitMs minus ringMs is the time before the first agent was rung. Absent when no agent was rung."
+          },
+          "answeringAgentRingToAnswerMs": {
+            "type": "number",
+            "description": "In this service call, the time from the first ring of the agent who answered to the answer, milliseconds; re-rings, and any stretches in between when that agent's phone was not ringing, are included. Absent when nobody answered, or when no ring was recorded for that agent."
+          },
+          "answeringAgentRingMs": {
+            "type": "number",
+            "description": "In this service call, how long the answering agent's phone actually rang, milliseconds: each ring of that agent lasts until the next event that names that agent (its cancel or the answer) or names no agent at all, and the rings are added up. Absent when nobody answered, or when no ring was recorded for that agent."
+          },
+          "talkMs": {
+            "type": "number",
+            "description": "Talk time from the answer to the end, hold included, milliseconds; 0 when nobody answered."
+          },
+          "durationMs": {
+            "type": "number",
+            "description": "The whole span of this service call, milliseconds: from joining the queue to the service call's end, waitMs plus talkMs (the whole unit, as the stream API means duration; the talk time alone is talkMs)."
+          },
+          "answered": {
+            "type": "boolean",
+            "description": "True exactly when an agent of the service answered: outcome completed or transferred; an unknown row can have answered true."
+          },
+          "answeredByAgentId": {
+            "type": "string",
+            "description": "The agent who answered - the user as a member of this service, <company>_<pbx>_<service>_<extension>. Absent when nobody answered."
+          },
+          "answeredByName": {
+            "type": "string",
+            "description": "The answering user's name as stored with the call (the name it had then). Absent when nobody answered."
+          },
+          "answeredByExtension": {
+            "type": "string",
+            "description": "The answering user's extension. Absent when nobody answered."
+          },
+          "agentsRung": {
+            "type": "number",
+            "description": "How many different agents the service rang during this service call, whether or not they picked up."
+          },
+          "startPosition": {
+            "type": "number",
+            "description": "The caller's place in line on joining the service's queue, as the PBX sends it (1 = first in line). Absent when the PBX did not send it."
+          },
+          "finalPosition": {
+            "type": "number",
+            "description": "The caller's place in line when the wait ended (answer, hang-up or exit), as the PBX sends it. Absent when the PBX did not send it."
+          },
+          "outcome": {
+            "type": "string",
+            "description": "completed | transferred | abandoned | unanswered | unknown. An open vocabulary: a client must tolerate a value not listed here. unknown: the outcome could not be determined from the service call's events (see ServiceCallCounts.unknown); such a row is outside every average and every SLA figure."
+          },
+          "disconnectReason": {
+            "type": "string",
+            "description": "The reason the call left the service, as the PBX gave it on the END event, upper-cased: HANGUP, TRANSFER, FORWARD, PICKUP, TIMEOUT, EMPTY, EXITWITHKEY, COMPATIBILITY, UNKNOWN. Absent when the END carried none. filter.disconnectReasons selects by it. The outcome follows the answer, not the reason: answered then TRANSFER or FORWARD is transferred; nobody answered is abandoned for HANGUP and unanswered for every other reason, a hand-off (TRANSFER, FORWARD, PICKUP) included."
+          },
+          "callerPhone": {
+            "type": "string",
+            "description": "The caller's number as the PBX received it. Absent when the PBX sent none."
+          },
+          "callerName": {
+            "type": "string",
+            "description": "The caller's name as the PBX received it. Absent when the PBX sent none."
+          },
+          "lost": {
+            "type": "boolean",
+            "description": "Set on abandoned and unanswered rows only: true when this was the last service call of its phone call (lost), false when a later service call then took the caller (overflow). Absent on every other row."
+          },
+          "totalQueueWaitMs": {
+            "type": "number",
+            "description": "The caller's total queue wait: the sum of waitMs over every service call of this phone call. The same value on every row of the call. It covers the waiting time inside the services' queues only - not the IVR before the first service or between services. Computed when the page is read, so it grows if a later service call arrives. It includes service calls in services outside the request's service filter, and service calls whose outcome could not be determined."
+          },
+          "totalQueueRingMs": {
+            "type": "number",
+            "description": "The caller's total ringing: the sum of ringMs over every service call of this phone call. The same value on every row of the call; a service call without ringMs adds 0. Computed when the page is read, so it grows if a later service call arrives. It includes service calls in services outside the request's service filter, and service calls whose outcome could not be determined."
+          },
+          "serviceCallsCount": {
+            "type": "number",
+            "description": "How many service calls this phone call has: 1 when it stayed in one service; the same service entered twice counts 2. Like totalQueueWaitMs and totalQueueRingMs, it includes service calls in services outside the request's service filter, and service calls whose outcome could not be determined."
+          }
+        },
+        "required": [
+          "agentsRung",
+          "answered",
+          "callId",
+          "durationMs",
+          "endedAt",
+          "enteredAt",
+          "flowIndex",
+          "outcome",
+          "serviceCallsCount",
+          "serviceId",
+          "talkMs",
+          "totalQueueRingMs",
+          "totalQueueWaitMs",
+          "waitMs"
+        ]
+      },
+      "ServiceInfo": {
+        "type": "object",
+        "description": "Basic information about a service, used in list responses.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the service."
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the service."
+          },
+          "pbx": {
+            "type": "string",
+            "description": "The PBX identifier of the service."
+          },
+          "aclGroup": {
+            "type": "string",
+            "description": "ACL group identifier associated with the service."
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ServiceLevelBand": {
+        "type": "object",
+        "description": "One band of a cumulative service-level ladder. count is cumulative (this band and every earlier one); delta is this band's own; withinSeconds is null on the open-ended last band.",
+        "properties": {
+          "withinSeconds": {
+            "type": "number",
+            "description": "The band's upper limit in seconds: count holds the calls whose wait was at most this. Absent on the open last band."
+          },
+          "count": {
+            "type": "number",
+            "description": "Calls waiting at most withinSeconds: this band and all earlier ones."
+          },
+          "delta": {
+            "type": "number",
+            "description": "Calls in this band only."
+          },
+          "lost": {
+            "type": "number",
+            "description": "Set on the abandoned-or-unanswered ladder: of count, the lost service calls (no later service took the caller), cumulative like count."
+          },
+          "lostDelta": {
+            "type": "number",
+            "description": "Set on the abandoned-or-unanswered ladder: of delta, the lost service calls."
+          },
+          "overflow": {
+            "type": "number",
+            "description": "Set on the abandoned-or-unanswered ladder: of count, the overflow service calls (a later service call then took the caller), cumulative like count. lost + overflow = count."
+          },
+          "overflowDelta": {
+            "type": "number",
+            "description": "Set on the abandoned-or-unanswered ladder: of delta, the overflow service calls. lostDelta + overflowDelta = delta."
+          }
+        },
+        "required": [
+          "count",
+          "delta"
+        ]
+      },
+      "ServiceSlaSeconds": {
+        "type": "object",
+        "description": "One service's SLA threshold.",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "description": "The service this threshold applies to."
+          },
+          "slaSeconds": {
+            "type": "number",
+            "maximum": 120,
+            "minimum": 5,
+            "description": "This service's SLA threshold, seconds; the same rules as filter.slaSeconds."
+          }
+        },
+        "required": [
+          "serviceId",
+          "slaSeconds"
+        ]
+      },
+      "SlaCounts": {
+        "type": "object",
+        "description": "Counts, not a percentage: the service level is answeredWithin divided by eligible. Over several services or periods, add the counts first and divide once; never average percentages. eligible already leaves out the service calls of unknown outcome and the short abandons - do not subtract counts.unknown or counts.shortAbandoned again; show 'no calls' rather than 0 % when eligible is 0. answeredWithin counts completed and transferred service calls whose wait is at most thresholdSeconds.",
+        "properties": {
+          "thresholdSeconds": {
+            "type": "number",
+            "description": "The default threshold that applied; on a by-service group, that service's own threshold."
+          },
+          "answeredWithin": {
+            "type": "number",
+            "description": "Completed or transferred service calls whose wait, ring included, is at most the threshold that applied to their service - this service's own wait, not the caller's wait across earlier services (the caller's whole wait across services is ServiceCallRow.totalQueueWaitMs)."
+          },
+          "eligible": {
+            "type": "number",
+            "description": "The SLA denominator: counts.offered minus counts.unknown minus counts.shortAbandoned - the calls whose outcome could be determined, without the calls abandoned within 5 seconds, which gave the service no time to answer."
+          },
+          "serviceSlaSeconds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceSlaSeconds"
+            },
+            "description": "Present only when the request sent serviceSlaSeconds: the overrides that actually applied, i.e. for services with at least one service call in the window. Absent means one threshold applied to every service."
+          }
+        },
+        "required": [
+          "answeredWithin",
+          "eligible",
+          "thresholdSeconds"
+        ]
+      },
+      "TalkTimeBand": {
+        "type": "object",
+        "description": "A talk-time band: bandNo from 1, fromSeconds inclusive, toSeconds inclusive and null on the open-ended last band.",
+        "properties": {
+          "bandNo": {
+            "type": "number",
+            "description": "Band number, from 1."
+          },
+          "fromSeconds": {
+            "type": "number",
+            "description": "Lowest whole second of talk in the band. Band 1 starts at 1 but also holds the calls with under 1 s of talk."
+          },
+          "toSeconds": {
+            "type": "number",
+            "description": "Highest whole second of talk in the band. Absent on the last band."
+          }
+        },
+        "required": [
+          "bandNo",
+          "fromSeconds"
+        ]
+      },
+      "UnansweredBreakdownDimension": {
+        "type": "string",
+        "description": "The grain of the unanswered breakdown: one group per service, or one group per outcome and raw END reason.",
+        "enum": [
+          "byService",
+          "byDisconnectReason"
+        ]
+      },
+      "UnansweredSlaCounts": {
+        "type": "object",
+        "description": "Abandoned-within counts: abandonedWithin / eligible is the share of the eligible service calls abandoned within thresholdSeconds. Both leave out the short abandons.",
+        "properties": {
+          "thresholdSeconds": {
+            "type": "number",
+            "description": "The default threshold that applied."
+          },
+          "abandonedWithin": {
+            "type": "number",
+            "description": "Abandoned service calls whose wait is at most the threshold that applied to their service, without the short abandons (counts.shortAbandoned), which are outside eligible too."
+          },
+          "eligible": {
+            "type": "number",
+            "description": "The denominator, the same as the distribution's sla.eligible: counts.offered minus counts.unknown minus counts.shortAbandoned."
+          },
+          "serviceSlaSeconds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceSlaSeconds"
+            },
+            "description": "Present only when the request sent serviceSlaSeconds: the overrides that actually applied, i.e. for services with at least one service call in the window. abandonedWithin is judged at each service's own threshold, so without this a reader cannot tell which targets produced it. Absent means one threshold applied to every service."
+          }
+        },
+        "required": [
+          "abandonedWithin",
+          "eligible",
+          "thresholdSeconds"
+        ]
+      },
+      "ValidationExceptionResponseContent": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "smithy.api.httpBearerAuth": {
+        "type": "http",
+        "description": "HTTP Bearer authentication",
+        "scheme": "Bearer"
+      }
+    }
+  }
+}

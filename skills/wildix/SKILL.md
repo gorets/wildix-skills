@@ -22,9 +22,9 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 |-------------|-----------|
 | "log in", "authenticate", token missing/expired | `wildix-auth` |
 | "show today's chats", "summarize messages", "what was discussed" | `wildix-chats-overview` |
-| a call or meeting that is over: transcript, AI summary, decisions, recording, call history, missed calls, find a meeting, as the user | `wildix-calls-history` |
+| a call or meeting that is over: transcript, AI summary, decisions, recording, call history, missed calls, find a meeting, as the user; the reports of the call queues over days (service level, lost calls, per agent) | `wildix-calls-history` |
 | a live phone call: call a number, answer, hold, transfer, hang up, DTMF, record, which phone rings, watch calls as they happen, as the user | `wildix-call-control` |
-| what is going on now: call queues and their agents, calls and customer chats in progress, whether a colleague is available, the live transcript of a call, a live feed of queues | `wildix-live-monitor` |
+| what is going on now: call queues and their agents, how the queues do today or in the last hour (service level, abandoned, waits), calls and customer chats in progress, whether a colleague is available, the live transcript of a call, a live feed of queues | `wildix-live-monitor` |
 | "write an ADR from this call", an ADR from a meeting link | `wildix-adr-from-meeting` |
 | "react with…", "put eyes on that message", "who reacted" | `wildix-chats` |
 | chats, messages, inbox and unread, search, members, files, mentions, find a colleague, send, edit or delete a message, follow chats live ("tell me when Anna writes"), as the user | `wildix-chats` |

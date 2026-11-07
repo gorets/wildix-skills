@@ -2,6 +2,15 @@
 
 All notable changes to the Wildix agent skills. The version is the number of the whole pack, shown at the top of the [`README.md`](README.md); the skills standard has no place for it, and `npx skills` notices updates by the content of each skill folder, not by a number. It follows [Semantic Versioning](https://semver.org): a skill removed or renamed is a major version, a skill or a command added is a minor one, a fix is a patch.
 
+## 3.3.0 — 2026-11-07
+
+### Added
+- `wildix-live-monitor`: **queue statistics**. `live.sh queues --stats` gives each queue, each of its agents and all the queues together their figures since the local midnight (`--window today`) or over the last 15 to 60 minutes: offered, answered, abandoned (short abandons apart), unanswered, transferred, service level against `--sla` (5 to 30 s), abandon rate, ASA, average talk and ring, longest wait now, agents by state; per agent offered, answered, missed, answer rate, talk, time available, busy, paused and in wrap-up, occupancy. `--active` and `--pbx` narrow the list. `watch --stats` adds `QUEUE_STATS` lines when the figures of a queue change. The figures come from the stats of the WDA live stream, the ones the x-caracal wallboard uses.
+- `wildix-calls-history`: **`queues.sh`**, the reports of the call queues over days from the WDA x-caracal service: `summary`, `by-queue`, `by-period` (hour, day, week, month, weekday), `answered` and `unanswered` with their breakdowns (by queue, agent, user, disconnect reason, talk time), `service-level` ladders, `calls` (the queue calls one by one, with pages) and `events` (one queue call step by step), filtered by days, PBX, queues, extensions, outcomes, hours, weekdays, wait and talk bands, disconnect reasons and SLA thresholds; `list` names the queues and the PBXs that have them. Its reference `queues.openapi.json` is built by `tools/split-xcaracal-openapi.mjs`.
+
+### Notes
+- Both need a Premium license. The trend series of a live stats window and the x-caracal dashboards are in the service models but not served on production yet: not offered.
+
 ## 3.2.2 — 2026-11-07
 
 ### Changed

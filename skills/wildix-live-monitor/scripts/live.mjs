@@ -4,6 +4,8 @@
 // One-shot commands print one JSON object; `watch` and `transcript --follow` print `<EVENT> <json>` lines.
 import {readFileSync, writeFileSync} from 'node:fs';
 
+import {agentFigures, queueFigures, statsOptions, sumStats} from './stats.mjs';
+
 // On macOS a piped stdout or stderr is asynchronous, and process.exit() right after a write cuts the output at
 // the pipe buffer (64 KB): an agent reading through a pipe would get broken JSON. Blocking writes keep every byte
 // written before an exit.
@@ -38,8 +40,8 @@ const opt = {list: {}, flags: new Set()};
 const positional = [];
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
-  if (['--full', '--busy', '--paused', '--calls', '--chats', '--conferences', '--follow', '--mine', '--queues', '--conversations', '--reconnected'].includes(a)) opt.flags.add(a.slice(2));
-  else if (['--name', '--status', '--limit', '--for', '--deadline', '--state', '--presence'].includes(a)) {
+  if (['--full', '--busy', '--paused', '--calls', '--chats', '--conferences', '--follow', '--mine', '--queues', '--conversations', '--reconnected', '--stats', '--active'].includes(a)) opt.flags.add(a.slice(2));
+  else if (['--name', '--status', '--limit', '--for', '--deadline', '--state', '--presence', '--window', '--sla', '--pbx'].includes(a)) {
     const v = argv[++i];
     if (v === undefined) fail(`${a} needs a value`);
     (opt.list[a.slice(2)] ??= []).push(v);
@@ -49,6 +51,9 @@ for (let i = 0; i < argv.length; i++) {
 const one = (k) => opt.list[k]?.at(-1);
 const has = (k) => opt.flags.has(k);
 const full = has('full');
+// Queue statistics: asked for by --stats, --window or --sla. Window: today (default) or the last 15/30/45/60 minutes.
+const wantStats = has('stats') || Boolean(one('window')) || Boolean(one('sla'));
+const statsOpts = () => statsOptions(one('window') ?? 'today', Number(one('sla') ?? 20));
 
 // ── the connection ───────────────────────────────────────────────────────────────────────────────────────────
 // Protocol: {"action":"authorize","token"} -> {"event":"authorized"}; then
@@ -220,8 +225,8 @@ function conversationView(c) {
   return drop({...base, flows: typeof c.flows === 'number' ? c.flows : undefined, key: c.key, insights: insights(c.annotationsByKey)});
 }
 
-function agentView(a) {
-  if (full) return a;
+function agentView(a, stats) {
+  if (full) return stats ? {...a, stats: agentFigures(stats)} : a;
   return drop({
     name: a.name,
     extension: a.userExtension,
@@ -230,19 +235,23 @@ function agentView(a) {
     paused: a.paused === 'true' || a.paused === true || undefined,
     reason: a.reason || undefined,
     message: a.message || undefined,
+    stats: stats ? agentFigures(stats) : undefined,
   });
 }
 
 function queueView(s) {
-  if (full) return s;
+  const agentStats = s.stats?.agentStats ?? {};
+  if (full) return s.stats ? {...s, figures: queueFigures(s.stats)} : s;
   return drop({
     id: s.id,
     name: s.name,
+    pbx: s.pbx,
     strategy: s.strategy,
     maxCalls: s.maxCalls ? Number(s.maxCalls) : undefined,
     calls: s.calls?.length ?? 0,
     callIds: s.calls?.length ? s.calls : undefined,
-    agents: s.agents?.map(agentView),
+    stats: queueFigures(s.stats),
+    agents: s.agents?.map((a) => agentView(a, s.stats ? agentStats[a.id] : undefined)),
   });
 }
 
@@ -308,17 +317,26 @@ async function queues() {
   await connectOrFail();
   let items;
   try {
-    items = await snapshot('services');
+    items = await snapshot('services', wantStats ? statsOpts() : {});
   } catch (e) {
     fail(e.message);
   }
   let qs = lastById(items.filter((i) => i.event === 'service'));
+  const pbx = one('pbx');
+  if (pbx) qs = qs.filter((q) => q.pbx === pbx);
   const name = one('name')?.toLowerCase();
   if (name) qs = qs.filter((q) => q.name?.toLowerCase().includes(name));
   if (has('busy')) qs = qs.filter((q) => q.calls?.length);
   if (has('paused')) qs = qs.filter((q) => q.agents?.some((a) => a.paused === 'true' || a.paused === true));
-  qs.sort((a, b) => (b.calls?.length ?? 0) - (a.calls?.length ?? 0) || String(a.name).localeCompare(String(b.name)));
-  print({total: qs.length, callsWaitingOrTalking: qs.reduce((n, q) => n + (q.calls?.length ?? 0), 0), queues: qs.map(queueView)});
+  if (has('active')) qs = qs.filter((q) => q.calls?.length || q.stats?.offered || q.stats?.outbound);
+  qs.sort((a, b) => (b.calls?.length ?? 0) - (a.calls?.length ?? 0) || (b.stats?.offered ?? 0) - (a.stats?.offered ?? 0) || String(a.name).localeCompare(String(b.name)));
+  print(drop({
+    total: qs.length,
+    callsWaitingOrTalking: qs.reduce((n, q) => n + (q.calls?.length ?? 0), 0),
+    pbxs: [...new Set(qs.map((q) => q.pbx))].length > 1 ? Object.fromEntries([...new Set(qs.map((q) => q.pbx))].map((p) => [p, qs.filter((q) => q.pbx === p).length])) : undefined,
+    stats: wantStats ? queueFigures(sumStats(qs.map((q) => q.stats))) : undefined,
+    queues: qs.map(queueView),
+  }));
   close(0);
 }
 
@@ -422,7 +440,7 @@ async function transcript() {
 }
 
 async function watch() {
-  const wantQueues = has('queues');
+  const wantQueues = has('queues') || wantStats;
   const wantConv = has('conversations') || has('calls') || has('mine') || (!wantQueues && !opt.list.presence);
   const presenceExt = opt.list.presence ?? [];
   const deadline = Number(one('deadline') ?? 0) * 1000;
@@ -432,9 +450,14 @@ async function watch() {
   let keepalive;
   let attempts = 0;
 
-  const subscriptions = () => [
+  // With stats the queues are subscribed with their current state, to learn their names (a stats update names only
+  // the queue id); the state itself is not printed. The keepalive asks again without the state.
+  const queueNames = new Map();
+  let queuesReady = !wantStats;
+  const queueSub = (state) => sub('services', wantStats ? {state, ...statsOpts()} : {state: false});
+  const subscriptions = (first = false) => [
     ...(wantConv ? [sub('conversations', {state: false})] : []),
-    ...(wantQueues ? [sub('services', {state: false})] : []),
+    ...(wantQueues ? [queueSub(first && wantStats)] : []),
     ...(presenceExt.length ? [sub('presence', {state: false, filter: presenceExt.map((e) => [null, company, e])})] : []),
   ];
 
@@ -458,11 +481,29 @@ async function watch() {
       if (d.code === 403) close(1);
       return;
     }
+    if (d.event === 'subscribed' && d.topic === 'services' && !queuesReady) {
+      queuesReady = true;
+      line('QUEUES', {queues: queueNames.size, stats: statsOpts()});
+      return;
+    }
     if (d.event !== 'broadcast') return;
     for (const it of Array.isArray(d.data) ? d.data : [d.data]) {
       if (!it) continue;
       if (d.topic === 'presence') line('PRESENCE', presenceView(it));
       else if (d.topic === 'services') {
+        if (it.event === 'service' && it.name) queueNames.set(it.id, it.name);
+        if (!queuesReady) continue;
+        if (it.event === 'service_stats_update') {
+          if (!wantStats) continue;
+          const agentStats = it.stats?.agentStats ?? {};
+          line('QUEUE_STATS', full ? it : drop({
+            id: it.id,
+            name: queueNames.get(it.id),
+            ...queueFigures(it.stats),
+            agents: Object.keys(agentStats).length ? Object.fromEntries(Object.entries(agentStats).map(([k, v]) => [k.startsWith(`${it.id}_`) ? k.slice(it.id.length + 1) : k, agentFigures(v)])) : undefined,
+          }));
+          continue;
+        }
         // A change names what changed (eventTrigger) and carries only that: usually one agent, no queue name.
         if (it.event === 'service') line('QUEUE', full ? it : drop({trigger: it.eventTrigger, ...queueView(it)}));
         else if (it.event === 'serviceCall' || it.event === 'service_call') line('QUEUE_CALL', serviceCallView(it));
@@ -492,7 +533,8 @@ async function watch() {
     }
     listeners.clear();
     listeners.add(onFrame);
-    for (const s of subscriptions()) ws.send(JSON.stringify(s));
+    queuesReady = !wantStats;
+    for (const s of subscriptions(true)) ws.send(JSON.stringify(s));
     attempts = 0;
     // The gateway drops a connection that is quiet for 10 minutes; subscribing again is harmless.
     clearInterval(keepalive);
@@ -503,6 +545,7 @@ async function watch() {
       topics: [wantConv && 'conversations', wantQueues && 'queues', presenceExt.length && 'presence'].filter(Boolean),
       calls: has('calls') || undefined,
       mine: has('mine') || undefined,
+      stats: wantQueues && wantStats ? statsOpts() : undefined,
     }));
     ready = true;
   }

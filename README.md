@@ -1,6 +1,6 @@
 # Wildix Agent Skills
 
-**Version 3.2.2** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
+**Version 3.3.0** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
 
 AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
@@ -71,9 +71,9 @@ The service is still being built: a call to an operation that is not ready answe
 
 ### `wildix-calls-history`
 
-What is on record about calls and meetings (conferences) that are over, as the logged-in user: the record and its participants, the transcript, the AI summary and insights, the recording link, the user's call history and missed calls, and a search over calls, conferences and chats by date, person, tag or language. It reads the past: it does not start, join or control a live call. One script per section (conferences, calls, conversations), and the OpenAPI of each section as its reference.
+What is on record about calls and meetings (conferences) that are over, as the logged-in user: the record and its participants, the transcript, the AI summary and insights, the recording link, the user's call history and missed calls, a search over calls, conferences and chats by date, person, tag or language, and the reports of the call queues over days from x-caracal (offered, answered, abandoned and lost calls, service level, waits, per queue, agent, hour or day, and the queue calls one by one). It reads the past: it does not start, join or control a live call. One script per section (conferences, calls, conversations, queues), and the OpenAPI of each section as its reference.
 
-**Triggers:** "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls", "find the meeting with Anna on Monday"
+**Triggers:** "what was discussed in yesterday's meeting", "get the transcript of that call", "summarize the conference", "my missed calls", "find the meeting with Anna on Monday", "service level of the support queue last week", "which callers did we lose yesterday"
 
 **Depends on:** `wildix-auth`
 
@@ -95,9 +95,9 @@ The PBX needs a recent WMS (7.11 has the API); an older one answers 404 to the R
 
 ### `wildix-live-monitor`
 
-What is going on **now** in your company, as the logged-in user, read only, from the live stream of Wildix Data Analytics (WDA) that the x-bees supervisor views use: every call queue with the calls in it and its agents (available, paused, in DND and why), the calls, customer chats and conferences in progress with their live AI insights (sentiment, CSAT, topics), presence of colleagues, the live transcript of a call in progress, and all of it as a feed, one line per change, to be watched by the agent. Queues and the conversations of the company need a Premium PBX license; the conversations a user sees follow their PBX right to view calls of other groups. Short views by default: e-mail, IP addresses and locations of people only on request.
+What is going on **now** in your company, as the logged-in user, read only, from the live stream of Wildix Data Analytics (WDA) that the x-bees supervisor views use: every call queue with the calls in it and its agents (available, paused, in DND and why) and, on request, how each queue and agent did since midnight or in the last hour (service level, answered, abandoned, waits, occupancy), the calls, customer chats and conferences in progress with their live AI insights (sentiment, CSAT, topics), presence of colleagues, the live transcript of a call in progress, and all of it as a feed, one line per change, to be watched by the agent. Queues and the conversations of the company need a Premium PBX license; the conversations a user sees follow their PBX right to view calls of other groups. Short views by default: e-mail, IP addresses and locations of people only on request.
 
-**Triggers:** "what's going on in the support queue", "who is paused in the sales queue", "which customer chats wait for a reply", "is Anna available", "what is the customer saying on my call", "tell me when a call comes into the queue"
+**Triggers:** "what's going on in the support queue", "who is paused in the sales queue", "service level of the support queue today", "which customer chats wait for a reply", "is Anna available", "what is the customer saying on my call", "tell me when a call comes into the queue"
 
 **Depends on:** `wildix-auth`
 
@@ -190,6 +190,12 @@ The reference of `wildix-call-control` is cut from the PBX API document that doc
 
 ```bash
 python3 tools/extract-pbx-call-control.py <path to>/pbx-openapi.yaml
+```
+
+The `queues` reference of `wildix-calls-history` comes from the smithy model of the x-caracal service (`sdk-models/models/wda-xcaracal`, which has no published OpenAPI yet) and the list of queues of the WDA stream document. Build the OpenAPI with the smithy `openapi` plugin (add `software.amazon.smithy:smithy-openapi` to `build.gradle.kts` and a projection `{"plugins": {"openapi": {"service": "wildix.wda.xcaracal#WdaXcaracal", "protocol": "aws.protocols#restJson1", "version": "3.1.0"}}}` to `smithy-build.json`, in a copy of `sdk-models`, then `./gradlew build`), then:
+
+```bash
+node tools/split-xcaracal-openapi.mjs <path to>/WdaXcaracal.openapi.json <path to>/wda-stream-client.openapi.json
 ```
 
 The two WDA sources are produced by the SDK generator (the same documents are also published, a little older, under `sdk-docs/static/codegen/api/`) (`yarn install`, then `node scripts/build-clients -s wda-history-client`, and the same for `wda-insights-client`, in `sdk-ts`): they land in `packages/<client>/etc/<client>.openapi.json`. Note that the generator also rewrites the tracked client sources of those packages.
