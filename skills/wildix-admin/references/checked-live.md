@@ -18,4 +18,4 @@ wx-admin 1.9.0 (Node 22+), 2026-11-09. Read only on the shared `crm-test.wildixi
 
 ## Not tried
 
-Any other write: `user`, `queue` beyond the one test queue, `dialplan`, `trunk`, `system *-set`, `config copy` without `--dry-run`, `key rename`, `kb source sync`, `wilma agent update|publish|deploy`, `integration` and `kite` changes, `api` with a method other than GET. `login` (the user's). `config copy` without `--dry-run`, a Company API Key login (only Basic was used), the WMS sign-in with 2FA, `--all-pbx`, `kb ask`, `records recording-download`, `cloud <service> <operation>`.
+Any other write: `user`, `queue` beyond the one test queue, `dialplan`, `trunk`, `system *-set`, `key rename`, `kb source sync`, `wilma agent update|publish|deploy`, `integration` and `kite` changes, `api` with a method other than GET. `login` (the user's). `config copy` without `--dry-run`, a Company API Key login (only Basic was used), the WMS sign-in with 2FA, `--all-pbx`, `kb ask`, `records recording-download`, `cloud <service> <operation>`.
