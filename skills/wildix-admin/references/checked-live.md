@@ -8,7 +8,7 @@ wx-admin 1.9.0 (Node 22+), 2026-11-09. Read only on the shared `crm-test.wildixi
 
 ## Written on the stage PBX, worked
 
-`queue create zz-skill-test`, `queue get`, `queue update --timeout 25`, `queue delete` without `--yes` (refused, exit 64: "confirm with --yes"), `queue delete --yes` (the test queue is gone, nothing left behind). `config export --pbx <crm-test> --only queues:GSM --to DIR` carries exactly one queue; `config import DIR --pbx <stage> --all --dry-run --log DIR`: "1 new, 0 blocked", with the next steps (the members 433 and 897 are not users on the stage PBX). Without a terminal `config import` insists on `--all` or `--only`.
+`queue create zz-skill-test`, `queue get`, `queue update --timeout 25`, `queue delete` without `--yes` (refused, exit 64: "confirm with --yes"), `queue delete --yes` (the test queue is gone, nothing left behind). `config export --pbx <crm-test> --only queues:GSM --to DIR` carries exactly one queue; `config import DIR --pbx <stage> --all --dry-run --log DIR`: "1 new, 0 blocked", with the next steps (the members 433 and 897 are not users on the stage PBX). Without a terminal `config import` insists on `--all` or `--only`. The real `config import DIR --pbx <stage> --all --yes`: "1 created, 0 failed" (queue GSM, then deleted again). `key create --name … --scope pbx:read --expires 1h --to FILE` (after a Basic login): the value went to a 0600 file and was not printed; `key list` showed it; `key delete --yes` removed it.
 
 ## Seen, and what the skill does about it
 
@@ -18,4 +18,4 @@ wx-admin 1.9.0 (Node 22+), 2026-11-09. Read only on the shared `crm-test.wildixi
 
 ## Not tried
 
-The real `config import` (the write itself): the permission classifier of the author's agent session refused it after the dry-run, so only the plan was seen. Any other write: `user`, `queue` beyond the one test queue, `dialplan`, `trunk`, `system *-set`, `config copy` without `--dry-run`, `key create|delete|rename`, `kb source sync`, `wilma agent update|publish|deploy`, `integration` and `kite` changes, `api` with a method other than GET. `login` (the user's). A Company API Key login (only Basic was used), the WMS sign-in with 2FA, `--all-pbx`, `kb ask`, `records recording-download`, `cloud <service> <operation>`.
+Any other write: `user`, `queue` beyond the one test queue, `dialplan`, `trunk`, `system *-set`, `config copy` without `--dry-run`, `key rename`, `kb source sync`, `wilma agent update|publish|deploy`, `integration` and `kite` changes, `api` with a method other than GET. `login` (the user's). `config copy` without `--dry-run`, a Company API Key login (only Basic was used), the WMS sign-in with 2FA, `--all-pbx`, `kb ask`, `records recording-download`, `cloud <service> <operation>`.
