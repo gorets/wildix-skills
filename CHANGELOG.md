@@ -12,8 +12,8 @@ All notable changes to the Wildix agent skills. The version is the number of the
 - Router (`wildix`): routes administrator tasks to `wildix-admin`, which does not use `wildix-auth`.
 
 ### Notes
-- Checked read only against a shared test PBX on 2026-11-09 (see `references/checked-live.md`). Writes, a Company API Key login and the WMS sign-in with 2FA were not tried.
-- Seen in `wx-admin` 1.9.0 and passed on in the skill as cautions: `config backup` stops on two dialplans whose names differ only in case on a case-insensitive disk; `config copy --only queues:NAME --dry-run` planned the whole configuration instead of one queue.
+- Checked on 2026-11-09 (see `references/checked-live.md`): reads on a shared test PBX, and on the author's stage PBX a test queue created, changed and deleted and a `config import --dry-run`. The write of `config import`, `key create`, a Company API Key login and the WMS sign-in with 2FA were not tried.
+- Seen in `wx-admin` 1.9.0 and passed on in the skill as cautions: `config backup` stops on two dialplans whose names differ only in case on a case-insensitive disk; `config copy --only queues:NAME --dry-run` planned the whole configuration instead of one queue (`config export --only` then `import --all` did not).
 
 ## 3.4.0 — 2026-11-07
 
