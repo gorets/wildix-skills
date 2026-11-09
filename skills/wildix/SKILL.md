@@ -1,6 +1,6 @@
 ---
 name: wildix
-description: Router for the Wildix skills. Use when the user wants to work with x-bees chats, channels and messages, to find a colleague, or to read what is on record about calls and meetings that are over (record, transcript, summary), to place or control a live phone call or watch calls as they happen, to see what is going on now in the company (queues and agents, calls and customer chats in progress, presence, a live transcript), or to write an ADR from a meeting; it names the sub-skill that does it.
+description: Router for the Wildix skills. Use when the user wants to work with x-bees chats, channels and messages, to find a colleague, or to read what is on record about calls and meetings that are over (record, transcript, summary), to place or control a live phone call or watch calls as they happen, to see what is going on now in the company (queues and agents, calls and customer chats in progress, presence, a live transcript), to administer the PBX or the company's cloud services as an administrator (users, queues, dialplans, trunks, config backup and transfer, API keys), or to write an ADR from a meeting; it names the sub-skill that does it.
 license: MIT
 metadata:
   author: Vladimir Gorobets
@@ -25,6 +25,7 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 | a call or meeting that is over: transcript, AI summary, decisions, recording, call history, missed calls, find a meeting, as the user; statistics of conversations by department, direction, hour, sentiment; the reports of the call queues over days (service level, lost calls, per agent) | `wildix-calls-history` |
 | a live phone call: call a number, answer, hold, transfer, hang up, DTMF, record, which phone rings, watch calls as they happen, as the user | `wildix-call-control` |
 | what is going on now: call queues and their agents, how the queues do today or in the last hour (service level, abandoned, waits), calls and customer chats in progress, whether a colleague is available, the live transcript of a call, a live feed of queues | `wildix-live-monitor` |
+| administer the PBX as an administrator: users, ACL, queues, dialplans, trunks, devices, system settings, back up, compare or move configuration between PBXs, knowledge base, Wilma, integrations, Kite, Company API Keys (through the `wx-admin` command line; not for ordinary user tasks) | `wildix-admin` |
 | "write an ADR from this call", an ADR from a meeting link | `wildix-adr-from-meeting` |
 | "react with…", "put eyes on that message", "who reacted" | `wildix-chats` |
 | chats, messages, inbox and unread, search, members, files, mentions, find a colleague, send, edit or delete a message, follow chats live ("tell me when Anna writes"), as the user | `wildix-chats` |
@@ -39,6 +40,6 @@ Read [`peers.yaml`](peers.yaml), then route based on the user's request:
 
 ## wildix-auth is always first
 
-Every sub-skill requires authentication. Before routing to any skill other than `wildix-auth` itself, check that `wildix-auth` is among the skills you can use; if not, ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`.
+Every sub-skill except `wildix-admin` requires authentication through `wildix-auth`. (`wildix-admin` signs in with `wx-admin`, which the user logs in themselves; it does not use `wildix-auth`. Route to it directly, and if `wx-admin` is missing tell the user to run `npm i -g wldx-admin-cli`.) Before routing to any other skill than `wildix-auth` itself, check that `wildix-auth` is among the skills you can use; if not, ask the user to run `npx skills add gorets/wildix-skills --s wildix-auth`.
 
 The sub-skills' scripts authenticate themselves through `wildix-auth`: nobody passes a token around. When a script reports that the user is not logged in, invoke `wildix-auth` to log in, then run the script again.

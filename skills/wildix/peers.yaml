@@ -42,3 +42,8 @@ peers:
     install: npx skills add gorets/wildix-skills --s wildix-adr-from-meeting
     install_policy: ask
     purpose: "Turn a meeting transcription into an Architecture Decision Record and publish it to Confluence."
+
+  - name: wildix-admin
+    install: npx skills add gorets/wildix-skills --s wildix-admin
+    install_policy: ask
+    purpose: "Administer a Wildix PBX and the cloud services of its company as an administrator through the wx-admin command line: users, ACL, queues, dialplans, trunks, system, config backup and transfer, knowledge base, Wilma, integrations, Kite, Company API Keys. Does not use wildix-auth."

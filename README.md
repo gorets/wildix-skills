@@ -1,8 +1,8 @@
 # Wildix Agent Skills
 
-**Version 3.4.0** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
+**Version 3.5.0** — what changed in each version: [`CHANGELOG.md`](CHANGELOG.md).
 
-AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
+AI agent skills for [Wildix](https://wildix.com) [x-bees](https://x-bees.com): authenticate, work with chats and messages as yourself, find colleagues, read what is on record about calls and meetings that are over (records, transcripts, AI summaries), place and control live phone calls on your PBX and watch them as they happen, see what is going on now in your company (call queues and their agents, calls and customer chats in progress, presence of colleagues, live transcripts), administer a PBX and the cloud services of the company as an administrator through the `wx-admin` command line, and turn a meeting transcription into a published Architecture Decision Record. They are written for Claude Code and work with other agents that read `SKILL.md` skills.
 
 > **Unofficial project.** These skills are a personal project, not an official Wildix product. They
 > are not released, endorsed or supported by Wildix, and Wildix gives no warranty for them. They
@@ -26,6 +26,7 @@ npx skills add gorets/wildix-skills --s wildix-chats -y
 npx skills add gorets/wildix-skills --s wildix-calls-history -y
 npx skills add gorets/wildix-skills --s wildix-call-control -y
 npx skills add gorets/wildix-skills --s wildix-live-monitor -y
+npx skills add gorets/wildix-skills --s wildix-admin -y
 npx skills add gorets/wildix-skills --s wildix-adr-from-meeting -y
 ```
 
@@ -102,6 +103,18 @@ What is going on **now** in your company, as the logged-in user, read only, from
 **Depends on:** `wildix-auth`
 
 Needs Node.js 22+ (no npm packages).
+
+---
+
+### `wildix-admin`
+
+Administering a Wildix PBX and the cloud services of its company **as an administrator**, through the [`wx-admin`](https://github.com/gorets/wildix-cli/tree/main/packages/wx-admin) command line (npm `wldx-admin-cli`): users, ACL groups, queues, dialplans, timetables, IVR menus, trunks, devices, phonebooks, sounds, system settings, call history and recordings of the whole PBX, backing up and comparing configuration, moving it between PBXs (plan first, then write, then what is left to do), the knowledge base, Wilma agents, WIM integrations, Kite channels and Company API Keys. The skill carries the safety rules for an agent that changes a PBX (read first, one named PBX, a plan and the user's yes before a write, `--yes` only for what was asked, no secrets) and the map of the commands; the command reference is generated from the README of `wx-admin`.
+
+**Signing in:** you sign in yourself in a terminal (`wx-admin login <pbx>`); the agent never asks for or handles a password, a 2FA code or a key. It does not use `wildix-auth`.
+
+**Triggers:** "add a user on the PBX", "list the queues", "back up the PBX config", "copy the dialplans to the other PBX", "what changed on the PBX since the backup", "make an API key for reporting"
+
+**Depends on:** `wx-admin` 1.9.0+ (Node.js 22+); not `wildix-auth`. Not for the everyday tasks of a user.
 
 ---
 
@@ -192,6 +205,12 @@ The reference of `wildix-call-control` is cut from the PBX API document that doc
 python3 tools/extract-pbx-call-control.py <path to>/pbx-openapi.yaml
 ```
 
+The command reference of `wildix-admin` is copied from the command tables in the README of `wx-admin` (the clone of `gorets/wildix-cli`, `packages/wx-admin/README.md`); regenerate it when `wx-admin` gets a new version, and raise the minimum version in `skills/wildix-admin/scripts/check.sh`:
+
+```bash
+python3 tools/extract-wx-admin-commands.py <path to>/packages/wx-admin/README.md
+```
+
 The `queues` reference of `wildix-calls-history` comes from the smithy model of the x-caracal service (`sdk-models/models/wda-xcaracal`, which has no published OpenAPI yet) and the list of queues of the WDA stream document. Build the OpenAPI with the smithy `openapi` plugin (add `software.amazon.smithy:smithy-openapi` to `build.gradle.kts` and a projection `{"plugins": {"openapi": {"service": "wildix.wda.xcaracal#WdaXcaracal", "protocol": "aws.protocols#restJson1", "version": "3.1.0"}}}` to `smithy-build.json`, in a copy of `sdk-models`, then `./gradlew build`), then:
 
 ```bash
@@ -208,6 +227,7 @@ Operations the service does not implement yet are listed in `tools/stream-not-im
 - `python3` — included on macOS/Linux
 - `curl` — included on macOS/Linux
 - Node.js 24+ and npm — only for the live view of `wildix-call-control` (`sip.sh`)
+- Node.js 22+ and [`wx-admin`](https://github.com/gorets/wildix-cli/tree/main/packages/wx-admin) 1.9.0+ (`npm i -g wldx-admin-cli`) — only for `wildix-admin`; you sign in to the PBX yourself with `wx-admin login`
 - Node.js 22+ — only for `wildix-live-monitor` and the live events of `wildix-chats` (`watch.sh`)
 - an Atlassian MCP server in Claude Code — only for `wildix-adr-from-meeting`, to publish to Confluence
 

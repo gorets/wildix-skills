@@ -11,7 +11,7 @@ skills/<name>/            one skill per folder; <name> is what users install
   SKILL.md                frontmatter (name, description, license, metadata, allowed-tools) + instructions
   peers.yaml              the skills it needs (only wildix-auth)
   scripts/                what the agent runs: <section>.sh, lib.sh (sourced), *.mjs (Node helpers)
-  references/             OpenAPI of the service, one file per section, generated (do not hand-edit)
+  references/             OpenAPI of the service, one file per section, generated (do not hand-edit); wildix-admin: commands.md generated, the others written by hand
 skills/wildix/            the router: SKILL.md (intent -> skill table) and peers.yaml (every skill of the pack)
 commands/                 optional slash commands (adr, save), copied by hand (npx skills does not install them)
 tools/                    check-skills.py, the reference generators, stream-not-implemented.json
@@ -23,8 +23,9 @@ The skills talk to Wildix services as the **logged-in user** (x-bees login throu
 
 ## Rules for every skill
 
-- **No references to other skills or tools**, except `wildix-auth`, which every skill needs. Describe the behaviour ("acts as the logged-in user, never as a bot") instead of naming a neighbour. Never mention staff-only tools (the Wildix CLI and its bots).
-- **Authentication stays inside `wildix-auth`.** A `lib.sh` sources `wildix-auth/scripts/load-token.sh` (looked for next to the skill, then `WILDIX_SKILLS_DIR`, `~/.agents/skills`, `~/.claude/skills`) and calls `wildix_require_token`; it stops with exit code 2 and an install or login hint. The agent never gets, passes or prints a token.
+- **No references to other skills or tools**, except `wildix-auth`, which every skill needs, and the one exception below. Describe the behaviour ("acts as the logged-in user, never as a bot") instead of naming a neighbour. Never mention staff-only tools (the Wildix CLI and its bots).
+- **Exception: a public Wildix command line.** A skill whose job is to drive a published Wildix CLI (today only `wx-admin`, npm `wldx-admin-cli`, in `wildix-admin`) may name that CLI and run it instead of its own scripts, if it: checks `command -v` and a minimum version in a small script (`scripts/check.sh`) that exits 2 with the install hint (`npm i -g <package>`); never installs anything itself (ask the user, as with peers); never handles credentials (the user signs in in their own terminal, the agent never asks for or types a password, a 2FA code or a key); does not depend on `wildix-auth` unless the CLI uses the x-bees login; and does not name staff-only tools. Its command reference is generated from the CLI's README, never hand-edited. The script rules below apply to the skill's own scripts, not to the CLI.
+- **Authentication stays inside `wildix-auth`** (for the skills that use the x-bees login). A `lib.sh` sources `wildix-auth/scripts/load-token.sh` (looked for next to the skill, then `WILDIX_SKILLS_DIR`, `~/.agents/skills`, `~/.claude/skills`) and calls `wildix_require_token`; it stops with exit code 2 and an install or login hint. The agent never gets, passes or prints a token.
 - **Never check for a peer skill by a file path** in `SKILL.md` or `peers.yaml` (no `glob:`): installation is judged by whether the agent can see the skill. Peers are never installed silently: `install_policy: ask`.
 - **Never send or expose the `silent` flag** of the chat APIs.
 - **Mark what a service does not implement yet** everywhere it shows: the sections table, the command blocks, the usage text of the script, the reference (`x-not-implemented`, from `tools/stream-not-implemented.json`), and a Known gaps list with the date it was checked.
@@ -65,6 +66,7 @@ Generated, never edited by hand (see Maintaining in the README):
 | `wildix-chats` | Stream service OpenAPI | `tools/split-stream-openapi.mjs` (+ `tools/stream-not-implemented.json`) |
 | `wildix-calls-history` | WDA History and WDA Insights OpenAPI (SDK generator) | `tools/split-wda-openapi.mjs` |
 | `wildix-call-control` | `https://docs.wildix.com/pbx-openapi.yaml` | `tools/extract-pbx-call-control.py` |
+| `wildix-admin` | the command tables of the README of `wx-admin` (`gorets/wildix-cli`, `packages/wx-admin`) | `tools/extract-wx-admin-commands.py` |
 | `wildix-calls-history` (`queues`) | WDA x-caracal smithy model (OpenAPI built with the smithy plugin) and the WDA stream OpenAPI | `tools/split-xcaracal-openapi.mjs` |
 
 `wildix-live-monitor` and the `watch.sh` of `wildix-chats` use websockets that have no OpenAPI: their protocol is described in the `SKILL.md` and in the comments of the `.mjs` scripts.

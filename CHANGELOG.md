@@ -2,6 +2,19 @@
 
 All notable changes to the Wildix agent skills. The version is the number of the whole pack, shown at the top of the [`README.md`](README.md); the skills standard has no place for it, and `npx skills` notices updates by the content of each skill folder, not by a number. It follows [Semantic Versioning](https://semver.org): a skill removed or renamed is a major version, a skill or a command added is a minor one, a fix is a patch.
 
+## 3.5.0 — 2026-11-09
+
+### Added
+- **`wildix-admin`**: administering a Wildix PBX and the cloud services of its company as an administrator through the `wx-admin` command line (npm `wldx-admin-cli`, 1.9.0 or newer). `SKILL.md` carries the safety rules (read before write, one named PBX, a plan and the user's explicit yes before a write, `--yes` only for what was asked, secrets never printed, `--all-pbx` read only, calls-stopping changes announced first), the login rule (the user signs in themselves; the agent never handles a password, a 2FA code or a key) and the flows (check, back up and diff, move settings with `--dry-run` first, change one thing). `scripts/check.sh` says whether `wx-admin` is installed, new enough and signed in (exit 2 and an install or login hint; nothing is installed by the skill). References: `commands.md` (291 commands, generated from the README of `wx-admin` by `tools/extract-wx-admin-commands.py`), `config-transfer.md`, `cloud.md` (knowledge base, Wilma, integrations, Kite, Company API Keys) and `checked-live.md`.
+
+### Changed
+- `AGENTS.md`: a documented exception to "no references to other tools" for a skill that drives a public Wildix CLI (check and minimum version, no automatic install, no credentials handled by the agent, generated command reference); the references table lists the new generator.
+- Router (`wildix`): routes administrator tasks to `wildix-admin`, which does not use `wildix-auth`.
+
+### Notes
+- Checked read only against a shared test PBX on 2026-11-09 (see `references/checked-live.md`). Writes, a Company API Key login and the WMS sign-in with 2FA were not tried.
+- Seen in `wx-admin` 1.9.0 and passed on in the skill as cautions: `config backup` stops on two dialplans whose names differ only in case on a case-insensitive disk; `config copy --only queues:NAME --dry-run` planned the whole configuration instead of one queue.
+
 ## 3.4.0 — 2026-11-07
 
 ### Added
